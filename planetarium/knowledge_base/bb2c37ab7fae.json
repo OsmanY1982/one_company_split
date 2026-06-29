@@ -1,0 +1,12 @@
+{
+  "id": "bb2c37ab7fae",
+  "title": "卷03_业务运营/13_产品管理_product_window.md",
+  "content": "## 第十三章 · 产品管理（product_window.py）\n\n### 库存的痛点\n\n一个人的公司，库存管理最大的痛点不是技术，是**忘了**。进了一批货，卖了三个月，忘了还剩多少。\n\n所以产品模块的核心设计是：\n- **低摩擦录入**：扫码录入（pyzbar 二维码识别 + 手动输入 fallback）\n- **预警机制**：设置最低库存阈值，低于阈值时舰桥 Dashboard 醒目提醒\n- **简易出库**：和订单联动，订单创建自动扣减库存\n\n### 扫码功能\n\nmacOS 上调用摄像头：`Pillow` + `pyzbar`。用户在库存页面点「扫码入库」→ 调用系统摄像头 → 扫描商品条码 → 自动填充商品信息。\n\n如果条码不在数据库中：弹窗让用户手动填写商品名和初始库存量。\n\n---\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/卷03_业务运营/13_产品管理_product_window.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "卷03_业务运营/13_产品管理_product_window.md"
+  },
+  "created_at": "2026-06-13T13:23:20.650802"
+}

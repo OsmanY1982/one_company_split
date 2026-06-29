@@ -1,0 +1,232 @@
+# -*- coding: utf-8 -*-
+"""
+类地行星 — 蓝绿大陆+蔚蓝海洋+白色云层漩涡+冰盖
+"""
+import math, random
+from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import (
+    QPainter, QRadialGradient, QColor, QPen, QBrush, QPainterPath
+)
+
+
+def paint(painter: QPainter, center: QPointF, radius: float,
+          anim_t: float, hovered: bool, alpha: float):
+    cx, cy = center.x(), center.y()
+    p = painter
+    p.save()
+    if alpha < 1.0:
+        p.setOpacity(alpha)
+
+    # ── 外辉光 ──
+    for gl in range(4):
+        gr = radius * (1.06 + gl * 0.20)
+        g = QRadialGradient(cx, cy, gr)
+        ga = max(1, 35 - gl * 8)
+        g.setColorAt(0.0, QColor(255, 255, 255, 0))
+        g.setColorAt(0.25, QColor(200, 200, 255, ga // 2))
+        g.setColorAt(0.55, QColor(120, 140, 255, ga))
+        g.setColorAt(0.80, QColor(60, 80, 200, ga // 2))
+        g.setColorAt(1.0, QColor(0, 0, 0, 0))
+        p.setBrush(g); p.setPen(Qt.NoPen)
+        p.drawEllipse(center, gr, gr)
+
+    # ── 海洋底层（深蓝→浅蓝穹顶渐变）──
+    ocean = QRadialGradient(cx - radius * 0.15, cy - radius * 0.15, radius * 1.06)
+    ocean.setColorAt(0.0, QColor(80, 165, 230))
+    ocean.setColorAt(0.20, QColor(55, 135, 210))
+    ocean.setColorAt(0.45, QColor(35, 100, 185))
+    ocean.setColorAt(0.65, QColor(20, 70, 150))
+    ocean.setColorAt(0.82, QColor(12, 45, 110))
+    ocean.setColorAt(0.94, QColor(6, 20, 60))
+    ocean.setColorAt(1.0, QColor(3, 8, 30))
+    p.setBrush(ocean); p.setPen(Qt.NoPen)
+    p.drawEllipse(center, radius, radius)
+
+    # ── 大陆块（QPainterPath 不规则形状，绿棕色调）──
+    land_rng = random.Random(42)
+    continents = []
+    # 主要大陆1（类欧亚）
+    c1 = QPainterPath()
+    bx, by = cx - radius * 0.10, cy - radius * 0.28
+    c1.moveTo(bx, by)
+    for a in [0.2, 0.5, 0.8, 1.1, 1.4, 1.7, 2.0, 2.3, 2.6]:
+        nx = cx + math.cos(a) * radius * (0.22 + 0.18 * math.sin(a * 2.3))
+        ny = cy - radius * 0.12 + math.sin(a * 0.7) * radius * 0.30
+        c1.lineTo(nx, ny)
+    c1.closeSubpath()
+    continents.append(("eurasia", c1, QColor(85, 155, 80)))
+
+    # 大陆2（类非洲/南美）
+    c2 = QPainterPath()
+    c2.moveTo(cx + radius * 0.05, cy + radius * 0.35)
+    for a in [0.0, 0.7, 1.2, 1.8, 2.3, 2.8, 3.5, 4.2, 5.0, 5.8]:
+        nx = cx + math.cos(a) * radius * (0.10 + 0.12 * abs(math.sin(a * 1.8)))
+        ny = cy + radius * 0.10 + math.sin(a * 0.6) * radius * 0.32
+        c2.lineTo(nx, ny)
+    c2.closeSubpath()
+    continents.append(("africa", c2, QColor(95, 150, 65)))
+
+    # 大陆3（北美）
+    c3 = QPainterPath()
+    c3.moveTo(cx - radius * 0.35, cy - radius * 0.55)
+    for a in [5.5, 5.0, 4.3, 3.8, 3.3, 3.0, 2.7, 2.4, 2.1, 1.8]:
+        nx = cx + math.cos(a) * radius * (0.12 + 0.14 * abs(math.cos(a * 1.5)))
+        ny = cy - radius * 0.30 + math.sin(a * 0.9) * radius * 0.20
+        c3.lineTo(nx, ny)
+    c3.closeSubpath()
+    continents.append(("north_am", c3, QColor(75, 140, 70)))
+
+    # 大陆4（澳洲/东南亚群岛）
+    c4 = QPainterPath()
+    c4.moveTo(cx + radius * 0.30, cy + radius * 0.50)
+    for a in [5.8, 5.5, 5.0, 4.7, 4.3, 4.0, 3.8, 3.5]:
+        nx = cx + math.cos(a) * radius * (0.08 + 0.05 * abs(math.sin(a)))
+        ny = cy + radius * 0.28 + math.sin(a * 1.2) * radius * 0.10
+        c4.lineTo(nx, ny)
+    c4.closeSubpath()
+    continents.append(("australia", c4, QColor(100, 160, 70)))
+
+    # 绘制大陆（带内部高地纹理）
+    for name, path, base_color in continents:
+        # 大陆基底
+        land_grad = QRadialGradient(cx - radius * 0.08, cy - radius * 0.08, radius * 0.90)
+        land_grad.setColorAt(0.0, QColor(base_color.red() + 30, base_color.green() + 20, base_color.blue() + 5, 200))
+        land_grad.setColorAt(0.5, QColor(base_color.red(), base_color.green(), base_color.blue(), 180))
+        land_grad.setColorAt(1.0, QColor(max(0, base_color.red() - 35), max(0, base_color.green() - 25), max(0, base_color.blue() - 10), 120))
+        p.setBrush(land_grad); p.setPen(Qt.NoPen)
+        p.drawPath(path)
+        # 高地纹理（内部暗斑模拟山脉）
+        high_rng = random.Random(hash(name) % 100000)
+        for _ in range(8):
+            hx = cx + high_rng.uniform(-radius * 0.55, radius * 0.55)
+            hy = cy + high_rng.uniform(-radius * 0.55, radius * 0.55)
+            hr = radius * high_rng.uniform(0.04, 0.11)
+            if path.contains(QPointF(hx, hy)):
+                hg = QRadialGradient(hx, hy, hr)
+                hg.setColorAt(0.0, QColor(60, 100, 40, 80))
+                hg.setColorAt(0.6, QColor(110, 160, 90, 30))
+                hg.setColorAt(1.0, QColor(255, 255, 255, 0))
+                p.setBrush(hg); p.setPen(Qt.NoPen)
+                p.drawEllipse(QPointF(hx, hy), hr, hr)
+
+    # ── 极冠（南北冰盖）──
+    # 北极冠
+    npole = QRadialGradient(cx, cy - radius * 0.68, radius * 0.40)
+    npole.setColorAt(0.0, QColor(240, 250, 255, 150))
+    npole.setColorAt(0.3, QColor(220, 240, 250, 100))
+    npole.setColorAt(0.6, QColor(200, 230, 245, 40))
+    npole.setColorAt(1.0, QColor(255, 255, 255, 0))
+    p.setBrush(npole); p.setPen(Qt.NoPen)
+    p.drawEllipse(center, radius, radius)
+    # 南极冠
+    spole = QRadialGradient(cx, cy + radius * 0.68, radius * 0.32)
+    spole.setColorAt(0.0, QColor(245, 252, 255, 130))
+    spole.setColorAt(0.4, QColor(230, 245, 252, 70))
+    spole.setColorAt(1.0, QColor(255, 255, 255, 0))
+    p.setBrush(spole); p.setPen(Qt.NoPen)
+    p.drawEllipse(center, radius, radius)
+
+    # ── 海洋深浅纹理（洋流）──
+    current_rng = random.Random(99)
+    for _ in range(5):
+        cx2 = cx + current_rng.uniform(-radius * 0.45, radius * 0.45)
+        cy2 = cy + current_rng.uniform(-radius * 0.45, radius * 0.45)
+        cur = QPainterPath()
+        cur.moveTo(cx2, cy2)
+        curl = radius * current_rng.uniform(0.15, 0.35)
+        for j in range(8):
+            frac = j / 7.0
+            nx = cx2 + math.sin(anim_t * 0.3 + frac * 4) * curl
+            ny = cy2 + frac * curl * 1.2
+            cur.lineTo(nx, ny)
+        pen = QPen(QColor(30, 80, 160, 30), 1.0)
+        pen.setCapStyle(Qt.RoundCap)
+        p.setPen(pen); p.setBrush(Qt.NoBrush)
+        p.drawPath(cur)
+
+    # ── 白色云层漩涡（多层螺旋叠加）──
+    cloud_offset = anim_t * 0.08
+    for layer in range(3):
+        cloud_rng = random.Random(55 + layer * 17)
+        for i in range(6 + layer * 2):
+            sw_path = QPainterPath()
+            swx = cx + cloud_rng.uniform(-radius * 0.50, radius * 0.50)
+            swy = cy + cloud_rng.uniform(-radius * 0.50, radius * 0.50)
+            sw_len = radius * cloud_rng.uniform(0.12, 0.40)
+            sw_width = radius * cloud_rng.uniform(0.02, 0.06)
+            sw_angle = cloud_rng.uniform(0, 2 * math.pi)
+            sw_start_x = swx + math.cos(sw_angle) * sw_len * 0.15
+            sw_start_y = swy + math.sin(sw_angle) * sw_len * 0.15
+            sw_path.moveTo(sw_start_x, sw_start_y)
+            for j in range(8):
+                frac = j / 7.0
+                a = sw_angle + cloud_offset * (layer + 1) * 2.5 + frac * math.pi * 1.1
+                r2 = sw_len * (0.15 + 0.85 * frac)
+                px = swx + math.cos(a) * r2
+                py = swy + math.sin(a) * r2
+                sw_path.lineTo(px, py)
+            sw_pen = QPen(QColor(250, 252, 255, 45 - layer * 12), sw_width * 2.5)
+            sw_pen.setCapStyle(Qt.RoundCap)
+            p.setPen(sw_pen); p.setBrush(Qt.NoBrush)
+            p.drawPath(sw_path)
+
+    # ── 高光 ──
+    hl = QRadialGradient(cx - radius * 0.25, cy - radius * 0.28, radius * 0.35)
+    hl.setColorAt(0.0, QColor(255, 255, 255, 55))
+    hl.setColorAt(0.4, QColor(200, 230, 255, 25))
+    hl.setColorAt(1.0, QColor(255, 255, 255, 0))
+    p.setBrush(hl); p.setPen(Qt.NoPen)
+    p.drawEllipse(center, radius, radius)
+
+    # ── 暗面（右下角阴影过渡）──
+    shadow = QRadialGradient(cx + radius * 0.55, cy + radius * 0.45, radius * 0.80)
+    shadow.setColorAt(0.0, QColor(255, 255, 255, 0))
+    shadow.setColorAt(0.35, QColor(0, 0, 0, 30))
+    shadow.setColorAt(0.55, QColor(0, 0, 0, 80))
+    shadow.setColorAt(0.75, QColor(0, 0, 0, 160))
+    shadow.setColorAt(0.92, QColor(0, 0, 0, 220))
+    shadow.setColorAt(1.0, QColor(0, 0, 0, 240))
+    p.setBrush(shadow); p.setPen(Qt.NoPen)
+    p.drawEllipse(center, radius, radius)
+
+    # ── 边缘逆光 ──
+    rim_breath = 1.0 + 0.03 * math.sin(anim_t * 2.2)
+    rim = QRadialGradient(cx + radius * 0.45, cy + radius * 0.50, radius * 0.50)
+    rim.setColorAt(0.0, QColor(255, 255, 255, 0))
+    rim.setColorAt(0.55, QColor(255, 255, 255, 0))
+    rim.setColorAt(0.78, QColor(180, 210, 255, int(15 * rim_breath)))
+    rim.setColorAt(0.92, QColor(140, 180, 255, int(32 * rim_breath)))
+    rim.setColorAt(1.0, QColor(0, 0, 0, 0))
+    p.setBrush(rim); p.setPen(Qt.NoPen)
+    p.drawEllipse(center, radius, radius)
+
+    # ── 悬停增强 ──
+    if hovered:
+        hp = 0.7 + 0.3 * abs(math.sin(anim_t * 3.5))
+        for i in range(3):
+            ir = radius + 2 + i * 5
+            ig = QRadialGradient(center, ir)
+            ga = int((70 - i * 18) * hp)
+            ig.setColorAt(0.60, QColor(255, 255, 255, 0))
+            ig.setColorAt(0.78, QColor(100, 180, 240, ga // 2))
+            ig.setColorAt(0.90, QColor(100, 180, 240, ga))
+            ig.setColorAt(0.97, QColor(50, 90, 150, ga // 3))
+            ig.setColorAt(1.0, QColor(0, 0, 0, 0))
+            p.setPen(Qt.NoPen); p.setBrush(ig)
+            p.drawEllipse(center, ir, ir)
+        for i in range(3):
+            outer_r = radius + 10 + i * 10
+            og = QRadialGradient(center, outer_r)
+            ga = int((50 - i * 14) * hp)
+            og.setColorAt(0.75, QColor(255, 255, 255, 0))
+            og.setColorAt(0.88, QColor(100, 180, 240, ga // 2))
+            og.setColorAt(0.96, QColor(50, 90, 160, ga // 3))
+            og.setColorAt(1.0, QColor(0, 0, 0, 0))
+            p.setPen(Qt.NoPen); p.setBrush(og)
+            p.drawEllipse(center, outer_r, outer_r)
+        br = 0.6 + 0.4 * abs(math.sin(anim_t * 4.0))
+        rpen = QPen(QColor(100, 180, 240, int(220 * hp * br)), 2.5 + 1.0 * br)
+        p.setPen(rpen); p.setBrush(Qt.NoBrush)
+        p.drawEllipse(center, radius + 3, radius + 3)
+
+    p.restore()

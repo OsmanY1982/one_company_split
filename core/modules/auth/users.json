@@ -1,0 +1,37 @@
+{
+  "admin": {
+    "password": "$2b$12$79/LDGAtt9pkjwqPPtuXzOSEh9.EoPWogvsLr4afmeggpEwQhr06u",
+    "role": "admin",
+    "membership": "permanent",
+    "expire_at": null,
+    "created_at": "2026-01-01 00:00:00"
+  },
+  "m123": {
+    "password": "123456",
+    "role": "member",
+    "membership": "trial",
+    "expire_at": "2026-06-18 21:50:11",
+    "created_at": "2026-06-11 21:50:11"
+  },
+  "m1234": {
+    "password": "123456",
+    "role": "member",
+    "membership": "trial",
+    "expire_at": "2026-06-25 08:09:42",
+    "created_at": "2026-06-18 08:09:42"
+  },
+  "test_split": {
+    "password": "newpass",
+    "role": "member",
+    "membership": "vip",
+    "expire_at": "2027-06-21 14:21:46",
+    "created_at": "2026-06-21 14:21:46"
+  },
+  "test_marvis_check": {
+    "password": "Test123456",
+    "role": "member",
+    "membership": "trial",
+    "expire_at": "2026-06-28 14:39:28",
+    "created_at": "2026-06-21 14:39:28"
+  }
+}

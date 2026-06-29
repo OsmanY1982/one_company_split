@@ -1,0 +1,12 @@
+{
+  "id": "e4367a0140cd",
+  "title": "卷05_数据与系统/17_数据中心_data_center.md",
+  "content": "## 第十七章 · 数据中心（data_center/）\n\n### 总控（data_window.py）\n\n288 行代码，2 颗小星球导航：\n\n| 子星球ID | 名称 | 功能 | 文件 |\n|----------|------|------|------|\n| report | 数据报表 | 统计图表+团队KPI | report_window.py (390行) |\n| bi | 数据大屏 | 可视化看板 | bi_window.py (313行) |\n\n### 数据报表（report_window.py）\n\n390 行代码，支持：\n- 5 项 KPI 卡片（财务收入/会员总数/客户数量/订单总数/团队人数）\n- 时间维度切换（累计/今日/本周/本月/本年）\n- 5 种统计类型（收入概览/订单明细/会员统计/客户分析/产品销售）\n- QPainter 自绘柱状图/折线图 + 数据表格\n- 导出 CSV\n\n底层使用 SQLite 直接查询 data/ 下各业务数据库，所有计算在 Python 侧完成。2026-06-11 修复 QRadialGradient 导入缺失导致图表渲染崩溃的 bug。\n\n### 数据大屏（bi_window.py）\n\n313 行代码，全屏数据可视化看板：\n- 关键指标卡片（总营收/订单数/客单价/新增客户）\n- QPainter 自绘趋势折线图 + 渐变填充\n- 详细数据表格 / Top 排行\n- 全屏模式（F11）\n\n---\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/卷05_数据与系统/17_数据中心_data_center.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "卷05_数据与系统/17_数据中心_data_center.md"
+  },
+  "created_at": "2026-06-13T13:23:20.808489"
+}

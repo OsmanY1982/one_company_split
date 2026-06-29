@@ -1,0 +1,12 @@
+{
+  "id": "349abdc88455",
+  "title": "卷03_业务运营/11_业务管理总控_business_window.md",
+  "content": "## 第十一章 · 业务管理总控（business_window.py）\n\n### 四星导航\n\n526 行代码，采用小星球导航模式。整体视觉语言延续舰桥：深空背景 + 4 颗小星球环绕中心能量球运行。\n\n| 子星球ID | 名称 | 功能 | 对应文件 |\n|----------|------|------|----------|\n| order | 订单管理 | 订单CRUD + 状态 | order_window.py (459行) |\n| product | 产品管理 | 产品库/库存 | product_window.py (379行) |\n| customer | 客户管理 | 最小CRM | customer_window.py (405行) |\n| finance | 财务管理 | 收支记账 | finance_window.py (490行) |\n\n每颗星球都有独立的辉光颜色和轨道半径，hover 时辉光增强，点击打开对应子窗口。这种\"递归宇宙\"的设计让 4 个功能模块的组织方式非常直观。\n\n---\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/卷03_业务运营/11_业务管理总控_business_window.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "卷03_业务运营/11_业务管理总控_business_window.md"
+  },
+  "created_at": "2026-06-13T13:23:20.625763"
+}

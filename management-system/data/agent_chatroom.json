@@ -1,0 +1,134 @@
+{
+  "version": "1.0",
+  "created_at": "2026-05-16T00:00:00+08:00",
+  "updated_at": "2026-05-16T00:00:00+08:00",
+  "chatroom": {
+    "id": "one_company_internal_chatroom",
+    "name": "一人公司内部聊天室",
+    "description": "CEO 与固定数字员工之间的内部协作空间。董事长只管理 CEO，员工之间通过本聊天室接受 CEO 分配任务、汇报进展、讨论方案。",
+    "rules": [
+      "董事长只直接管理 CEO，不直接管理普通员工。",
+      "CEO 负责任务拆解、员工分配、结果汇总和最终汇报。",
+      "员工发言必须标明：员工名、职位、当前任务、结论或问题。",
+      "员工不得越权替 CEO 或董事长做最终决策。",
+      "涉及代码修改、发布、付款、合同、重要对外内容，必须先提交 CEO 确认。",
+      "记忆员工负责把关键结论写入公司记忆。",
+      "项目员工负责把任务写入任务板。",
+      "测试员工负责在发布或交付前做质量检查。"
+    ]
+  },
+  "members": [
+    {
+      "id": "ceo",
+      "name": "CEO",
+      "display_name": "iqra",
+      "position": "CEO / 总裁",
+      "department": "总裁办",
+      "can_post": true,
+      "can_assign_tasks": true,
+      "can_approve_decisions": true
+    },
+    {
+      "id": "agent_product_001",
+      "name": "产品员工",
+      "display_name": "产品员工（产品负责人）",
+      "position": "产品负责人",
+      "department": "产品部",
+      "responsibilities": "需求分析、功能设计、方案拆解、验收标准",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    },
+    {
+      "id": "agent_research_001",
+      "name": "研究员工",
+      "display_name": "研究员工（市场研究员）",
+      "position": "市场研究员",
+      "department": "研究部",
+      "responsibilities": "查资料、竞品分析、行业信息整理、趋势判断",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    },
+    {
+      "id": "agent_dev_001",
+      "name": "开发员工",
+      "display_name": "开发员工（全栈开发工程师）",
+      "position": "全栈开发工程师",
+      "department": "工程部",
+      "responsibilities": "写代码、改程序、自动化实现、系统集成",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    },
+    {
+      "id": "agent_test_001",
+      "name": "测试员工",
+      "display_name": "测试员工（测试工程师）",
+      "position": "测试工程师",
+      "department": "质量部",
+      "responsibilities": "检查 bug、验证功能、风险报告、质量验收",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    },
+    {
+      "id": "agent_ops_001",
+      "name": "运营员工",
+      "display_name": "运营员工（增长运营）",
+      "position": "增长运营",
+      "department": "运营部",
+      "responsibilities": "内容发布、用户增长、推广策略、活动设计",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    },
+    {
+      "id": "agent_finance_001",
+      "name": "财务员工",
+      "display_name": "财务员工（财务顾问）",
+      "position": "财务顾问",
+      "department": "财务部",
+      "responsibilities": "成本估算、报价建议、预算控制、收益分析",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    },
+    {
+      "id": "agent_secretary_001",
+      "name": "记忆员工",
+      "display_name": "记忆员工（记忆秘书）",
+      "position": "记忆秘书",
+      "department": "总裁办",
+      "responsibilities": "公司记忆、董事长偏好、任务历史、会议纪要",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    },
+    {
+      "id": "agent_pm_001",
+      "name": "项目员工",
+      "display_name": "项目员工（项目经理）",
+      "position": "项目经理",
+      "department": "项目管理部",
+      "responsibilities": "排期、拆任务、进度跟踪、风险和阻塞提醒",
+      "can_post": true,
+      "can_assign_tasks": false,
+      "can_approve_decisions": false
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg_000001",
+      "timestamp": "2026-05-16T00:00:00+08:00",
+      "sender_id": "ceo",
+      "sender_name": "CEO",
+      "sender_position": "CEO / 总裁",
+      "type": "system",
+      "content": "一人公司内部聊天室已创建。董事长只管理 CEO；CEO 管理所有数字员工；员工通过本聊天室协作、汇报和接受任务。",
+      "tags": ["system", "chatroom_created"]
+    }
+  ],
+  "active_tasks": [],
+  "latest_summary": "内部聊天室已创建，固定数字员工已入驻。"
+}

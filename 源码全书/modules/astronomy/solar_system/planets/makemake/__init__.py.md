@@ -1,0 +1,39 @@
+# `modules/astronomy/solar_system/planets/makemake/__init__.py`
+
+> 路径：`modules/astronomy/solar_system/planets/makemake/__init__.py` | 行数：28
+
+
+---
+
+
+```python
+# -*- coding: utf-8 -*-
+"""鸟神星（矮行星）— 甲烷冰+微红索林"""
+from PyQt5.QtCore import QPointF
+from PyQt5.QtGui import QPainter, QColor
+
+from .._base import _paint_surface, _paint_atmosphere, _paint_label, _paint_hover_border
+
+STYLE = {
+    "name": "鸟神星", "type": "dwarf_planet",
+    "band_colors": [
+        (0.00, QColor(200, 180, 170)), (0.30, QColor(220, 200, 185)),
+        (0.60, QColor(210, 190, 175)), (1.00, QColor(195, 175, 165)),
+    ],
+    "turbulence": 0.25, "feature_spots": 8,
+    "atmosphere": QColor(190, 160, 140, 8),
+}
+
+
+def paint(p: QPainter, c: QPointF, r: float, hovered: bool,
+          label: str, font_size: int, anim_t: float):
+    _paint_surface(p, c, r, STYLE, anim_t)
+    _paint_atmosphere(p, c, r, STYLE)
+    if hovered:
+        from .._base import _paint_hover_glow, _paint_hover_border
+        _paint_hover_glow(p, c, r)
+        _paint_hover_border(p, c, r)
+    if label:
+        _paint_label(p, c, r, label, font_size)
+
+```

@@ -1,0 +1,78 @@
+Metadata-Version: 2.4
+Name: one-person-company
+Version: 2.0.0
+Summary: 一人公司 · 宇宙版 — AI 赋能的全栈个人商业操作系统
+Author: OPC Team
+License: Proprietary
+Project-URL: Homepage, https://github.com/opc/one-person-company
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: X11 Applications :: Qt
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Operating System :: MacOS
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=2.0
+Requires-Dist: psutil>=5.9
+Requires-Dist: httpx>=0.27
+Requires-Dist: requests>=2.31
+Requires-Dist: PyQt5>=5.15
+Requires-Dist: qrcode>=7.4
+Requires-Dist: pillow>=10.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: rich>=13.0
+Requires-Dist: typer>=0.9
+Requires-Dist: click>=8.0
+Requires-Dist: pygments>=2.17
+Requires-Dist: markdown-it-py>=3.0
+Requires-Dist: packaging>=23.2
+Requires-Dist: tqdm>=4.66
+Provides-Extra: voice
+Requires-Dist: sounddevice>=0.4; extra == "voice"
+Requires-Dist: faster-whisper>=1.0; extra == "voice"
+Requires-Dist: ctranslate2>=4.0; extra == "voice"
+Requires-Dist: onnxruntime>=1.18; extra == "voice"
+Requires-Dist: av>=10.0; extra == "voice"
+Provides-Extra: ai
+Requires-Dist: huggingface-hub>=0.23; extra == "ai"
+Requires-Dist: tokenizers>=0.19; extra == "ai"
+Requires-Dist: protobuf>=4.25; extra == "ai"
+Requires-Dist: hf-xet>=1.0; extra == "ai"
+Provides-Extra: semantic
+Requires-Dist: sentence-transformers>=2.2.0; extra == "semantic"
+Requires-Dist: faiss-cpu>=1.7.0; extra == "semantic"
+Provides-Extra: crawl
+Requires-Dist: firecrawl-py>=1.0; extra == "crawl"
+Provides-Extra: vision
+Requires-Dist: pyzbar>=0.1; extra == "vision"
+Provides-Extra: crypto
+Requires-Dist: cryptography>=41.0; extra == "crypto"
+Requires-Dist: bcrypt>=4.0; extra == "crypto"
+Requires-Dist: cffi>=1.16; extra == "crypto"
+Provides-Extra: net
+Requires-Dist: beautifulsoup4>=4.12; extra == "net"
+Requires-Dist: urllib3>=2.0; extra == "net"
+Requires-Dist: anyio>=4.0; extra == "net"
+Requires-Dist: h11>=0.14; extra == "net"
+Requires-Dist: httpcore>=1.0; extra == "net"
+Requires-Dist: idna>=3.6; extra == "net"
+Requires-Dist: charset-normalizer>=3.3; extra == "net"
+Requires-Dist: certifi>=2024; extra == "net"
+Provides-Extra: data
+Requires-Dist: fsspec>=2024.1; extra == "data"
+Requires-Dist: filelock>=3.13; extra == "data"
+Requires-Dist: soupsieve>=2.5; extra == "data"
+Requires-Dist: flatbuffers>=23.5; extra == "data"
+Requires-Dist: networkx>=3.0; extra == "data"
+Requires-Dist: matplotlib>=3.7; extra == "data"
+Requires-Dist: jinja2>=3.1; extra == "data"
+Requires-Dist: openpyxl>=3.1; extra == "data"
+Provides-Extra: cli
+Requires-Dist: mdurl>=0.1; extra == "cli"
+Requires-Dist: shellingham>=1.5; extra == "cli"
+Provides-Extra: desktop
+Requires-Dist: one-person-company[ai,cli,crypto,data,net,vision,voice]; extra == "desktop"
+Provides-Extra: full
+Requires-Dist: one-person-company[crawl,desktop,semantic]; extra == "full"

@@ -1,0 +1,13 @@
+{
+  "id": "anomaly_20260614_015553",
+  "title": "异常检测报告 2026-06-14 01:55",
+  "content": "异常检测总计: 4 项\n  严重: 0 | 警告: 4 | 提示: 0\n\n[警告] error — 销售异常检测失败: no such column: amount\n[警告] error — 库存异常检测失败: no such table: orders\n[警告] error — 客户异常检测失败: no such column: customer\n[警告] error — 系统异常检测失败: no such column: customer",
+  "source": "anomaly_detector",
+  "doc_type": "anomaly_report",
+  "metadata": {
+    "total": 4,
+    "critical": 0,
+    "warning": 4,
+    "info": 0
+  }
+}

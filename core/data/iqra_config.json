@@ -1,0 +1,14 @@
+{
+  "active_provider_id": "ollama",
+  "active_provider_type": "local",
+  "cloud_providers": {},
+  "local_providers": {
+    "ollama": {
+      "name": "Ollama",
+      "provider_type": "openai_compatible",
+      "base_url": "http://localhost:11434/v1",
+      "model": "qwen3.6:35b-vl",
+      "api_key": ""
+    }
+  }
+}

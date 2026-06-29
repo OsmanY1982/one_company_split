@@ -1,0 +1,26 @@
+Installation:
+
+1. Copy
+	'rhea.jpg'  (2K map)
+	  or
+	'rhea.dds'  (2K map, DXT1 compressed)
+   into celestia\textures\hires folder 
+    or 
+   into medres folder by replaceing old files.
+
+2. Edit with notepad 'solarsys.ssc' and
+   change/add following lines in rhea section:
+
+	Texture "rhea.*"   ( press in Celestia 'shift + r' / 'r' to load textures )
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+These maps was made by Jens Meyer.
+The texture base on a map form www.solarviews.com produced by NASA/USGS. 
+http://www.solarviews.com/eng/homepage.htm
+
+
+Send any comments and suggestions to jim at Celestia forum or mail to jimpage@arcor.de.
+
+These textures are designed for Celestia and free for any non-commercial use.

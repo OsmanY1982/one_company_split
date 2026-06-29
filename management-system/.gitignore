@@ -1,0 +1,12 @@
+.env
+*api*key*
+__pycache__/
+*.pyc
+*.pyo
+data/*.db
+.DS_Store
+build/
+dist/
+*.dmg
+*.app
+*.spec.bak

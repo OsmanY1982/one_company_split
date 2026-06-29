@@ -1,0 +1,9 @@
+{
+  "admin": {
+    "password": "$2b$12$yd1e1mRKXK1C6naNiD/WTuP1wkLCcVnfSBbj1OXdIPQiWGvHzorbq",
+    "role": "admin",
+    "membership": "permanent",
+    "expire_at": null,
+    "created_at": "2026-01-01 00:00:00"
+  }
+}

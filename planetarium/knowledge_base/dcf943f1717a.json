@@ -1,0 +1,12 @@
+{
+  "id": "dcf943f1717a",
+  "title": "卷04_智能中枢/16_智能中心总控_intelligence_window.md",
+  "content": "## 第十六章 · 智能中心总控（intelligence_window.py）\n\n### 星球导航\n\n| 子星球ID | 名称 | 功能 | 文件 |\n|----------|------|------|------|\n| ai_chat | AI助手 | LLM接入+离线兜底 | ai_chat_window.py (224行) + 3子模块 |\n| ai_center | 智能中心 | AI能力总览（轨道式滚动区+真实报表洞察） | ai_center_window.py (343行) |\n| tools | 工具箱 | 4工具集 | tools_window.py (237行) |\n| scan | 扫码工具 | 二维码生成/解析 | scan_window.py (223行) |\n\n### AI助手（ai_chat_window.py）\n\n656 行代码，2026-06-11 重写并模块化拆分。核心改进：\n\n**模块化拆分（2026-06-11）**：原 656 行单文件拆为 4 个文件：\n- `ai_chat_window.py`（224行）：核心 UI + LLM 管理 + 交互入口\n- `ai_chat_styles.py`（45行）：样式常量 + 路径常量\n- `llm_config_dialog.py`（163行）：LLM 配置对话框（API Key/Endpoint/Model）\n- `offline_analyzer.py`（322行）：`gather_context()` 上下文收集 + `offline_analysis()` 离线引擎\n\n**LLM 接入**：新增 `LLMConfigDialog` 配置对话框，支持用户填写 API Key / Endpoint / Model。LLM 配置持久化到 `data/llm_config.json`。对话时优先调用 LLM（通过 `core.llm_client`），调用失败自动降级为离线关键词匹配引擎。\n\n**上下文注入**：`_gather_context` 方法在每次对话时收集当前业务数据（钱包余额、订单数、库存预警等）作为 LLM 上下文前缀，让 AI 无需用户解释背景即可回答业务问题。\n\n**离线兜底**：保留原有关键词匹配引擎，LLM 不可用时自动切换，确保离线可用。右下角「LLM 设置」按钮可打开配置对话框。\n\n### 知识库（vault_window.py）\n\n用户可以把常用文档、合同模板、产品手册导入知识库。Agent 在回答时会从知识库检索相关内容。\n\n实现：本地向量存储 + 关键词检索（目前是简单匹配，未来计划用 embedding 做语义搜索）。\n\n### 扫码工具（scan_window.py）\n\n223 行代码，支持：\n- 文本输入生成二维码（qrcode 库，PNG 保存）\n- 图片文件解析二维码（pyzbar + Pillow）\n- 手动输入条码解析\n- 解析历史记录表格（支持清空）\n\n### 工具箱（tools_window.py）\n\n237 行，4 工具导航入口（2×2 网格卡片布局）：\n- **文本编辑器**：路由到 EditorWindow\n- **密码保险箱**：路由到 VaultWindow\n- **扫码工具**：路由到 ScanWindow\n- **计算器**：内嵌 CalcDialog，支持四则运算 + 表达式求值\n\n### 编辑器（editor_window.py）\n\n287 行，Markdown 编辑器（2026-06-11 增强）：\n- 打开/保存/加密保存文本文件（.txt / .md / .py / .json / .html / .csv）\n- 加密文件使用 VLT 格式（PBKDF2 + XOR），支持密码验证\n- **Markdown 实时预览**：QSplitter 拆分窗格（左编辑右预览），\"预览\"按钮开关，\"实时\"复选框控制即时刷新\n- 自包含零依赖 _md_to_html() 渲染引擎，支持 10 种语法（标题/粗体/斜体/代码块/行内代码/列表/链接/引用/删除线/水平线）\n- 状态栏显示字数和行数\n\n---\n\n# 第五卷 · 数据与系统\n\n> 数据是燃料，系统是引擎。这一卷涵盖数据可视化和系统维护。\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/卷04_智能中枢/16_智能中心总控_intelligence_window.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "卷04_智能中枢/16_智能中心总控_intelligence_window.md"
+  },
+  "created_at": "2026-06-13T13:23:21.239952"
+}

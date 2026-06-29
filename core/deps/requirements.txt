@@ -1,0 +1,69 @@
+# ═══════════════════════════════════════════
+# 一人公司 · 宇宙版 依赖清单
+# 打包时默认不安装，首次运行按需自动安装
+# ═══════════════════════════════════════════
+
+# ── 核心依赖（运行时必需）──
+numpy>=2.0               # 数值计算
+psutil>=5.9              # 系统监控
+httpx>=0.27              # HTTP 客户端
+requests>=2.31           # HTTP 请求（兼容）
+PyQt5>=5.15              # GUI 框架（系统级，通常预装）
+qrcode>=7.4              # 二维码生成
+
+# ── 语音（可选，按需加载）──
+sounddevice>=0.4         # 音频采集
+faster-whisper>=1.0      # 语音识别
+ctranslate2>=4.0         # Whisper 推理加速
+onnxruntime>=1.18        # ONNX 推理
+
+# ── AI / 大模型（可选，按需加载）──
+huggingface-hub>=0.23    # HuggingFace 模型下载
+tokenizers>=0.19         # 分词器
+protobuf>=4.25           # 序列化
+
+# ── 语义搜索（可选，不安装自动降级 BM25）──
+sentence-transformers>=2.2.0  # Embedding 模型（all-MiniLM-L6-v2）
+faiss-cpu>=1.7.0              # 向量相似度搜索
+
+# ── 图像与视觉（可选，按需加载）──
+pillow>=10.0             # 图像处理
+pyzbar>=0.1              # 条码/二维码识别
+av>=10.0                 # 音视频处理
+
+# ── 加密与安全（可选）──
+cryptography>=41.0       # 加密库
+bcrypt>=4.0              # 密码哈希
+cffi>=1.16               # C 扩展接口
+
+# ── 网络与爬虫（可选）──
+firecrawl-py>=1.0        # Firecrawl 网页抓取 API
+beautifulsoup4>=4.12     # HTML 解析
+urllib3>=2.0             # HTTP 连接池
+anyio>=4.0               # 异步 I/O
+h11>=0.14                # HTTP/1.1
+httpcore>=1.0            # HTTP 核心
+idna>=3.6                # 国际化域名
+charset-normalizer>=3.3  # 字符编码检测
+certifi>=2024            # CA 证书
+
+# ── 命令行与工具（可选）──
+rich>=13.0               # 终端美化
+typer>=0.9               # CLI 框架
+click>=8.0               # CLI 工具
+pygments>=2.17           # 语法高亮
+pyyaml>=6.0              # YAML 解析
+markdown-it-py>=3.0      # Markdown 解析
+mdurl>=0.1               # URL 工具
+shellingham>=1.5         # Shell 检测
+
+# ── 数据与文件（可选）──
+fsspec>=2024.1           # 文件系统抽象
+filelock>=3.13           # 文件锁
+tqdm>=4.66               # 进度条
+packaging>=23.2          # 包版本管理
+soupsieve>=2.5           # CSS 选择器
+flatbuffers>=23.5        # 序列化
+hf-xet>=1.0              # HuggingFace 传输
+networkx>=3.0            # 代码知识图谱（可选依赖）
+（内容由AI生成，仅供参考）

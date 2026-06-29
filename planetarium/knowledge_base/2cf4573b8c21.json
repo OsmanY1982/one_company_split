@@ -1,0 +1,12 @@
+{
+  "id": "2cf4573b8c21",
+  "title": "附录C_代码规范与约定.md",
+  "content": "## 文件命名\n\n| 类型 | 规约 | 示例 |\n|------|------|------|\n| 窗口/对话框 | `*_window.py` / `*_dialog.py` | `login_window.py`, `update_dialog.py` |\n| 服务/管理器 | `*_service.py` / `*_manager.py` | `auth_service.py` |\n| 核心库 | 简短名词 | `cosmic.py`, `agent.py`, `voice.py` |\n| 数据层 | `*_base.py` | `order_base.py`（计划中） |\n\n\n## 类命名\n\n- PyQt 组件：`*Window(QMainWindow)` / `*Dialog(QDialog)` / `*Widget(QWidget)`\n- 核心服务：`*Core` / `*Service` / `*Manager`\n- 线程：`*Thread(QThread)`\n\n\n## QSS 样式约定\n\n- 所有样式用 `setStyleSheet()` 内联或对象名选择器（`#object_name`）\n- 颜色统一用 `rgba()` 格式，避免 `#RRGGBB` 硬编码\n- 辉光渐变统一用 `QRadialGradient` + `QLinearGradient`\n- 禁止使用系统默认样式表覆盖\n\n\n## 数据访问约定\n\n- 所有 SQL 操作通过 `core/data.py` 提供的数据库路径常量访问\n- 禁止在 UI 模块中硬编码数据库路径\n- 事务性操作使用 `with db:` 上下文管理器\n\n---\n\n# 附录 D · 常见调试命令\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/附录C_代码规范与约定.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "附录C_代码规范与约定.md"
+  },
+  "created_at": "2026-06-13T13:23:20.609743"
+}

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>数字路径 · Number Path</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d0d1a;
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh; overflow: hidden;
+    font-family: 'SF Pro', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    color: #ccc;
+  }
+  #wrap { text-align: center; user-select: none; }
+  canvas {
+    display: block; margin: 0 auto;
+    border-radius: 14px;
+    box-shadow: 0 0 60px rgba(100,140,255,0.12);
+    cursor: pointer;
+    background: #101022;
+  }
+  #hud {
+    margin-top: 14px; display: flex; justify-content: center; gap: 40px;
+    font-size: 15px; color: #778;
+  }
+  #hud span { color: #aaf; font-weight: 600; font-size: 18px; }
+  #hud .target { color: #ffd93d; font-size: 20px; }
+  #msg {
+    margin-top: 6px; height: 22px; font-size: 13px;
+    transition: color 0.3s;
+  }
+  .btns { margin-top: 10px; display: flex; gap: 10px; justify-content: center; }
+  button {
+    padding: 8px 20px;
+    background: #1a1a30; color: #aaf; border: 1px solid #2a2a44;
+    border-radius: 6px; cursor: pointer; font-size: 13px;
+    font-family: inherit; transition: all 0.2s;
+  }
+  button:hover { background: #252545; color: #ccf; border-color: #44a; }
+  button.primary { background: #2a2a55; border-color: #446; color: #ddf; }
+  .rule {
+    margin-top: 14px; font-size: 11px; color: #445; line-height: 1.7;
+    max-width: 500px; margin-left: auto; margin-right: auto;
+  }
+  .rule b { color: #667; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="hud">
+    当前累加: <span id="sum">0</span>
+    &nbsp;/&nbsp; 目标值: <span class="target" id="target">?</span>
+    &nbsp;&nbsp; 剩余步数: <span id="steps">?</span>
+  </div>
+  <div id="msg"></div>
+  <div class="btns">
+    <button onclick="undoStep()">撤销一步</button>
+    <button class="primary" onclick="resetPath()">重画路径</button>
+    <button onclick="newLevel()">新关卡</button>
+  </div>
+  <div class="rule">
+    <b>规则：</b>点击起点开始画路径 → 点击相邻格子延伸路径 → 点终点提交<br>
+    路径经过的数字格会累加，最终累加值<b>必须恰好等于目标值</b>才能过关<br>
+    路径不能交叉，可以经过空白格，数字格只能用一次
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const COLS = 7, ROWS = 7;
+const CELL = 62, GAP = 3;
+const OX = 40, OY = 70;
+const W = OX * 2 + COLS * (CELL + GAP) - GAP;
+const H = OY + ROWS * (CELL + GAP) + 40;
+canvas.width = W; canvas.height = H;
+canvas.style.width = Math.min(520, W) + 'px';
+canvas.style.height = Math.min(520, H / W * Math.min(520, W)) + 'px';
+
+// --- 游戏状态 ---
+let grid = [];        // grid[r][c] = { value: int|null, type: 'start'|'end'|'number'|'empty' }
+let path = [];        // [{r,c}]
+let targetSum = 0;
+let minSteps = 0;
+
+function newLevel() {
+  grid = [];
+  path = [];
+  document.getElementById('msg').textContent = '';
+
+  // 清空格子
+  for (let r = 0; r < ROWS; r++) {
+    grid[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      grid[r][c] = { value: 0, type: 'empty' };
+    }
+  }
+
+  // 放置起点 (左上区域)
+  const startR = Math.floor(Math.random() * 2);
+  const startC = Math.floor(Math.random() * 2);
+  grid[startR][startC] = { value: 0, type: 'start' };
+
+  // 放置终点 (右下区域)
+  const endR = ROWS - 1 - Math.floor(Math.random() * 2);
+  const endC = COLS - 1 - Math.floor(Math.random() * 2);
+  grid[endR][endC] = { value: 0, type: 'end' };
+
+  // 计算从起点到终点的最短曼哈顿距离
+  const manhattan = Math.abs(endR - startR) + Math.abs(endC - startC);
+
+  // BFS 找最短路径长度（避开后面要放的数字格）
+  function bfsShortest(sr, sc, er, ec, blocked) {
+    const visited = new Set();
+    const q = [{ r: sr, c: sc, d: 0 }];
+    visited.add(`${sr},${sc}`);
+    while (q.length) {
+      const { r, c, d } = q.shift();
+      if (r === er && c === ec) return d;
+      for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+        const nr = r + dr, nc = c + dc;
+        if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
+        if (visited.has(`${nr},${nc}`)) continue;
+        if (blocked.has(`${nr},${nc}`)) continue;
+        visited.add(`${nr},${nc}`);
+        q.push({ r: nr, c: nc, d: d + 1 });
+      }
+    }
+    return Infinity;
+  }
+
+  // 布置数字格：随机放几个数字，使得存在一条路径恰好累加到目标值
+  const numCells = 5 + Math.floor(Math.random() * 7); // 5-11个数字格
+  const candidates = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (grid[r][c].type !== 'empty') continue;
+      candidates.push({ r, c });
+    }
+  }
+  // 洗牌
+  for (let i = candidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+  }
+
+  // 选 numCells 个位置放数字
+  const placed = candidates.slice(0, numCells);
+  const values = placed.map(() => 1 + Math.floor(Math.random() * 9)); // 1-9
+  for (let i = 0; i < placed.length; i++) {
+    grid[placed[i].r][placed[i].c] = { value: values[i], type: 'number' };
+  }
+
+  // 找一条可行路径使得数字累加等于目标值
+  // 贪心策略：从起点出发，每步决定走不走数字格，直到终点
+  // 先计算一个合理的目标值
+  let achievable = null;
+  const allNumbers = placed.map((p, i) => ({ ...p, v: values[i] }));
+
+  // 尝试找到一条连通且累加值合理到终点的路径
+  function searchTarget() {
+    // BFS 找路径，沿途尽可能收集数字
+    // 这里用简化算法：走最短路径 + 绕路捡数字
+    const shortest = bfsShortest(startR, startC, endR, endC, new Set());
+
+    // 收集短路径附近的数字
+    const maxDetour = Math.floor(shortest * 2.5);
+    const maxSteps = Math.min(shortest + 8, ROWS * COLS - 2);
+
+    // 让数字格的总可用值为路径提供选择
+    const totalAvailable = allNumbers.reduce((s, n) => s + n.v, 0);
+    targetSum = Math.min(totalAvailable, 12 + Math.floor(Math.random() * 20));
+    if (targetSum < 5) targetSum = 5;
+
+    minSteps = shortest;
+    // 确保目标值至少可以达到
+    // 用DP验证：是否存在数字子集和为targetSum
+    const subsetVals = allNumbers.map(n => n.v);
+    const dp = new Array(targetSum + 1).fill(false);
+    dp[0] = true;
+    for (const v of subsetVals) {
+      for (let s = targetSum; s >= v; s--) {
+        if (dp[s - v]) dp[s] = true;
+      }
+    }
+    if (!dp[targetSum]) {
+      // 不可达，用最接近的可达值
+      for (let s = targetSum; s >= 1; s--) {
+        if (dp[s]) { targetSum = s; break; }
+      }
+    }
+  }
+
+  searchTarget();
+
+  updateUI();
+  path = [];
+  updateUI();
+}
+
+// --- 路径编辑 ---
+let pathSet = new Set();
+
+function cellKey(r, c) { return `${r},${c}`; }
+
+function isAdjacent(r1, c1, r2, c2) {
+  return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+}
+
+function tryAddToPath(r, c) {
+  if (path.length === 0) {
+    // 必须从起点开始
+    if (grid[r][c].type !== 'start') return false;
+    path.push({ r, c });
+    pathSet.add(cellKey(r, c));
+    return true;
+  }
+
+  const last = path[path.length - 1];
+  if (!isAdjacent(last.r, last.c, r, c)) return false;
+  if (pathSet.has(cellKey(r, c))) {
+    // 点击的是前一个格子 → 回退
+    if (path.length >= 2) {
+      const prev = path[path.length - 2];
+      if (prev.r === r && prev.c === c) {
+        undoStep();
+        return true;
+      }
+    }
+    return false;
+  }
+  path.push({ r, c });
+  pathSet.add(cellKey(r, c));
+  return true;
+}
+
+function undoStep() {
+  if (path.length <= 1) return;
+  const removed = path.pop();
+  pathSet.delete(cellKey(removed.r, removed.c));
+  updateUI();
+}
+
+function resetPath() {
+  path = [];
+  pathSet = new Set();
+  document.getElementById('msg').textContent = '';
+  updateUI();
+}
+
+function getPathSum() {
+  let sum = 0;
+  for (const { r, c } of path) {
+    if (grid[r][c].type === 'number') sum += grid[r][c].value;
+  }
+  return sum;
+}
+
+function submitPath() {
+  if (path.length === 0) return;
+  const last = path[path.length - 1];
+  if (grid[last.r][last.c].type !== 'end') {
+    document.getElementById('msg').textContent = '路径必须以终点结束';
+    document.getElementById('msg').style.color = '#e66';
+    return;
+  }
+  const sum = getPathSum();
+  if (sum === targetSum) {
+    document.getElementById('msg').textContent = '过关！完美！';
+    document.getElementById('msg').style.color = '#6c6';
+    // 3秒后自动下一关
+    setTimeout(newLevel, 2000);
+  } else {
+    document.getElementById('msg').textContent = `累加值 ${sum} ≠ 目标 ${targetSum}，再试试`;
+    document.getElementById('msg').style.color = '#e66';
+  }
+}
+
+function updateUI() {
+  document.getElementById('sum').textContent = getPathSum();
+  document.getElementById('target').textContent = targetSum;
+  const stepsLeft = minSteps + 8 - path.length;
+  document.getElementById('steps').textContent = Math.max(0, stepsLeft);
+  draw();
+}
+
+// --- 渲染 ---
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // 标题
+  ctx.fillStyle = '#556';
+  ctx.font = '600 13px "SF Pro", "PingFang SC", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('NUMBERS PATH', W / 2, 35);
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const x = OX + c * (CELL + GAP);
+      const y = OY + r * (CELL + GAP);
+      const cell = grid[r][c];
+      const inPath = pathSet.has(cellKey(r, c));
+      const isLast = path.length > 0 && path[path.length - 1].r === r && path[path.length - 1].c === c;
+      const pathIndex = path.findIndex(p => p.r === r && p.c === c);
+
+      // 背景
+      ctx.beginPath();
+      ctx.roundRect(x, y, CELL, CELL, 6);
+      if (inPath && isLast) {
+        ctx.fillStyle = '#ffd93d33';
+      } else if (inPath) {
+        ctx.fillStyle = '#334466';
+      } else if (cell.type === 'number') {
+        ctx.fillStyle = '#1a1a2e';
+      } else {
+        ctx.fillStyle = '#121222';
+      }
+      ctx.fill();
+
+      // 边框
+      ctx.strokeStyle = inPath ? '#5577aa' : '#1e1e38';
+      ctx.lineWidth = inPath ? 2 : 1;
+      ctx.stroke();
+
+      // 内容
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const cx = x + CELL / 2, cy = y + CELL / 2;
+
+      if (cell.type === 'start') {
+        ctx.fillStyle = '#6c6';
+        ctx.font = '600 22px "SF Pro", sans-serif';
+        ctx.fillText('▶', cx, cy);
+      } else if (cell.type === 'end') {
+        ctx.fillStyle = '#ff6b6b';
+        ctx.font = '600 22px "SF Pro", sans-serif';
+        ctx.fillText('★', cx, cy);
+      } else if (cell.type === 'number') {
+        const consumed = inPath;
+        ctx.fillStyle = consumed ? '#8899cc' : '#c8a86e';
+        ctx.font = '600 20px "SF Pro", sans-serif';
+        ctx.globalAlpha = consumed ? 0.5 : 1;
+        ctx.fillText(cell.value, cx, cy);
+        ctx.globalAlpha = 1;
+      }
+
+      // 路径序号
+      if (pathIndex >= 0) {
+        ctx.fillStyle = '#aac8ff';
+        ctx.font = '600 10px "SF Pro", sans-serif';
+        ctx.fillText(pathIndex + 1, cx + CELL / 2 - 10, cy - CELL / 2 + 10);
+      }
+    }
+  }
+
+  // 路径连线
+  if (path.length >= 2) {
+    ctx.beginPath();
+    ctx.strokeStyle = '#5588bb';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const first = path[0];
+    ctx.moveTo(OX + first.c * (CELL + GAP) + CELL / 2, OY + first.r * (CELL + GAP) + CELL / 2);
+    for (let i = 1; i < path.length; i++) {
+      const p = path[i];
+      ctx.lineTo(OX + p.c * (CELL + GAP) + CELL / 2, OY + p.r * (CELL + GAP) + CELL / 2);
+    }
+    ctx.stroke();
+  }
+}
+
+// --- 事件 ---
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * scaleY;
+
+  const c = Math.floor((mx - OX) / (CELL + GAP));
+  const r = Math.floor((my - OY) / (CELL + GAP));
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
+
+  // 边界检查
+  if (mx < OX + c * (CELL + GAP) - 2 || mx > OX + c * (CELL + GAP) + CELL + 2) return;
+
+  const last = path.length > 0 ? path[path.length - 1] : null;
+
+  // 如果路径已完成到终点，再点就判断是否提交
+  if (last && grid[last.r][last.c].type === 'end') {
+    if (r === last.r && c === last.c) {
+      submitPath();
+    }
+    return;
+  }
+
+  if (tryAddToPath(r, c)) {
+    // 如果刚加的是终点，自动提交
+    if (grid[r][c].type === 'end') {
+      updateUI();
+      setTimeout(() => submitPath(), 150);
+    } else {
+      updateUI();
+    }
+  }
+});
+
+// 触屏支持
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const t = e.touches[0];
+  const mx = (t.clientX - rect.left) * scaleX;
+  const my = (t.clientY - rect.top) * scaleY;
+
+  const c = Math.floor((mx - OX) / (CELL + GAP));
+  const r = Math.floor((my - OY) / (CELL + GAP));
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
+  if (mx < OX + c * (CELL + GAP) - 2 || mx > OX + c * (CELL + GAP) + CELL + 2) return;
+
+  const last = path.length > 0 ? path[path.length - 1] : null;
+  if (last && grid[last.r][last.c].type === 'end') {
+    if (r === last.r && c === last.c) submitPath();
+    return;
+  }
+
+  if (tryAddToPath(r, c)) {
+    if (grid[r][c].type === 'end') {
+      updateUI();
+      setTimeout(() => submitPath(), 150);
+    } else {
+      updateUI();
+    }
+  }
+}, { passive: false });
+
+newLevel();
+</script>
+</body>
+</html>

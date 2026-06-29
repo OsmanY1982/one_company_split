@@ -1,0 +1,133 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "one-person-company"
+version = "2.0.0"
+description = "一人公司 · 宇宙版 — AI 赋能的全栈个人商业操作系统"
+authors = [
+    { name = "OPC Team" }
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "Proprietary" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    # ── 最小核心（14 个包，保障启动 + 基础服务）──
+    "numpy>=2.0",            # 底层数值（被 6+ 包依赖）
+    "psutil>=5.9",           # 系统监控
+    "httpx>=0.27",           # HTTP 客户端
+    "requests>=2.31",        # HTTP 请求
+    "PyQt5>=5.15",           # GUI 框架（macOS 通常预装）
+    "qrcode>=7.4",           # 二维码生成
+    "pillow>=10.0",          # 图像处理
+    "pyyaml>=6.0",           # 配置解析
+    "rich>=13.0",            # 终端输出
+    "typer>=0.9",            # CLI 框架
+    "click>=8.0",            # CLI 底层
+    "pygments>=2.17",        # 语法高亮
+    "markdown-it-py>=3.0",   # Markdown 解析
+    "packaging>=23.2",       # 版本管理
+    "tqdm>=4.66",            # 进度条
+]
+
+[project.optional-dependencies]
+# ── 语音引擎（~36 MB）──
+voice = [
+    "sounddevice>=0.4",
+    "faster-whisper>=1.0",    # → ctranslate2, huggingface-hub, tokenizers, onnxruntime, av
+    "ctranslate2>=4.0",
+    "onnxruntime>=1.18",
+    "av>=10.0",
+]
+# ── AI / 大模型 ──
+ai = [
+    "huggingface-hub>=0.23",
+    "tokenizers>=0.19",
+    "protobuf>=4.25",
+    "hf-xet>=1.0",
+]
+# ── 语义搜索 ──
+semantic = [
+    "sentence-transformers>=2.2.0",
+    "faiss-cpu>=1.7.0",
+]
+# ── 网页抓取 ──
+crawl = [
+    "firecrawl-py>=1.0",
+]
+# ── 图像与视觉（增量，pillow 已在 core）──
+vision = [
+    "pyzbar>=0.1",
+]
+# ── 加密与安全 ──
+crypto = [
+    "cryptography>=41.0",
+    "bcrypt>=4.0",
+    "cffi>=1.16",
+]
+# ── 网络与爬虫 ──
+net = [
+    "beautifulsoup4>=4.12",
+    "urllib3>=2.0",
+    "anyio>=4.0",
+    "h11>=0.14",
+    "httpcore>=1.0",
+    "idna>=3.6",
+    "charset-normalizer>=3.3",
+    "certifi>=2024",
+]
+# ── 数据与报告生成 ──
+data = [
+    "fsspec>=2024.1",
+    "filelock>=3.13",
+    "soupsieve>=2.5",
+    "flatbuffers>=23.5",
+    "networkx>=3.0",
+    "jinja2>=3.1",
+    "openpyxl>=3.1",
+]
+# ── CLI 增强（rich/typer/click 已在 core）──
+cli = [
+    "mdurl>=0.1",
+    "shellingham>=1.5",
+]
+# ── 便捷 meta-group ──
+desktop = [
+    "one-person-company[voice,ai,vision,crypto,net,data,cli]",
+]
+full = [
+    "one-person-company[desktop,semantic,crawl]",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.14",
+    "flake8>=7.0",
+]
+
+[project.scripts]
+# CLI 入口（可选）
+opc = "core.main:main"
+
+[project.urls]
+Homepage = "https://github.com/opc/one-person-company"
+
+[tool.setuptools]
+# 本项目的子项目（core / management-system / planetarium / iqra）各自独立运行
+# 无需 setuptools 打包，此处仅声明 pyproject.toml 用于依赖管理和开发规范
+py-modules = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

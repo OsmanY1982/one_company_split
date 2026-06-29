@@ -1,0 +1,12 @@
+{
+  "id": "7a71c14fd19f",
+  "title": "卷03_业务运营/12_订单管理_order_window.md",
+  "content": "## 第十二章 · 订单管理（order_window.py）\n\n### 一个人的公司需要什么订单系统？\n\n大企业的订单系统有审批流、ERP 对接、多仓库、多币种。一个人不需要这些。\n\n一人公司的订单系统只需要：\n- 创建订单（客户名、商品、金额、日期）\n- 查看所有订单列表\n- 按状态过滤（待处理 / 已完成 / 已取消）\n- 简单的统计（本月营收、订单数）\n\n### 为什么叫 `order_window` 而不是 `orders_base + orders_window`？\n\n这是项目里反复出现的一个模式：**数据和界面分离**。虽然 order_window.py 本身包含界面和数据操作，但底层的 SQL 操作遵循 base 层设计原则——订单的增删改查都是通过标准的 SQLite 操作，界面只负责渲染和交互。\n\n好处：\n1. 数据层可以单独测试（不需要启动 GUI）\n2. 未来要换成 Web 端，数据层可以直接复用\n3. 所有模块遵守这个模式，新人看代码一目了然\n\n---\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/卷03_业务运营/12_订单管理_order_window.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "卷03_业务运营/12_订单管理_order_window.md"
+  },
+  "created_at": "2026-06-13T13:23:20.635819"
+}

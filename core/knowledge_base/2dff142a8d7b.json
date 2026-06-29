@@ -1,0 +1,12 @@
+{
+  "id": "2dff142a8d7b",
+  "title": "回滚管控策略.md",
+  "content": "# 回滚管控策略\n\n> 生效日期：2026-06-11 | 实施模块：rollback_control.py\n\n## 三条铁律\n\n| # | 规则 | 说明 |\n|---|------|------|\n| 1 | **禁止全局回滚** | 不得执行 `git reset --hard`、`git checkout .`、全项目覆盖、批量还原等全局操作 |\n| 2 | **逐模块申请** | 一次只回滚一个文件/模块，明确指定路径 |\n| 3 | **审计日志** | 所有回滚操作写入 `data/rollback_log.json`，记录时间/模块/原因/操作者 |\n\n## 受保护区域\n\n以下路径在任何情况下禁止回滚：\n\n```\ncore/              # 核心引擎（cosmic.py / data.py / agent.py 等）\nmain.py            # 应用入口\ngen_book.py        # 文档生成器\nrollback_control.py # 回滚管控模块自身\ndata/              # 数据库目录（独立备份机制）\n项目全书/           # 项目文档\n源码全书/           # 自动生成文档\n```\n\n## AI 回滚流程\n\n```\n1. AI 判断需要回滚某模块\n      ↓\n2. 调用 rollback_control.rollback(module_path, reason)\n      ↓\n3. 被批准 → 执行回滚 → 更新版本功能地图 → 运行 gen_book.py\n   被拒绝 → 向用户说明原因，等待人工介入\n```\n\n## 回滚后的文档更新要求\n\n每次回滚完成后，必须在 `项目全书/版本功能地图.md` 追加记录：\n\n```\n### YYYY-MM-DD | 回滚：<模块名>\n- **回滚模块**：<文件路径>\n- **回滚原因**：<原因>\n- **回滚记录ID**：RB-xxxx\n- **影响说明**：<简要说明>\n```\n\n## 审计日志格式\n\n```json\n{\n  \"policy\": \"module-only\",\n  \"records\": [\n    {\n      \"id\": \"RB-20260611120000\",\n      \"timestamp\": \"2026-06-11 12:00:00\",\n      \"module\": \"modules/auth/login_window.py\",\n      \"reason\": \"WA_TransparentForMouseEvents修复后HUD仍无响应\",\n      \"operator\": \"AI\",\n      \"status\": \"approved\"\n    }\n  ]\n}\n```\n\n## 命令行自检\n\n```bash\n# 查看回滚策略和历史\npython3 rollback_control.py\n\n# 运行自检测试（4 项）\npython3 rollback_control.py test\n```\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/回滚管控策略.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "回滚管控策略.md"
+  },
+  "created_at": "2026-06-13T13:23:20.422477"
+}

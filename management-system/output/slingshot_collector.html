@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>弹弓收集 · Slingshot Collector</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0b0b16;
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh; overflow: hidden;
+    font-family: 'SF Pro', 'PingFang SC', sans-serif;
+    color: #ccc;
+  }
+  #wrap { text-align: center; user-select: none; }
+  canvas {
+    display: block; margin: 0 auto;
+    border-radius: 16px;
+    box-shadow: 0 0 50px rgba(120,180,255,0.1);
+    cursor: crosshair;
+    background: #0e0e1c;
+  }
+  #hud {
+    margin-top: 12px; display: flex; justify-content: center; gap: 36px;
+    font-size: 14px; color: #667;
+  }
+  #hud span { color: #aaf; font-weight: 600; font-size: 18px; }
+  #hud .shots { color: #ffd93d; }
+  #msg {
+    margin-top: 6px; height: 20px; font-size: 13px; color: #6a6;
+    transition: color 0.3s;
+  }
+  .btns { margin-top: 8px; }
+  button {
+    padding: 8px 20px;
+    background: #1a1a30; color: #aaf; border: 1px solid #2a2a44;
+    border-radius: 6px; cursor: pointer; font-size: 13px;
+    font-family: inherit; transition: all 0.2s;
+  }
+  button:hover { background: #252545; color: #ccf; }
+  .hint {
+    margin-top: 10px; font-size: 11px; color: #445;
+    line-height: 1.6;
+  }
+  .hint b { color: #667; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="hud">
+    剩余宝石: <span id="gems">0</span>
+    发射次数: <span class="shots" id="shots">0</span>
+    分数: <span id="score">0</span>
+  </div>
+  <div id="msg"></div>
+  <div class="btns">
+    <button onclick="resetGame()">重新生成</button>
+  </div>
+  <div class="hint">
+    <b>操作：</b>从发射器向外拖动（拉弹弓），松手发射收集球<br>
+    球在场上弹跳时吸附<b>同色</b>宝石，碰到<b>异色</b>宝石则收集终止并返回<br>
+    收集到的宝石按数量平方计分（一次收集越多，分数越高）
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const W = 520, H = 520;
+canvas.width = W; canvas.height = H;
+
+// --- 颜色 ---
+const GEM_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff922b', '#cc5de8'];
+
+// --- 状态 ---
+let gems = [];
+let ball = null;          // { x, y, vx, vy, r, color, collected:[] }
+let shotsLeft = 0;
+let score = 0;
+let dragging = false;
+let dragStart = null;
+let dragEnd = null;
+let launcher = { x: 40, y: H / 2 };  // 发射器位置
+
+// 场地边界（给发射器留空间）
+const FIELD_LEFT = 70, FIELD_RIGHT = W - 15, FIELD_TOP = 15, FIELD_BOTTOM = H - 15;
+
+class Gem {
+  constructor(x, y, color) {
+    this.x = x; this.y = y;
+    this.color = color;
+    this.r = 8;
+    this.alive = true;
+  }
+}
+
+function spawnGems(count) {
+  gems = [];
+  const margin = 20;
+  for (let i = 0; i < count; i++) {
+    const color = GEM_COLORS[Math.floor(Math.random() * GEM_COLORS.length)];
+    let x, y, tries = 0;
+    do {
+      x = FIELD_LEFT + margin + Math.random() * (FIELD_RIGHT - FIELD_LEFT - 2 * margin);
+      y = FIELD_TOP + margin + Math.random() * (FIELD_BOTTOM - FIELD_TOP - 2 * margin);
+      tries++;
+    } while (tries < 80 && gems.some(g => Math.hypot(g.x - x, g.y - y) < 20));
+    gems.push(new Gem(x, y, color));
+  }
+  shotsLeft = Math.max(3, Math.ceil(count / 3));
+  score = 0;
+  ball = null;
+  updateUI();
+}
+
+function resetGame() {
+  const count = 8 + Math.floor(Math.random() * 13); // 8-20个宝石
+  spawnGems(count);
+  document.getElementById('msg').textContent = '';
+  document.getElementById('msg').style.color = '#6a6';
+}
+
+function updateUI() {
+  document.getElementById('gems').textContent = gems.filter(g => g.alive).length;
+  document.getElementById('shots').textContent = shotsLeft;
+  document.getElementById('score').textContent = score;
+}
+
+// --- 发射 ---
+function launchBall() {
+  if (!dragStart || !dragEnd || shotsLeft <= 0) return;
+  if (ball) return; // 球还在飞
+
+  const dx = launcher.x - dragEnd.x;
+  const dy = launcher.y - dragEnd.y;
+  const dist = Math.hypot(dx, dy);
+  if (dist < 15) return; // 拉太短
+
+  const power = Math.min(dist / 6, 12);
+  ball = {
+    x: launcher.x, y: launcher.y,
+    vx: (dx / dist) * power,
+    vy: (dy / dist) * power,
+    r: 6,
+    color: null,  // 初始无颜色
+    collected: [],
+    trail: [],
+    hits: 0
+  };
+  shotsLeft--;
+  dragging = false;
+  dragStart = null;
+  dragEnd = null;
+  updateUI();
+}
+
+// --- 物理 ---
+function updateBall() {
+  if (!ball) return;
+
+  ball.x += ball.vx;
+  ball.y += ball.vy;
+
+  // 拖尾
+  ball.trail.push({ x: ball.x, y: ball.y, life: 10 });
+  if (ball.trail.length > 20) ball.trail.shift();
+
+  // 边界反弹
+  if (ball.x - ball.r < FIELD_LEFT) {
+    ball.x = FIELD_LEFT + ball.r;
+    ball.vx *= -0.9;
+    ball.hits++;
+  }
+  if (ball.x + ball.r > FIELD_RIGHT) {
+    ball.x = FIELD_RIGHT - ball.r;
+    ball.vx *= -0.9;
+    ball.hits++;
+  }
+  if (ball.y - ball.r < FIELD_TOP) {
+    ball.y = FIELD_TOP + ball.r;
+    ball.vy *= -0.9;
+    ball.hits++;
+  }
+  if (ball.y + ball.r > FIELD_BOTTOM) {
+    ball.y = FIELD_BOTTOM - ball.r;
+    ball.vy *= -0.9;
+    ball.hits++;
+  }
+
+  // 碰到异色宝石 → 球返回，收集终止
+  for (const g of gems) {
+    if (!g.alive) continue;
+    const dist = Math.hypot(ball.x - g.x, ball.y - g.y);
+    if (dist < ball.r + g.r) {
+      if (ball.color === null) {
+        // 第一次碰到宝石，设定球的颜色
+        ball.color = g.color;
+        ball.collected.push(g);
+        g.alive = false;
+        // 轻微反弹
+        const nx = (ball.x - g.x) / dist;
+        const ny = (ball.y - g.y) / dist;
+        ball.vx = ball.vx * 0.7 + nx * 2;
+        ball.vy = ball.vy * 0.7 + ny * 2;
+      } else if (g.color === ball.color) {
+        // 同色，收集
+        ball.collected.push(g);
+        g.alive = false;
+        // 轻微反弹
+        const nx = (ball.x - g.x) / dist;
+        const ny = (ball.y - g.y) / dist;
+        ball.vx = ball.vx * 0.7 + nx * 2;
+        ball.vy = ball.vy * 0.7 + ny * 2;
+      } else {
+        // 异色，终止收集，返回
+        returnBall();
+        return;
+      }
+    }
+  }
+
+  // 碰到发射器位置（球返回了发射器）
+  if (ball.color !== null) {
+    const distToLauncher = Math.hypot(ball.x - launcher.x, ball.y - launcher.y);
+    if (distToLauncher < 25 && ball.vx < 0 && ball.x < launcher.x + 10) {
+      returnBall();
+      return;
+    }
+  }
+
+  // 速度衰减
+  ball.vx *= 0.998;
+  ball.vy *= 0.998;
+
+  // 如果球几乎停了，强制返回
+  if (Math.hypot(ball.vx, ball.vy) < 0.3 && ball.color !== null) {
+    returnBall();
+    return;
+  }
+}
+
+function returnBall() {
+  const collectedCount = ball.collected.length;
+  if (collectedCount > 0) {
+    const bonus = collectedCount * collectedCount * 10;
+    score += bonus;
+  }
+  ball = null;
+
+  const aliveGems = gems.filter(g => g.alive).length;
+  if (aliveGems === 0) {
+    document.getElementById('msg').textContent = '全部收集！完美清场！';
+    document.getElementById('msg').style.color = '#6c6';
+  }
+  updateUI();
+}
+
+// --- 事件 ---
+function getCanvasPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY
+  };
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  if (ball) return;
+  const pos = getCanvasPos(e);
+  // 检查是否点击在发射器附近
+  const dist = Math.hypot(pos.x - launcher.x, pos.y - launcher.y);
+  if (dist < 40) {
+    dragging = true;
+    dragStart = { x: launcher.x, y: launcher.y };
+    dragEnd = pos;
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!dragging) return;
+  const pos = getCanvasPos(e);
+  // 限制拖拽距离
+  const dx = pos.x - launcher.x;
+  const dy = pos.y - launcher.y;
+  const dist = Math.hypot(dx, dy);
+  const maxDist = 120;
+  if (dist > maxDist) {
+    dragEnd = {
+      x: launcher.x + (dx / dist) * maxDist,
+      y: launcher.y + (dy / dist) * maxDist
+    };
+  } else {
+    dragEnd = pos;
+  }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  if (dragging) {
+    launchBall();
+  }
+  dragging = false;
+});
+
+canvas.addEventListener('mouseleave', () => {
+  if (dragging) {
+    launchBall();
+  }
+  dragging = false;
+});
+
+// 触屏
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  if (ball) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const t = e.touches[0];
+  const pos = { x: (t.clientX - rect.left) * scaleX, y: (t.clientY - rect.top) * scaleY };
+  const dist = Math.hypot(pos.x - launcher.x, pos.y - launcher.y);
+  if (dist < 50) {
+    dragging = true;
+    dragStart = { x: launcher.x, y: launcher.y };
+    dragEnd = pos;
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  if (!dragging) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const t = e.touches[0];
+  const pos = { x: (t.clientX - rect.left) * scaleX, y: (t.clientY - rect.top) * scaleY };
+  const dx = pos.x - launcher.x;
+  const dy = pos.y - launcher.y;
+  const dist = Math.hypot(dx, dy);
+  const maxDist = 120;
+  if (dist > maxDist) {
+    dragEnd = { x: launcher.x + (dx / dist) * maxDist, y: launcher.y + (dy / dist) * maxDist };
+  } else {
+    dragEnd = pos;
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  if (dragging) launchBall();
+  dragging = false;
+});
+
+// --- 渲染 ---
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // 场地背景
+  ctx.fillStyle = '#111128';
+  ctx.beginPath();
+  ctx.roundRect(FIELD_LEFT - 5, FIELD_TOP - 5, FIELD_RIGHT - FIELD_LEFT + 10, FIELD_BOTTOM - FIELD_TOP + 10, 10);
+  ctx.fill();
+  ctx.strokeStyle = '#1e1e44';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // 网格
+  ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+  ctx.lineWidth = 0.5;
+  for (let x = FIELD_LEFT; x <= FIELD_RIGHT; x += 30) {
+    ctx.beginPath(); ctx.moveTo(x, FIELD_TOP); ctx.lineTo(x, FIELD_BOTTOM); ctx.stroke();
+  }
+  for (let y = FIELD_TOP; y <= FIELD_BOTTOM; y += 30) {
+    ctx.beginPath(); ctx.moveTo(FIELD_LEFT, y); ctx.lineTo(FIELD_RIGHT, y); ctx.stroke();
+  }
+
+  // 宝石
+  for (const g of gems) {
+    if (!g.alive) continue;
+    // 辉光
+    ctx.beginPath();
+    ctx.arc(g.x, g.y, g.r * 2, 0, Math.PI * 2);
+    ctx.fillStyle = g.color + '18';
+    ctx.fill();
+
+    // 主体
+    ctx.beginPath();
+    // 钻石形状
+    const s = g.r * 0.9;
+    ctx.moveTo(g.x, g.y - s);
+    ctx.lineTo(g.x + s * 0.7, g.y);
+    ctx.lineTo(g.x, g.y + s);
+    ctx.lineTo(g.x - s * 0.7, g.y);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(g.x - s, g.y - s, g.x + s, g.y + s);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.4, g.color);
+    grad.addColorStop(1, g.color + '88');
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+
+  // 球拖尾
+  if (ball && ball.trail.length > 1) {
+    ctx.beginPath();
+    ctx.moveTo(ball.trail[0].x, ball.trail[0].y);
+    for (let i = 1; i < ball.trail.length; i++) {
+      ctx.lineTo(ball.trail[i].x, ball.trail[i].y);
+    }
+    ctx.lineTo(ball.x, ball.y);
+    ctx.strokeStyle = (ball.color || '#aaa') + '44';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+
+  // 球
+  if (ball) {
+    // 辉光
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r * 3, 0, Math.PI * 2);
+    ctx.fillStyle = (ball.color || '#ffffff') + '15';
+    ctx.fill();
+
+    // 主体
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+    const g2 = ctx.createRadialGradient(ball.x - 1, ball.y - 1, ball.r * 0.1, ball.x, ball.y, ball.r);
+    g2.addColorStop(0, '#fff');
+    g2.addColorStop(0.5, ball.color || '#ffffff');
+    g2.addColorStop(1, (ball.color || '#ffffff') + '55');
+    ctx.fillStyle = g2;
+    ctx.fill();
+
+    // 收集的宝石数标签
+    if (ball.collected.length > 0) {
+      ctx.fillStyle = '#fff';
+      ctx.font = '600 11px "SF Pro", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`×${ball.collected.length}`, ball.x, ball.y - 14);
+    }
+  }
+
+  // 发射器
+  const lx = launcher.x, ly = launcher.y;
+  // 底座
+  ctx.fillStyle = '#1a1a38';
+  ctx.beginPath();
+  ctx.arc(lx, ly, 18, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#335';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 弹弓皮筋
+  if (dragging && dragEnd) {
+    // 上筋
+    ctx.beginPath();
+    ctx.moveTo(lx, ly - 10);
+    ctx.lineTo(dragEnd.x, dragEnd.y - 4);
+    ctx.strokeStyle = '#4488aa55';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // 下筋
+    ctx.beginPath();
+    ctx.moveTo(lx, ly + 10);
+    ctx.lineTo(dragEnd.x, dragEnd.y + 4);
+    ctx.strokeStyle = '#4488aa55';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // 拉拽点
+    ctx.beginPath();
+    ctx.arc(dragEnd.x, dragEnd.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#aaccff';
+    ctx.fill();
+  }
+
+  // 三角箭头指示器
+  ctx.fillStyle = '#4488aa';
+  ctx.beginPath();
+  ctx.moveTo(lx + 10, ly);
+  ctx.lineTo(lx - 2, ly - 6);
+  ctx.lineTo(lx - 2, ly + 6);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// --- 主循环 ---
+function gameLoop() {
+  if (ball) updateBall();
+  updateUI();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+resetGame();
+gameLoop();
+</script>
+</body>
+</html>

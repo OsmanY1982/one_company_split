@@ -1,0 +1,12 @@
+{
+  "id": "d38177552e83",
+  "title": "终章.md",
+  "content": "## 技术栈总览\n\n| 层级 | 技术 | 说明 |\n|------|------|------|\n| 界面框架 | PyQt5 | GUI 框架，QPainter 手绘渲染 |\n| 数据库 | SQLite 3 | 多库架构，每个域独立 .db |\n| AI 后端 | Ollama / OpenAI / DeepSeek / Claude / 通义千问 | 6 后端统一 LLMClient 封装 |\n| 语音识别 | faster-whisper (CTranslate2) | 离线语音识别，tiny/base/small 三档 |\n| 扫码 | pyzbar + Pillow | 条码/二维码识别 |\n| 密码安全 | bcrypt (cost factor=12) | 密码哈希和验证 |\n| 图表 | Matplotlib | 数据可视化绑定到 PyQt |\n| 依赖管理 | 自建 deps.py | wheel 离线安装，不走 pip |\n| 打包 | PyInstaller | macOS .app 分发 |\n\n---\n\n\n## 项目统计\n\n| 指标 | 数值 |\n|------|------|\n| Python 模块文件 | 54 个 |\n| 总代码行数 | ~15,000 行 |\n| 最大单文件 | dashboard_window.py (886行) |\n| 数据库文件 | 9 个独立 .db |\n| 第三方依赖 wheel | 44 个 (67MB) |\n| 支持 AI 模型后端 | 6 个 |\n| 顶层模块（星球） | 5 个 |\n| 子模块（小星球） | 19 个 |\n| 语音识别方案 | 3 档 (tiny/base/small) |\n\n---\n\n---\n\n# 附录 A · 数据库表结构参考\n\n> 以下是各数据库的核心表结构，供开发和调试参考。\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/终章.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "终章.md"
+  },
+  "created_at": "2026-06-13T13:23:20.522433"
+}

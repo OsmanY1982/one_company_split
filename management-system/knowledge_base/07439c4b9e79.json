@@ -1,0 +1,12 @@
+{
+  "id": "07439c4b9e79",
+  "title": "附录B_打包与分发.md",
+  "content": "## PyInstaller 配置\n\n项目使用 PyInstaller 打包为 macOS .app：\n\n```\npyinstaller --windowed --name \"一人公司\" \\\n  --add-data \"deps:deps\" \\\n  --add-data \"data:data\" \\\n  --hidden-import PyQt5 \\\n  --hidden-import sounddevice \\\n  --hidden-import ctranslate2 \\\n  main.py\n```\n\n关键注意事项：\n1. `deps/` 和 `data/` 目录必须随包分发\n2. macOS 代码签名：`--codesign-identity` + entitlements\n3. WAL 模式数据库的 `.db-wal` 和 `.db-shm` 文件需特殊处理\n\n\n## 已知打包问题\n\n| 问题 | 状态 | 解决方案 |\n|------|------|----------|\n| faster-whisper 模型包体过大 | ✅ 已解决 | 按需下载，不在打包时包含 |\n| .db-wal 签名被清 | ✅ 已解决 | data.py 自动修复逻辑 |\n| macOS Gatekeeper 警告 | ⚠️ 持续 | 需 Apple Developer 证书 |\n| PyQt5 在 macOS 15+ 的渲染异常 | 🔲 待观察 | 暂无用户报告 |\n\n\n## 启动流程\n\n```\n用户双击 .app\n  → main.py 入口\n  → deps.py 检测依赖（按需安装 wheel）\n  → data.py 初始化所有数据库（含自动修复）\n  → LoginWindow 显示登录界面\n  → 用户登录 → ConnectWindow（引擎舱）\n  → 配置 AI 引擎 → DashboardWindow（舰桥）\n```\n\n---\n\n# 附录 C · 代码规范与约定\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/附录B_打包与分发.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "附录B_打包与分发.md"
+  },
+  "created_at": "2026-06-13T13:23:20.599265"
+}

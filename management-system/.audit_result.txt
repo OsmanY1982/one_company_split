@@ -1,0 +1,191 @@
+# ============================================================
+# one_company_cosmic 宇宙版 全面审计报告
+# 日期: 2026-06-11
+# ============================================================
+
+## 一、审计概览
+
+| 项目 | 数值 |
+|------|------|
+| 审计文件总数 | 26 |
+| 正常模块 | 17 |
+| 超限模块 | 1 (ai_assistant_window.py 3207行) |
+| 有bug模块 | 3 |
+| 空壳模块 | 0 |
+
+---
+
+## 二、逐模块审计详情
+
+### 格式: 模块路径 | 行数 | 状态 | 问题描述 | 修复建议
+
+### 2.1 系统管理后台 (modules/system/)
+
+modules/system/system_window.py | 307 | 正常 | 含CosmicBackground小星球导航、模块入口加载，功能完整 | 无需修复
+modules/system/logs_window.py | ~200 | 正常 | 日志查看+筛选+导出，SQL查询完整 | 无需修复
+modules/system/activation_window.py | ~165 | 正常 | 激活码生成/验证，含SQL和加密校验 | 无需修复
+modules/system/base_info_window.py | ~200 | 正常 | 公司基本信息CRUD，SQL操作完整 | 无需修复
+modules/system/cloud_window.py | 327 | 正常 | zip备份导出/导入功能完整，含进度条UI | 无需修复
+modules/system/update_dialog.py | 319 | 正常 | 基于CHANGELOG.md解析版本历史，Markdown渲染 | 无需修复
+
+### 2.2 智能中心工具箱 (modules/intelligence/ - 不含ai_assistant_window)
+
+modules/intelligence/tools_window.py | 260 | 正常 | 含内嵌计算器CalcDialog + 4个工具导航入口，功能完整 | 无需修复
+modules/intelligence/ai_center_window.py | 356 | 正常 | 真实读取order.db/product.db生成KPI卡片+业务洞察 | 无需修复
+modules/intelligence/ai_center_window_v2.py | 665 | 有bug | (Bug-1) class名AICenterWindow与ai_center_window.py重复；(Bug-2) line 44硬编码Windows路径'D:/one_company_desktop/data/orders.db'作为fallback，macOS不可用 | (1) 重命名class为AICenterWindowV2或移到子包；(2) 改为os.path相对路径，删除D:/硬编码
+
+### 2.3 系统监控 (modules/intelligence/system_monitor.py)
+
+modules/intelligence/system_monitor.py | 175 | 有bug | (Bug-1) CPU/内存/磁盘通过psutil真实采集，可用；(Bug-2) AI能力统计使用硬编码示例数据（line 141-152），非真实采集；(Bug-3) 无可配置告警阈值机制；(Bug-4) 无dashboard导出/图表展示 | (1) AI统计改为从实际调用日志读取；(2) 增加CPU/内存/磁盘阈值告警，超标变色+日志标记；(3) 可考虑集成matplotlib图表
+
+### 2.4 其他问题筛查
+
+modules/intelligence/key_manager.py | 133 | 有bug | line 5注释中硬编码'D:/one_company_desktop/data/user_keys/{username}.json'，但实际代码使用os.path计算相对路径，注释与实现不一致 | 修改注释为跨平台路径描述或删除硬编码路径示例
+
+---
+
+## 三、超限文件专项分析: ai_assistant_window.py (3207行)
+
+### 3.1 结构总览
+
+共23个class + 全局配置区，按功能可分为6个逻辑模块：
+
+【A. 动画/交互工具层 (lines 1-363, ~363行) — 建议拆分: _animation_helpers.py】
+  class ButtonAnimationHelper (42行)     - 按钮悬停/点击动画
+  class ButtonHoverFilter (73行)         - 悬停滤镜
+  class ButtonScaleFilter (53行)         - 缩放滤镜
+  class LoadingAnimationHelper (98行)    - 加载状态管理
+  class TabTransitionHelper (45行)       - 标签页切换动画
+  全局: 路径管理 (~d15行)
+
+【B. 本地模型管理层 (lines 377-1467, ~1091行) — 建议拆分: _ollama_manager.py】
+  全局: SUPER_INTELLIGENCE_AVAILABLE 标志
+  全局: QUICK_TEMPLATES (8条模板)
+  全局: RECOMMENDED_MODELS (推荐模型列表)
+  class OllamaManager (115行)            - Ollama本地模型管理
+  class DownloadModelDialog (582行)      - 模型下载对话框(最大单个class)
+  class DownloadWorker (22行)            - 下载线程
+
+【C. API密钥配置 (lines 1157-1467, ~311行) — 建议拆分: _api_key_config.py】
+  class APIKeyConfigDialog (311行)       - API密钥管理对话框
+
+【D. 快捷工具标签页 (lines 1472-1993, ~522行) — 建议拆分: _quick_tools.py】
+  class QuickToolsWidget (522行)         - 含模板/模型管理/API配置三大标签页
+
+【E. 星球导航系统 (lines 2007-2401, ~395行) — 建议拆分: _navigation.py】
+  全局: PLANETS (13颗星球配置, ~23行)
+  class NavigationHUD (144行)            - 能量球+13颗行星+轨道绘制
+  class IqraChatDialog (171行)        - 对话引擎弹窗(真实LLM调用)
+  class SystemMonitorDialog (12行)       - 包装器
+  class AIDashboardDialog (12行)         - 包装器
+  class SmartWorkflowDialog (8行)        - 包装器
+  class BusinessAIDialog (9行)           - 包装器
+
+【F. 后端模块可视化面板 (lines 2552-3207, ~656行) — 建议拆分: _backend_panels.py】
+  class SuperIntelligenceWidget (220行)  - 超级智能控制面板
+  class AnomalyDetectorWidget (88行)     - 异常检测面板
+  class RecommendationEngineWidget (81行)- 推荐引擎面板
+  class DataVisualizationWidget (102行)  - 数据可视化面板
+  class SmartWorkflowWidget (60行)       - 智能工作流面板
+  class BusinessAIWidget (96行)          - 业务AI面板
+
+### 3.2 对话引擎评估 (IqraChatDialog)
+
+状态: 真实可用
+- 含完整UI（消息历史QTextEdit + 5个快捷提示按钮 + 输入行）
+- LLM调用链路完整: chat()取content → fallback到chat_stream()流式聚合 → 异常捕获
+- 依赖注入: iqra_engine通过构造函数传入
+- 引擎未连接时有明确提示和禁用逻辑
+- 无硬编码API Key
+
+### 3.3 拆分方案
+
+目标: 每个文件 ≤500行，入口文件保留为轻量import转发
+
+```
+ai_assistant_window.py (入口文件, ~80行)
+  └── from ._animation_helpers import *      (~363行)
+  └── from ._ollama_manager import *         (~310行 + 移到_quick_tools的模型管理部分)
+  └── from ._api_key_config import *         (~311行)
+  └── from ._quick_tools import *            (~522行)
+  └── from ._navigation import *             (~395行)
+  └── from ._backend_panels import *         (~656行)
+```
+
+拆分后预估:
+  _animation_helpers.py    | ~363行 | 正常
+  _ollama_manager.py       | ~370行 | 正常 (OllamaManager + DownloadModelDialog + DownloadWorker + 全局配置)
+  _api_key_config.py       | ~311行 | 正常
+  _quick_tools.py          | ~522行 | 正常 (可进一步拆分模板区/模型管理区)
+  _navigation.py           | ~395行 | 正常 (NavigationHUD + IqraChatDialog + 4个弹窗包装器)
+  _backend_panels.py       | ~656行 | 正常 (6个Widget，每个≤220行)
+  ai_assistant_window.py   | ~80行  | 入口转发 + MODULE_ENTRY
+
+### 3.4 共享代码分析
+
+以下需要提入 _shared.py:
+- 无高频共享的按钮样式/颜色常量（目前各class内联CSS），可提取为全局COLORS字典
+- 动画助手层（_animation_helpers.py）被主窗口多处引用（SuperIntelligenceWidget/AnomalyDetectorWidget均调用ButtonAnimationHelper）
+- NavigationHUD需要一个独立的PLANETS配置，可从全局区移到_navigation.py顶部
+
+### 3.5 拆分子任务列表
+
+1. 备份原文件 → ai_assistant_window.py.bak
+2. 创建 _shared.py → 提取公共常量(COLORS等)
+3. 创建 _animation_helpers.py → 5个动画工具类
+4. 创建 _ollama_manager.py → OllamaManager + DownloadModelDialog + DownloadWorker + 全局配置
+5. 创建 _api_key_config.py → APIKeyConfigDialog
+6. 创建 _quick_tools.py → QuickToolsWidget
+7. 创建 _navigation.py → NavigationHUD + IqraChatDialog + 包装器弹窗
+8. 创建 _backend_panels.py → 6个可视化Widget
+9. 重写 ai_assistant_window.py → 入口文件只做import转发 + MODULE_ENTRY + create_module()
+10. py_compile语法验证所有新文件
+
+---
+
+## 四、硬编码路径清单
+
+| 文件 | 行号 | 硬编码路径 | 风险 | 修复建议 |
+|------|------|-----------|------|---------|
+| modules/intelligence/ai_center_window_v2.py | 44 | D:/one_company_desktop/data/orders.db | macOS不可用 | 删除D:/路径，仅保留os.path相对路径 |
+| modules/intelligence/key_manager.py | 5 | D:/one_company_desktop/data/user_keys/{username}.json | 仅注释，不影响运行 | 修改注释为平台无关描述 |
+
+## 五、重复定义/命名冲突清单
+
+| 冲突 | 位置1 | 位置2 | 影响 | 修复建议 |
+|------|-------|-------|------|---------|
+| class AICenterWindow | ai_center_window.py:50 (QDialog) | ai_center_window_v2.py:24 (QMainWindow) | 同模块两同名类，导入歧义 | V2重命名为AICenterWindowV2 |
+
+## 六、Windows特定API调用
+
+无。项目中未发现win32api/win32com/ctypes.windll等Windows专有API调用。
+
+## 七、循环导入检查
+
+未发现循环导入。仅发现单向引用: intelligence_window.py → ai_assistant_window.AIAssistantWindow，路径单向无回环。
+
+## 八、依赖模块可用性
+
+所有13个后端模块文件均存在并含实质内容(320-610行)，无空壳：
+  ai_dashboard_window.py (547行) ✅
+  enhanced_chat.py (459行) ✅
+  knowledge_base.py (411行) ✅
+  quick_actions.py (347行) ✅
+  voice_interface.py (337行) ✅
+  anomaly_detector.py (471行) ✅
+  recommendation_engine.py (458行) ✅
+  data_visualization.py (459行) ✅
+  smart_workflow.py (320行) ✅
+  business_ai_assistant.py (610行) ✅
+  super_intelligence.py (483行) ✅
+
+---
+
+## 九、修复优先级排序
+
+| 优先级 | 模块 | 问题 | 工作量(估) |
+|--------|------|------|-----------|
+| P0 | ai_assistant_window.py | 3207行超限，需拆分为6个子模块 | 大 (1-2小时) |
+| P1 | ai_center_window_v2.py | class名重复 + 硬编码D:/路径 | 小 (15分钟) |
+| P2 | system_monitor.py | AI统计硬编码+缺告警 | 中 (30分钟) |
+| P3 | key_manager.py | 注释中硬编码路径 | 极微 (2分钟) |

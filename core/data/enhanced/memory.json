@@ -1,0 +1,14 @@
+{
+  "verify_test": {
+    "value": "mixin split ok",
+    "updated_at": "2026-06-24T01:38:39.311370"
+  },
+  "pytest_test": {
+    "value": "hello",
+    "updated_at": "2026-06-24T07:37:51.212318"
+  },
+  "pytest_enhanced_test": {
+    "value": "hello world",
+    "updated_at": "2026-06-24T08:29:27.355136"
+  }
+}

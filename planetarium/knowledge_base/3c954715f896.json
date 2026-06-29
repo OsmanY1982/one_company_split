@@ -1,0 +1,12 @@
+{
+  "id": "3c954715f896",
+  "title": "附录D_常见调试命令.md",
+  "content": "## 启动与测试\n\n```bash\n# 开发模式启动（不打包）\npython3 main.py\n\n# 只验证模块导入\npython3 -c \"from modules.dashboard.dashboard_window import DashboardWindow; print('OK')\"\n\n# 验证所有核心模块\npython3 -c \"\nfrom core.cosmic import CosmicBackground\nfrom core.agent import AgentCore\nfrom core.llm_client import LLMClient\nfrom core.data import init_all_dbs\nprint('All core OK')\n\"\n\n# 检查数据库完整性\npython3 -c \"\nimport sqlite3\nfor db in ['member.db','staff.db','wallet.db','order.db']:\n    conn = sqlite3.connect(f'data/{db}')\n    print(db, conn.execute('PRAGMA integrity_check').fetchone()[0])\n\"\n```\n\n\n## 重置与清理\n\n```bash\n# 删除所有数据（危险！）\nrm -rf data/*.db data/*.db-wal data/*.db-shm\n\n# 清理 Python 缓存\nfind . -type d -name '__pycache__' -exec rm -rf {} +\n\n# 重新生成源码全书\npython3 gen_book.py\n```\n\n---\n\n*一人公司 · 宇宙版 · 项目全书*\n*「一个人 + 一台电脑 = 能运转的最小企业」*\n*最后更新：2026-06-11*\n*（内容由AI生成，仅供参考）*\n*（内容由AI生成，仅供参考）*\n",
+  "source": "/Volumes/D盘工作区/一人公司拆分版/one_company_split/one_company_cosmic/项目全书/附录D_常见调试命令.md",
+  "doc_type": "md",
+  "metadata": {
+    "source": "项目全书",
+    "file": "附录D_常见调试命令.md"
+  },
+  "created_at": "2026-06-13T13:23:20.619111"
+}

@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+"""
+EnhancedAIAssistant 自测脚本
+从 enhanced_tools.py 拆出的 if __name__ == "__main__" 代码块。
+"""
+
+import sys
+import os
+
+# 确保项目根目录在 path 中
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from core.modules.intelligence.enhanced.enhanced_tools import EnhancedAIAssistant
+
+
+def main():
+    assistant = EnhancedAIAssistant()
+    print("=== 工具列表 ===")
+    for t in assistant.list_tools():
+        print(f"  {t['icon']} {t['name']}: {t['description']}")
+
+    print("\n=== 测试 file_read ===")
+    r = assistant.execute_tool("file_read", {"path": __file__})
+    print(f"  success={r['success']}, size={r.get('size', '?')}")
+
+    print("\n=== 测试 multi_search ===")
+    r = assistant.execute_tool("multi_search", {"query": "EnhancedAIAssistant"})
+    print(f"  success={r['success']}, count={r.get('count', 0)}")
+
+    print("\n=== 测试 memory ===")
+    r = assistant.execute_tool("memory_save", {"key": "test", "value": "hello world"})
+    print(f"  success={r['success']}")
+    r = assistant.execute_tool("memory_load", {"key": "test"})
+    print(f"  success={r['success']}, value={r.get('value', '?')}")
+
+    print("\n✅ 全部测试通过")
+
+
+if __name__ == "__main__":
+    main()
