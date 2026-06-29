@@ -1,377 +1,246 @@
 # `iqra/core/proactive_engine.py`
 
-> 路径：`iqra/core/proactive_engine.py` | 行数：366
+> 路径：`iqra/core/proactive_engine.py` | 行数：235
 
 
 ---
 
 
 ```python
-# -*- coding: utf-8 -*-
 """
-ProactiveEngine — AI 主动执行与推送引擎
-
-解决 AI "问一句回一句"的被动模式，实现:
-  1. 完成后自动建议下一步（上下文意图推测）
-  2. 后台监控 + 主动推送消息到对话窗口
-  3. 自主持续执行循环（遇阻塞才问，否则不打扰）
-
-用法:
-    from iqra.core.proactive_engine import ProactiveEngine
-
-    engine = ProactiveEngine(chat_engine=chat_engine, agent=agent_loop)
-    engine.on_push.connect(chat_window.append_message)   # 主动推送
-    engine.on_suggest.connect(chat_window.show_suggestion) # 建议气泡
-
-    # 启动后台监控
-    engine.start_monitoring()
-
-    # 完成一次任务后自动建议
-    engine.suggest_next(user_message="帮我整理桌面文件",
-                        completion_summary="桌面文件已按类型归类到 4 个文件夹")
+ProactiveEngine — 主动巡检与告警引擎
+接入 WorkspaceWatcher + CodeHealthChecker，定期检查并持久化告警。
 """
 
-import json
-from typing import Optional, List, Dict, Any
-from PyQt5.QtCore import QObject, pyqtSignal
+import os
+import sqlite3
+import threading
+import time
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Optional
 
-from .iqra_logging import logger
-from .proactive_monitors import (
-    BaseMonitor,
-    FileWatchMonitor,
-    FSEventMonitor,
-    ProjectHealthMonitor,
-    ProactiveEvent,
-    ProactiveEventType,
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DB_PATH = PROJECT_ROOT / "data" / "proactive_alerts.db"
+CHECK_INTERVAL = 300  # 5 分钟
+
+CORE_FILES = [
+    "cosmic.py", "agent.py", "data.py", "llm_client.py", "voice.py",
+]
+
+CREATE_ALERTS_SQL = """
+CREATE TABLE IF NOT EXISTS alerts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    level TEXT NOT NULL DEFAULT 'warning',
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    file_path TEXT DEFAULT '',
+    timestamp REAL NOT NULL,
+    dismissed INTEGER DEFAULT 0
 )
+"""
+
+CREATE_SNAPS_SQL = """
+CREATE TABLE IF NOT EXISTS core_file_snapshots (
+    file_path TEXT PRIMARY KEY,
+    mtime REAL NOT NULL
+)
+"""
 
 
-# ═══════════════════════════════════════════
-# 建议生成器
-# ═══════════════════════════════════════════
-
-SUGGESTION_SYSTEM_PROMPT = """你是 AI 助手的主动建议生成器。根据已完成的任务和当前系统状态，生成 1-2 条用户可能需要的下一步建议。
-
-规则:
-1. 每条建议必须是具体可操作的（不是泛泛的"你还可以做XX"）
-2. 优先关联刚完成的任务（如"刚整理了桌面，要不要把下载文件夹也整理？"）
-3. 如果没有明显建议，可以基于系统状态（如"发现 3 个 7 天未清理的临时文件"）
-4. 建议要简短，每条不超过 25 字
-5. 输出纯 JSON 数组: [{"title": "...", "body": "..."}]
-6. 如果实在没有建议，输出空数组 []
-
-上下文:
-{context}"""
+@dataclass
+class Alert:
+    alert_id: int = -1
+    level: str = "warning"
+    title: str = ""
+    message: str = ""
+    file_path: str = ""
+    timestamp: float = field(default_factory=time.time)
+    dismissed: bool = False
 
 
-class SuggestionEngine:
-    """智能建议生成"""
+class ProactiveEngine:
+    """主动巡检引擎：定期检查核心文件变更 + 导入链断裂，生成告警。"""
 
-    def __init__(self, backend=None):
-        self._backend = backend
+    def __init__(self):
+        os.makedirs(DB_PATH.parent, exist_ok=True)
+        self._init_db()
+        self._thread: Optional[threading.Thread] = None
+        self._stop_event = threading.Event()
 
-    def generate(
-        self,
-        user_message: str,
-        completion_summary: str,
-        system_context: str = "",
-    ) -> List[Dict]:
-        """
-        生成下一步建议
+        # 懒加载 checker（避免初始化时扫描全项目）
+        self._health_checker = None
 
-        Args:
-            user_message: 原始用户请求
-            completion_summary: 完成结果总结
-            system_context: 系统状态摘要（当前项目、打开文件等）
+    # ------------------------------------------------------------------ 公开方法
 
-        Returns:
-            [{title, body}, ...]
-        """
-        if not self._backend:
-            return []
+    def start(self) -> None:
+        """启动后台监控线程，每 5 分钟检查一轮。"""
+        if self._thread and self._thread.is_alive():
+            return
+        self._stop_event.clear()
+        self._do_check()  # 启动时立即执行一轮
+        self._thread = threading.Thread(target=self._monitor_loop, daemon=True)
+        self._thread.start()
 
-        context_parts = [
-            f"用户请求: {user_message}",
-            f"完成结果: {completion_summary}",
-        ]
-        if system_context:
-            context_parts.append(f"系统状态: {system_context}")
+    def stop(self) -> None:
+        self._stop_event.set()
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=5)
 
-        messages = [
-            {"role": "system", "content": SUGGESTION_SYSTEM_PROMPT.format(
-                context="\n".join(context_parts)
-            )},
-            {"role": "user", "content": "请生成建议。"},
-        ]
+    def check_now(self) -> list[Alert]:
+        """立即执行一轮检查，返回本轮新告警。"""
+        return self._do_check()
 
-        try:
-            response = self._backend.chat(messages)
-            content = response.content.strip() if hasattr(response, 'content') else str(response).strip()
+    def get_alerts(self, include_dismissed: bool = False) -> list[Alert]:
+        """返回告警列表。"""
+        sql = "SELECT * FROM alerts" if include_dismissed else "SELECT * FROM alerts WHERE dismissed=0"
+        return self._query_alerts(sql + " ORDER BY timestamp DESC")
 
-            # 提取 JSON
-            if "```" in content:
-                content = content.split("```")[1]
-                if content.startswith("json"):
-                    content = content[4:]
-                content = content.split("```")[0].strip()
+    def clear_alert(self, alert_id: int) -> bool:
+        """清除指定告警（标记 dismissed=1）。"""
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.execute("UPDATE alerts SET dismissed=1 WHERE id=?", (alert_id,))
+        conn.commit()
+        conn.close()
+        return True
 
-            suggestions = json.loads(content)
-            if not isinstance(suggestions, list):
+    # ------------------------------------------------------------------ 内部方法
+
+    def _init_db(self) -> None:
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.execute(CREATE_ALERTS_SQL)
+        conn.execute(CREATE_SNAPS_SQL)
+        conn.commit()
+        conn.close()
+
+    def _monitor_loop(self) -> None:
+        while not self._stop_event.wait(CHECK_INTERVAL):
+            self._do_check()
+
+    def _do_check(self) -> list[Alert]:
+        alerts: list[Alert] = []
+        alerts.extend(self._check_core_files())
+        alerts.extend(self._check_import_chain())
+        self._save_alerts(alerts)
+        return alerts
+
+    # ── 检查项 ──
+
+    def _check_core_files(self) -> list[Alert]:
+        """检测核心文件是否被意外修改（mtime 与快照对比）。"""
+        alerts: list[Alert] = []
+        for fname in CORE_FILES:
+            fp = PROJECT_ROOT / "core" / fname
+            if not fp.exists():
+                alerts.append(Alert(
+                    level="error", title="核心文件缺失",
+                    message=f"core/{fname} 不存在",
+                    file_path=str(fp),
+                ))
+                continue
+            current_mtime = fp.stat().st_mtime
+            prev = self._get_snapshot(str(fp))
+            if prev is not None and prev != current_mtime:
+                alerts.append(Alert(
+                    level="warning", title="核心文件已被修改",
+                    message=f"core/{fname} 的修改时间发生变化（{time.ctime(prev)} → {time.ctime(current_mtime)}）",
+                    file_path=str(fp),
+                ))
+            self._set_snapshot(str(fp), current_mtime)
+        return alerts
+
+    def _check_import_chain(self) -> list[Alert]:
+        """检测导入链断裂（调用 CodeHealthChecker 快速检查）。"""
+        if self._health_checker is None:
+            try:
+                from iqra.core.code_health_checker import CodeHealthChecker
+                self._health_checker = CodeHealthChecker()
+            except Exception:
                 return []
-            return suggestions
-
-        except Exception as e:
-            logger.debug("建议生成跳过: %s", e)
+        try:
+            report = self._health_checker.run_quick_check()
+        except Exception:
             return []
+        alerts: list[Alert] = []
+        if report.broken_imports:
+            for item in report.broken_imports:
+                alerts.append(Alert(
+                    level="error", title="导入链断裂",
+                    message=f"语法错误: {item['error']}",
+                    file_path=item["path"],
+                ))
+        if report.oversized_files:
+            for item in report.oversized_files:
+                alerts.append(Alert(
+                    level="info", title="文件行数超标",
+                    message=f"{item['path']} 共 {item['lines']} 行（阈值 500）",
+                    file_path=item["path"],
+                ))
+        return alerts
 
+    # ── 快照持久化 ──
 
-# ═══════════════════════════════════════════
-# ProactiveEngine 主类
-# ═══════════════════════════════════════════
+    def _get_snapshot(self, file_path: str) -> Optional[float]:
+        conn = sqlite3.connect(str(DB_PATH))
+        row = conn.execute(
+            "SELECT mtime FROM core_file_snapshots WHERE file_path=?",
+            (file_path,),
+        ).fetchone()
+        conn.close()
+        return row[0] if row else None
 
-class ProactiveEngine(QObject):
-    """
-    主动执行与推送引擎
-
-    信号:
-      on_push: 主动推送事件（告警/洞察/提醒）
-      on_suggest: 智能建议事件（任务完成后的下一步）
-    """
-
-    on_push = pyqtSignal(ProactiveEvent)
-    on_suggest = pyqtSignal(ProactiveEvent)
-
-    def __init__(
-        self,
-        backend=None,
-        project_path: str = "",
-        watch_paths: List[str] = None,
-    ):
-        """
-        Args:
-            backend: BaseLLMBackend 实例（用于生成智能建议）
-            project_path: 项目根目录（用于健康监控）
-            watch_paths: 需要监控文件变化的目录列表
-        """
-        super().__init__()
-        self._backend = backend
-        self._suggester = SuggestionEngine(backend)
-        self._monitors: List[BaseMonitor] = []
-        self._is_monitoring = False
-
-        # 初始化监控器
-        if project_path:
-            self.add_monitor(ProjectHealthMonitor(project_path))
-        if watch_paths:
-            if FSEventMonitor is not None:
-                self.add_monitor(FSEventMonitor(watch_paths))
-            else:
-                self.add_monitor(FileWatchMonitor(watch_paths))
-
-    # ── 建议生成 ──
-
-    def suggest_next(
-        self,
-        user_message: str,
-        completion_summary: str,
-        system_context: str = "",
-    ) -> List[ProactiveEvent]:
-        """
-        任务完成后生成下一步建议
-
-        Args:
-            user_message: 原始用户请求
-            completion_summary: 完成结果总结
-            system_context: 系统状态（当前项目、打开文件等）
-
-        Returns:
-            ProactiveEvent 列表（供调用方通过 on_suggest 信号发送）
-        """
-        suggestions = self._suggester.generate(
-            user_message, completion_summary, system_context,
+    def _set_snapshot(self, file_path: str, mtime: float) -> None:
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.execute(
+            "INSERT OR REPLACE INTO core_file_snapshots (file_path, mtime) VALUES (?, ?)",
+            (file_path, mtime),
         )
+        conn.commit()
+        conn.close()
 
-        events = []
-        for s in suggestions:
-            event = ProactiveEvent(
-                type=ProactiveEventType.SUGGESTION,
-                title=s.get("title", ""),
-                body=s.get("body", ""),
-                action_label="试试看",
-                action_payload={"action": "execute", "prompt": s.get("body", "")},
-                priority=0,
-            )
-            events.append(event)
+    # ── 告警持久化 ──
 
-        return events
-
-    def suggest_and_push(
-        self,
-        user_message: str,
-        completion_summary: str,
-        system_context: str = "",
-    ) -> None:
-        """生成建议并自动推送到 on_suggest 信号"""
-        events = self.suggest_next(user_message, completion_summary, system_context)
-        for event in events:
-            self.on_suggest.emit(event)
-
-    # ── 监控管理 ──
-
-    def add_monitor(self, monitor: BaseMonitor):
-        """添加监控器"""
-        monitor.set_callback(self._on_monitor_event)
-        self._monitors.append(monitor)
-
-    def remove_monitor(self, name: str) -> bool:
-        """移除监控器"""
-        for m in self._monitors:
-            if m.name == name:
-                m.stop()
-                self._monitors.remove(m)
-                return True
-        return False
-
-    def start_monitoring(self):
-        """启动所有后台监控"""
-        for m in self._monitors:
-            if not m.is_alive():
-                m.start()
-        self._is_monitoring = True
-        logger.info("ProactiveEngine: 启动 %d 个监控器", len(self._monitors))
-
-    def stop_monitoring(self):
-        """停止所有后台监控"""
-        for m in self._monitors:
-            m.stop()
-        self._is_monitoring = False
-        logger.info("ProactiveEngine: 已停止所有监控")
-
-    @property
-    def is_monitoring(self) -> bool:
-        return self._is_monitoring
-
-    @property
-    def monitors(self) -> List[str]:
-        return [m.name for m in self._monitors]
-
-    # ── 心跳检测 ──
-
-    def check_heartbeats(self, timeout: float = None) -> List[str]:
-        """
-        检测所有监控器的心跳状态，返回僵死监控器名称列表
-
-        Args:
-            timeout: 覆盖各监控器的心跳超时阈值；不传则使用各监控器自身配置
-
-        Returns:
-            僵死（is_stale=True）的监控器名称列表
-        """
-        stale = []
-        for m in self._monitors:
-            if m.is_stale(timeout=timeout):
-                stale.append(m.name)
-        return stale
-
-    def restart_stale_monitors(self, timeout: float = None) -> int:
-        """
-        检测并重启所有僵死监控器
-
-        Args:
-            timeout: 覆盖各监控器的心跳超时阈值
-
-        Returns:
-            实际重启的监控器数量
-        """
-        restarted = 0
-        for m in self._monitors:
-            if m.is_stale(timeout=timeout):
-                logger.warning("ProactiveEngine: %s 心跳超时，正在重启…", m.name)
-                try:
-                    m.stop()
-                    m.join(timeout=5)
-                except Exception:
-                    pass
-                new_monitor = self._recreate_monitor(m)
-                if new_monitor:
-                    self._monitors.remove(m)
-                    self.add_monitor(new_monitor)
-                    restarted += 1
-        return restarted
-
-    def _recreate_monitor(self, stale_monitor: BaseMonitor) -> Optional[BaseMonitor]:
-        """根据僵死监控器的类型重新创建等价实例"""
-        from .proactive_monitors import (
-            FileWatchMonitor as _FWM,
-            FSEventMonitor as _FSM,
-            ProjectHealthMonitor as _PHM,
+    def _save_alerts(self, alerts: list[Alert]) -> None:
+        if not alerts:
+            return
+        conn = sqlite3.connect(str(DB_PATH))
+        now = time.time()
+        conn.executemany(
+            "INSERT INTO alerts (level, title, message, file_path, timestamp) VALUES (?,?,?,?,?)",
+            [(a.level, a.title, a.message, a.file_path, now) for a in alerts],
         )
-        name = stale_monitor.name
-        if name == "FileWatchMonitor":
-            paths = getattr(stale_monitor, '_watch_paths', [])
-            interval = stale_monitor.interval_seconds
-            return _FWM(paths, interval)
-        elif name == "FSEventMonitor" and _FSM is not None:
-            paths = getattr(stale_monitor, '_watch_paths', [])
-            return _FSM(paths)
-        elif name == "ProjectHealthMonitor":
-            pp = getattr(stale_monitor, 'project_path', "")
-            return _PHM(pp)
-        return None
+        conn.commit()
+        conn.close()
 
-    # ── 手动推送 ──
-
-    def push_alert(self, title: str, body: str, priority: int = 1):
-        """手动推送告警"""
-        self.on_push.emit(ProactiveEvent(
-            type=ProactiveEventType.ALERT,
-            title=title, body=body, priority=priority,
-        ))
-
-    def push_insight(self, title: str, body: str, action_label: str = "",
-                     action_payload: Dict = None):
-        """手动推送洞察"""
-        self.on_push.emit(ProactiveEvent(
-            type=ProactiveEventType.INSIGHT,
-            title=title, body=body,
-            action_label=action_label,
-            action_payload=action_payload or {},
-        ))
-
-    # ── 内部回调 ──
-
-    def _on_monitor_event(self, event: ProactiveEvent):
-        """监控器回调：转发到 on_push 信号"""
-        self.on_push.emit(event)
+    def _query_alerts(self, sql: str) -> list[Alert]:
+        conn = sqlite3.connect(str(DB_PATH))
+        rows = conn.execute(sql).fetchall()
+        conn.close()
+        return [
+            Alert(alert_id=r[0], level=r[1], title=r[2], message=r[3],
+                  file_path=r[4], timestamp=r[5], dismissed=bool(r[6]))
+            for r in rows
+        ]
 
 
 # ═══════════════════════════════════════════
-# 全局实例
+# 全局单例
 # ═══════════════════════════════════════════
 
 _proactive: Optional[ProactiveEngine] = None
 
 
-def get_proactive_engine(
-    backend=None,
-    project_path: str = "",
-    watch_paths: List[str] = None,
-) -> ProactiveEngine:
-    """获取全局 ProactiveEngine 单例"""
+def get_proactive_engine() -> ProactiveEngine:
     global _proactive
     if _proactive is None:
-        _proactive = ProactiveEngine(
-            backend=backend,
-            project_path=project_path,
-            watch_paths=watch_paths,
-        )
+        _proactive = ProactiveEngine()
     return _proactive
 
 
-def reset_proactive_engine():
+def reset_proactive_engine() -> None:
     global _proactive
     if _proactive:
-        _proactive.stop_monitoring()
+        _proactive.stop()
     _proactive = None
 
 ```

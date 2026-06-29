@@ -1,6 +1,6 @@
 # `iqra/iqra_chat.py`
 
-> 路径：`iqra/iqra_chat.py` | 行数：232
+> 路径：`iqra/iqra_chat.py` | 行数：353
 
 
 ---
@@ -17,6 +17,7 @@ import os
 import sys
 import json
 import threading
+import time
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, PROJECT_ROOT)
@@ -29,6 +30,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtGui import QFont, QTextCursor, QColor
 from core.dark_theme import apply_dark_theme
+from iqra.core.workspace_watcher import WorkspaceWatcher
 
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 CONFIG_PATH = os.path.join(DATA_DIR, "iqra_config.json")
@@ -74,6 +76,11 @@ class ChatWindow(QMainWindow):
         self.setStyleSheet(self.styleSheet() + IQRA_CHAT_EXTRA_STYLE)
 
         self._engine = None
+        self._episodic_memory = None    # 跨会话情节记忆
+        self._semantic_memory = None    # 语义记忆层（知识图谱）
+        self._project_knowledge = None  # 项目知识库索引
+        self.workspace_watcher = None
+        self._cached_changes_summary = None
         self._signals = ChatSignals()
         self._signals.response_ready.connect(self._on_response)
         self._signals.thinking.connect(self._on_thinking)
@@ -139,6 +146,36 @@ class ChatWindow(QMainWindow):
     def _init_engine(self):
         """初始化 Iqra 核心引擎"""
         self._add_system_msg("正在初始化 Iqra 引擎...")
+
+        # 初始化情节记忆引擎
+        try:
+            from core.episodic_memory import EpisodicMemory
+            data_dir = os.path.join(PROJECT_ROOT, "data")
+            self._episodic_memory = EpisodicMemory(data_dir=data_dir, project="iqra")
+            self._add_system_msg("情节记忆引擎已加载")
+        except Exception as e:
+            self._episodic_memory = None
+
+        # 初始化语义记忆（知识图谱）
+        try:
+            from iqra.core.semantic_memory import SemanticMemory
+            self._semantic_memory = SemanticMemory()
+            s = self._semantic_memory.stats()
+            self._add_system_msg(
+                f"语义记忆已加载 (实体: {s['entity_count']}, 关系: {s['relation_count']}, 事实: {s['fact_count']})")
+        except Exception:
+            self._semantic_memory = None
+
+        # 初始化项目知识库
+        try:
+            from iqra.core.project_knowledge import ProjectKnowledge
+            self._project_knowledge = ProjectKnowledge()
+            s = self._project_knowledge.build_index()
+            self._add_system_msg(
+                f"项目知识库已加载 (文件: {s['file_count']}, 分块: {s['chunk_count']})")
+        except Exception:
+            self._project_knowledge = None
+
         try:
             from core.core_engine import IqraCoreEngine
 
@@ -176,6 +213,17 @@ class ChatWindow(QMainWindow):
             self._send_btn.setEnabled(False)
             self._input.setEnabled(False)
 
+        # 初始化工作区监视器
+        try:
+            self.workspace_watcher = WorkspaceWatcher()
+            self.workspace_watcher.start()
+            self._cached_changes_summary = self.workspace_watcher.get_changes_summary(since_seconds=86400)
+            if any(self._cached_changes_summary.values()):
+                self._add_system_msg("工作区监视器已启动")
+        except Exception:
+            self.workspace_watcher = None
+            self._cached_changes_summary = None
+
     def _add_system_msg(self, text):
         self._display.append(f'<span style="color:#6c7086;font-style:italic;">[系统] {text}</span>')
 
@@ -204,14 +252,87 @@ class ChatWindow(QMainWindow):
             self._send_btn.setEnabled(True)
             return
 
-        self._status.setText("Iqra 思考中...")
-        threading.Thread(target=self._run_chat, args=(text,), daemon=True).start()
+        # 检测工作区变更查询
+        change_kw = ["最近改了什么", "最近变了什么", "文件变更", "改了什么", "最近修改", "最近变更"]
+        if any(kw in text for kw in change_kw) and self.workspace_watcher:
+            try:
+                changes = self.workspace_watcher.get_recent_changes(since_seconds=86400)
+                if changes:
+                    lines = []
+                    for c in changes[:30]:
+                        ts = time.strftime("%H:%M:%S", time.localtime(c["timestamp"]))
+                        lines.append(f"• [{c['event_type']}] {c['file_path']} ({ts})")
+                    self._add_assistant_msg("工作区最近 24h 文件变更：\n" + "\n".join(lines))
+                else:
+                    self._add_assistant_msg("最近 24 小时工作区无文件变更。")
+            except Exception:
+                self._add_assistant_msg("无法获取工作区变更信息。")
+            self._input.setEnabled(True)
+            self._send_btn.setEnabled(True)
+            return
 
-    def _run_chat(self, user_input):
+        # 注入上下文：项目知识 > 工作区变更 > 语义记忆 > 情节记忆
+        augmented_text = text
+        context_parts = []
+
+        # 1. 项目知识库检索
+        if self._project_knowledge:
+            try:
+                ctx = self._project_knowledge.get_relevant_context(text, top_k=3)
+                if ctx:
+                    context_parts.append(f"[项目知识]\n{ctx}")
+            except Exception:
+                pass
+
+        # 1.5 工作区变更摘要
+        if self.workspace_watcher:
+            try:
+                summary = self.workspace_watcher.get_changes_summary(since_seconds=86400)
+                if any(summary.values()):
+                    s = f"新增 {summary['created']} 文件、修改 {summary['modified']} 文件、删除 {summary['deleted']} 文件"
+                    context_parts.append(f"[工作区变更(24h)]\n{s}")
+            except Exception:
+                pass
+
+        # 2. 语义记忆检索
+        if self._semantic_memory:
+            try:
+                ctx = self._semantic_memory.get_context(text, top_k=3)
+                if ctx:
+                    context_parts.append(f"[语义记忆]\n{ctx}")
+            except Exception:
+                pass
+
+        # 3. 情节记忆检索（已有）
+        if self._episodic_memory:
+            try:
+                ctx = self._episodic_memory.get_context(text)
+                if ctx:
+                    context_parts.append(f"[情节记忆]\n{ctx}")
+            except Exception:
+                pass
+
+        if context_parts:
+            augmented_text = "\n\n".join(context_parts) + "\n\n[当前对话]\n" + text
+
+        self._status.setText("Iqra 思考中...")
+        threading.Thread(target=self._run_chat, args=(augmented_text, text), daemon=True).start()
+
+    def _run_chat(self, user_input, original_text=None):
         try:
             self._signals.thinking.emit(True)
             response = self._engine.chat(user_input)
             self._signals.response_ready.emit(response)
+
+            # 记录会话到情节记忆
+            if original_text and self._episodic_memory:
+                try:
+                    self._episodic_memory.record(
+                        user_query=original_text,
+                        summary=response[:500],
+                    )
+                except Exception:
+                    pass
         except Exception as e:
             self._signals.error.emit(str(e))
 

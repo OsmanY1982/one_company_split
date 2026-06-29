@@ -1,6 +1,6 @@
 # 一人公司 · 宇宙版 — 源码全书
-> 自动生成于 2026-06-29 17:25
-> 共 1304 个模块，每个 `.py` 文件独立为一个文档
+> 自动生成于 2026-06-30 00:43
+> 共 1292 个模块，每个 `.py` 文件独立为一个文档
 
 ---
 
@@ -304,16 +304,7 @@
 │   │   ├── startup/
 │   │   │   └── startup_selector_window.py
 │   │   ├── supabase/
-│   │   │   ├── __init__.py
-│   │   │   ├── _core.py
-│   │   │   ├── activation.py
-│   │   │   ├── admin_log.py
-│   │   │   ├── auth.py
-│   │   │   ├── business.py
-│   │   │   ├── distribution.py
-│   │   │   ├── member.py
-│   │   │   ├── updater.py
-│   │   │   └── wallet.py
+│   │   │   └── __init__.py
 │   │   ├── system/
 │   │   │   ├── _archived/
 │   │   │   │   ├── activation_window.py
@@ -528,7 +519,9 @@
 │   ├── agent_bridge_tools/
 │   │   ├── __init__.py
 │   │   ├── _code_tools.py
+│   │   ├── _convert_tools.py
 │   │   ├── _file_tools.py
+│   │   ├── _image_tools.py
 │   │   ├── _legacy_tools.py
 │   │   ├── _system_tools.py
 │   │   ├── _task_tools.py
@@ -578,6 +571,10 @@
 │   │   ├── _catalog.py
 │   │   ├── _core.py
 │   │   └── _data.py
+│   ├── tests/
+│   │   ├── mcp_test_server.py
+│   │   ├── run_with_timeout.py
+│   │   └── test_mcp_client.py
 │   ├── text_editor/
 │   │   ├── __init__.py
 │   │   ├── _core.py
@@ -650,6 +647,7 @@
 │   ├── key_manager.py
 │   ├── knowledge_base.py
 │   ├── marketing_tools.py
+│   ├── mcp_client.py
 │   ├── model_config.py
 │   ├── monitor_dashboard.py
 │   ├── offline_analyzer.py
@@ -770,6 +768,7 @@
 │   │   ├── _agent_loop_base.py
 │   │   ├── _agent_loop_compat_mixin.py
 │   │   ├── _agent_loop_exec_mixin.py
+│   │   ├── _agent_loop_old.py
 │   │   ├── _agent_prompts.py
 │   │   ├── _backend_convenience.py
 │   │   ├── _backend_factory.py
@@ -804,10 +803,12 @@
 │   │   ├── cloud_pull.py
 │   │   ├── cloud_sync.py
 │   │   ├── code_executor.py
+│   │   ├── code_health_checker.py
 │   │   ├── code_intel.py
 │   │   ├── collaboration_client.py
 │   │   ├── config_validator.py
 │   │   ├── conflict_resolver.py
+│   │   ├── context_compressor.py
 │   │   ├── core_engine.py
 │   │   ├── cosmic.py
 │   │   ├── custom_fields.py
@@ -816,11 +817,15 @@
 │   │   ├── data.py
 │   │   ├── data_sync.py
 │   │   ├── database.py
+│   │   ├── embedding_searcher.py
 │   │   ├── enhanced_core.py
+│   │   ├── episodic_memory.py
 │   │   ├── event_bus.py
 │   │   ├── excel_export.py
 │   │   ├── git_ops.py
+│   │   ├── hybrid_retriever.py
 │   │   ├── iqra_logging.py
+│   │   ├── knowledge_graph.py
 │   │   ├── light_tool_theme.py
 │   │   ├── llm_backend.py
 │   │   ├── llm_client.py
@@ -830,6 +835,7 @@
 │   │   ├── mobile_api.py
 │   │   ├── model_status.py
 │   │   ├── model_status_manager.py
+│   │   ├── module_dependency_graph.py
 │   │   ├── module_manager.py
 │   │   ├── multi_model.py
 │   │   ├── multi_model_chat_engine.py
@@ -842,25 +848,32 @@
 │   │   ├── patch_engine.py
 │   │   ├── paths.py
 │   │   ├── performance_monitor.py
+│   │   ├── permission_manager.py
 │   │   ├── planet_painter.py
+│   │   ├── platform_commands.py
 │   │   ├── proactive_engine.py
 │   │   ├── proactive_monitors.py
 │   │   ├── procedural_texture.py
 │   │   ├── process_manager.py
+│   │   ├── project_knowledge.py
+│   │   ├── project_memory.py
 │   │   ├── provider_registry.py
 │   │   ├── rag_context.py
 │   │   ├── reconciliation.py
 │   │   ├── scheduled_tasks.py
 │   │   ├── secure_storage.py
+│   │   ├── semantic_memory.py
 │   │   ├── semantic_search.py
 │   │   ├── session_search.py
 │   │   ├── simple_sync.py
 │   │   ├── skill_loader.py
 │   │   ├── skill_system.py
+│   │   ├── smart_context_selector.py
 │   │   ├── smart_memory.py
 │   │   ├── smart_memory_adapter.py
 │   │   ├── smart_report.py
 │   │   ├── storage.py
+│   │   ├── sub_agent.py
 │   │   ├── supabase_client.py
 │   │   ├── super_intelligence.py
 │   │   ├── sync_bridge.py
@@ -878,15 +891,19 @@
 │   │   ├── triple_sync.py
 │   │   ├── ui_components.py
 │   │   ├── user_dao.py
+│   │   ├── verification_hook.py
 │   │   ├── voice.py
 │   │   ├── web_search.py
 │   │   ├── workflow_engine.py
-│   │   └── workspace_indexer.py
+│   │   ├── workspace_indexer.py
+│   │   └── workspace_watcher.py
 │   ├── data/
 │   │   ├── ads/
 │   │   │   └── videos/
 │   │   ├── drafts/
 │   │   ├── enhanced/
+│   │   ├── episodic/
+│   │   ├── health_reports/
 │   │   ├── iqra/
 │   │   │   └── metrics/
 │   │   ├── metrics/
@@ -937,7 +954,7 @@
 │   │   │   │   └── _ui.py
 │   │   │   └── dashboard_window.py
 │   │   ├── intelligence/
-│   │   │   └── __init__.py
+│   │   │   ├── __init__.py
 │   │   ├── iqra/
 │   │   │   └── data/
 │   │   └── __init__.py
@@ -982,6 +999,14 @@
 │   │   ├── theme_service.py
 │   │   ├── update_service.py
 │   │   └── workflow_service.py
+│   ├── skills/
+│   │   ├── document-writer/
+│   │   ├── docx/
+│   │   ├── excel-processing-and-analysis/
+│   │   ├── file-organizer/
+│   │   ├── file-search/
+│   │   ├── image-search/
+│   │   └── pdf/
 │   ├── solar_explorer/
 │   │   ├── __init__.py
 │   │   ├── _dwarf_planets.py
@@ -998,9 +1023,11 @@
 │   │   │   ├── __init__.py
 │   │   │   └── file_sync.py
 │   │   ├── __init__.py
+│   │   ├── a2a_tool.py
 │   │   ├── check_imports.py
 │   │   ├── module_health.py
 │   │   └── skills_sync.py
+│   ├── __init__.py
 │   ├── hermes_constants.py
 │   ├── iqra_chat.py
 │   ├── iqra_setup.py
@@ -1032,16 +1059,7 @@
 │   │   │   ├── intelligence/
 │   │   │   │   └── __init__.py
 │   │   │   ├── supabase/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _core.py
-│   │   │   │   ├── activation.py
-│   │   │   │   ├── admin_log.py
-│   │   │   │   ├── auth.py
-│   │   │   │   ├── business.py
-│   │   │   │   ├── distribution.py
-│   │   │   │   ├── member.py
-│   │   │   │   ├── updater.py
-│   │   │   │   └── wallet.py
+│   │   │   │   └── __init__.py
 │   │   │   └── __init__.py
 │   │   ├── services/
 │   │   ├── shapes/
@@ -1423,33 +1441,14 @@
 │   │   │   │   │   ├── _engine.py
 │   │   │   │   │   └── _models.py
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── _ai_shared.py
 │   │   │   │   ├── _chat_dialog.py
 │   │   │   │   ├── _compat.py
-│   │   │   │   ├── _model_manager_download.py
-│   │   │   │   ├── _model_manager_ollama.py
-│   │   │   │   ├── _stubs.py
 │   │   │   │   ├── agent_bridge.py
 │   │   │   │   ├── intelligence_integration.py
-│   │   │   │   ├── marketing_tools.py
-│   │   │   │   ├── quick_tools_panel.py
-│   │   │   │   ├── session_context.py
-│   │   │   │   ├── solar_system_data.py
 │   │   │   │   ├── super_intelligence.py
-│   │   │   │   ├── text_editor.py
-│   │   │   │   ├── tool_registry.py
-│   │   │   │   └── workflow_engine.py
+│   │   │   │   └── tool_registry.py
 │   │   │   ├── supabase/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _core.py
-│   │   │   │   ├── activation.py
-│   │   │   │   ├── admin_log.py
-│   │   │   │   ├── auth.py
-│   │   │   │   ├── business.py
-│   │   │   │   ├── distribution.py
-│   │   │   │   ├── member.py
-│   │   │   │   ├── updater.py
-│   │   │   │   └── wallet.py
+│   │   │   │   └── __init__.py
 │   │   │   └── __init__.py
 │   │   ├── shapes/
 │   │   │   ├── __init__.py
@@ -1611,7 +1610,7 @@
 │   ├── clean_package.py
 │   └── pack_build.py
 ├── gen_book.py
-└── verify_both.py
+├── verify_both.py
 ```
 
 ---
@@ -1863,15 +1862,6 @@
 - [`core/modules/personnel/wallet_window.py`](./core/modules/personnel/wallet_window.py.md)
 - [`core/modules/startup/startup_selector_window.py`](./core/modules/startup/startup_selector_window.py.md)
 - [`core/modules/supabase/__init__.py`](./core/modules/supabase/__init__.py.md)
-- [`core/modules/supabase/_core.py`](./core/modules/supabase/_core.py.md)
-- [`core/modules/supabase/activation.py`](./core/modules/supabase/activation.py.md)
-- [`core/modules/supabase/admin_log.py`](./core/modules/supabase/admin_log.py.md)
-- [`core/modules/supabase/auth.py`](./core/modules/supabase/auth.py.md)
-- [`core/modules/supabase/business.py`](./core/modules/supabase/business.py.md)
-- [`core/modules/supabase/distribution.py`](./core/modules/supabase/distribution.py.md)
-- [`core/modules/supabase/member.py`](./core/modules/supabase/member.py.md)
-- [`core/modules/supabase/updater.py`](./core/modules/supabase/updater.py.md)
-- [`core/modules/supabase/wallet.py`](./core/modules/supabase/wallet.py.md)
 - [`core/modules/system/__init__.py`](./core/modules/system/__init__.py.md)
 - [`core/modules/system/_archived/activation_window.py`](./core/modules/system/_archived/activation_window.py.md)
 - [`core/modules/system/_archived/base_info_window.py`](./core/modules/system/_archived/base_info_window.py.md)
@@ -2048,7 +2038,9 @@
 - [`intelligence/agent_bridge_models.py`](./intelligence/agent_bridge_models.py.md)
 - [`intelligence/agent_bridge_tools/__init__.py`](./intelligence/agent_bridge_tools/__init__.py.md)
 - [`intelligence/agent_bridge_tools/_code_tools.py`](./intelligence/agent_bridge_tools/_code_tools.py.md)
+- [`intelligence/agent_bridge_tools/_convert_tools.py`](./intelligence/agent_bridge_tools/_convert_tools.py.md)
 - [`intelligence/agent_bridge_tools/_file_tools.py`](./intelligence/agent_bridge_tools/_file_tools.py.md)
+- [`intelligence/agent_bridge_tools/_image_tools.py`](./intelligence/agent_bridge_tools/_image_tools.py.md)
 - [`intelligence/agent_bridge_tools/_legacy_tools.py`](./intelligence/agent_bridge_tools/_legacy_tools.py.md)
 - [`intelligence/agent_bridge_tools/_system_tools.py`](./intelligence/agent_bridge_tools/_system_tools.py.md)
 - [`intelligence/agent_bridge_tools/_task_tools.py`](./intelligence/agent_bridge_tools/_task_tools.py.md)
@@ -2125,6 +2117,7 @@
 - [`intelligence/marketing_tools/_core.py`](./intelligence/marketing_tools/_core.py.md)
 - [`intelligence/marketing_tools/_registration.py`](./intelligence/marketing_tools/_registration.py.md)
 - [`intelligence/marketing_tools.py`](./intelligence/marketing_tools.py.md)
+- [`intelligence/mcp_client.py`](./intelligence/mcp_client.py.md)
 - [`intelligence/model_config.py`](./intelligence/model_config.py.md)
 - [`intelligence/monitor_dashboard.py`](./intelligence/monitor_dashboard.py.md)
 - [`intelligence/offline_analyzer.py`](./intelligence/offline_analyzer.py.md)
@@ -2156,6 +2149,9 @@
 - [`intelligence/super_intelligence.py`](./intelligence/super_intelligence.py.md)
 - [`intelligence/system_hub_window.py`](./intelligence/system_hub_window.py.md)
 - [`intelligence/system_monitor.py`](./intelligence/system_monitor.py.md)
+- [`intelligence/tests/mcp_test_server.py`](./intelligence/tests/mcp_test_server.py.md)
+- [`intelligence/tests/run_with_timeout.py`](./intelligence/tests/run_with_timeout.py.md)
+- [`intelligence/tests/test_mcp_client.py`](./intelligence/tests/test_mcp_client.py.md)
 - [`intelligence/text_editor/__init__.py`](./intelligence/text_editor/__init__.py.md)
 - [`intelligence/text_editor/_core.py`](./intelligence/text_editor/_core.py.md)
 - [`intelligence/text_editor/_crypto.py`](./intelligence/text_editor/_crypto.py.md)
@@ -2173,6 +2169,7 @@
 - [`intelligence/workflow_engine/_engine.py`](./intelligence/workflow_engine/_engine.py.md)
 - [`intelligence/workflow_engine/_models.py`](./intelligence/workflow_engine/_models.py.md)
 - [`intelligence/workflow_engine.py`](./intelligence/workflow_engine.py.md)
+- [`iqra/__init__.py`](./iqra/__init__.py.md)
 - [`iqra/_archived/dedup_20260619_170800/deps.py`](./iqra/_archived/dedup_20260619_170800/deps.py.md)
 - [`iqra/_archived/license_模块归档_20260619/license_crypto.py`](./iqra/_archived/license_模块归档_20260619/license_crypto.py.md)
 - [`iqra/_archived/license_模块归档_20260619/license_db.py`](./iqra/_archived/license_模块归档_20260619/license_db.py.md)
@@ -2185,6 +2182,7 @@
 - [`iqra/core/_agent_loop_base.py`](./iqra/core/_agent_loop_base.py.md)
 - [`iqra/core/_agent_loop_compat_mixin.py`](./iqra/core/_agent_loop_compat_mixin.py.md)
 - [`iqra/core/_agent_loop_exec_mixin.py`](./iqra/core/_agent_loop_exec_mixin.py.md)
+- [`iqra/core/_agent_loop_old.py`](./iqra/core/_agent_loop_old.py.md)
 - [`iqra/core/_agent_prompts.py`](./iqra/core/_agent_prompts.py.md)
 - [`iqra/core/_backend_convenience.py`](./iqra/core/_backend_convenience.py.md)
 - [`iqra/core/_backend_factory.py`](./iqra/core/_backend_factory.py.md)
@@ -2220,10 +2218,12 @@
 - [`iqra/core/cloud_pull.py`](./iqra/core/cloud_pull.py.md)
 - [`iqra/core/cloud_sync.py`](./iqra/core/cloud_sync.py.md)
 - [`iqra/core/code_executor.py`](./iqra/core/code_executor.py.md)
+- [`iqra/core/code_health_checker.py`](./iqra/core/code_health_checker.py.md)
 - [`iqra/core/code_intel.py`](./iqra/core/code_intel.py.md)
 - [`iqra/core/collaboration_client.py`](./iqra/core/collaboration_client.py.md)
 - [`iqra/core/config_validator.py`](./iqra/core/config_validator.py.md)
 - [`iqra/core/conflict_resolver.py`](./iqra/core/conflict_resolver.py.md)
+- [`iqra/core/context_compressor.py`](./iqra/core/context_compressor.py.md)
 - [`iqra/core/core_engine.py`](./iqra/core/core_engine.py.md)
 - [`iqra/core/cosmic.py`](./iqra/core/cosmic.py.md)
 - [`iqra/core/custom_fields.py`](./iqra/core/custom_fields.py.md)
@@ -2232,13 +2232,17 @@
 - [`iqra/core/data.py`](./iqra/core/data.py.md)
 - [`iqra/core/data_sync.py`](./iqra/core/data_sync.py.md)
 - [`iqra/core/database.py`](./iqra/core/database.py.md)
+- [`iqra/core/embedding_searcher.py`](./iqra/core/embedding_searcher.py.md)
 - [`iqra/core/enhanced_core.py`](./iqra/core/enhanced_core.py.md)
+- [`iqra/core/episodic_memory.py`](./iqra/core/episodic_memory.py.md)
 - [`iqra/core/event_bus.py`](./iqra/core/event_bus.py.md)
 - [`iqra/core/excel_export.py`](./iqra/core/excel_export.py.md)
 - [`iqra/core/git_ops.py`](./iqra/core/git_ops.py.md)
 - [`iqra/core/harness/__init__.py`](./iqra/core/harness/__init__.py.md)
 - [`iqra/core/harness/config_schema.py`](./iqra/core/harness/config_schema.py.md)
+- [`iqra/core/hybrid_retriever.py`](./iqra/core/hybrid_retriever.py.md)
 - [`iqra/core/iqra_logging.py`](./iqra/core/iqra_logging.py.md)
+- [`iqra/core/knowledge_graph.py`](./iqra/core/knowledge_graph.py.md)
 - [`iqra/core/light_tool_theme.py`](./iqra/core/light_tool_theme.py.md)
 - [`iqra/core/llm_backend.py`](./iqra/core/llm_backend.py.md)
 - [`iqra/core/llm_client.py`](./iqra/core/llm_client.py.md)
@@ -2248,6 +2252,7 @@
 - [`iqra/core/mobile_api.py`](./iqra/core/mobile_api.py.md)
 - [`iqra/core/model_status.py`](./iqra/core/model_status.py.md)
 - [`iqra/core/model_status_manager.py`](./iqra/core/model_status_manager.py.md)
+- [`iqra/core/module_dependency_graph.py`](./iqra/core/module_dependency_graph.py.md)
 - [`iqra/core/module_manager.py`](./iqra/core/module_manager.py.md)
 - [`iqra/core/modules/__init__.py`](./iqra/core/modules/__init__.py.md)
 - [`iqra/core/modules/intelligence/__init__.py`](./iqra/core/modules/intelligence/__init__.py.md)
@@ -2277,11 +2282,15 @@
 - [`iqra/core/patch_engine.py`](./iqra/core/patch_engine.py.md)
 - [`iqra/core/paths.py`](./iqra/core/paths.py.md)
 - [`iqra/core/performance_monitor.py`](./iqra/core/performance_monitor.py.md)
+- [`iqra/core/permission_manager.py`](./iqra/core/permission_manager.py.md)
 - [`iqra/core/planet_painter.py`](./iqra/core/planet_painter.py.md)
+- [`iqra/core/platform_commands.py`](./iqra/core/platform_commands.py.md)
 - [`iqra/core/proactive_engine.py`](./iqra/core/proactive_engine.py.md)
 - [`iqra/core/proactive_monitors.py`](./iqra/core/proactive_monitors.py.md)
 - [`iqra/core/procedural_texture.py`](./iqra/core/procedural_texture.py.md)
 - [`iqra/core/process_manager.py`](./iqra/core/process_manager.py.md)
+- [`iqra/core/project_knowledge.py`](./iqra/core/project_knowledge.py.md)
+- [`iqra/core/project_memory.py`](./iqra/core/project_memory.py.md)
 - [`iqra/core/prompts/__init__.py`](./iqra/core/prompts/__init__.py.md)
 - [`iqra/core/prompts/task_decompose.py`](./iqra/core/prompts/task_decompose.py.md)
 - [`iqra/core/provider_registry.py`](./iqra/core/provider_registry.py.md)
@@ -2289,6 +2298,7 @@
 - [`iqra/core/reconciliation.py`](./iqra/core/reconciliation.py.md)
 - [`iqra/core/scheduled_tasks.py`](./iqra/core/scheduled_tasks.py.md)
 - [`iqra/core/secure_storage.py`](./iqra/core/secure_storage.py.md)
+- [`iqra/core/semantic_memory.py`](./iqra/core/semantic_memory.py.md)
 - [`iqra/core/semantic_search.py`](./iqra/core/semantic_search.py.md)
 - [`iqra/core/session_search.py`](./iqra/core/session_search.py.md)
 - [`iqra/core/shapes/__init__.py`](./iqra/core/shapes/__init__.py.md)
@@ -2330,10 +2340,12 @@
 - [`iqra/core/simple_sync.py`](./iqra/core/simple_sync.py.md)
 - [`iqra/core/skill_loader.py`](./iqra/core/skill_loader.py.md)
 - [`iqra/core/skill_system.py`](./iqra/core/skill_system.py.md)
+- [`iqra/core/smart_context_selector.py`](./iqra/core/smart_context_selector.py.md)
 - [`iqra/core/smart_memory.py`](./iqra/core/smart_memory.py.md)
 - [`iqra/core/smart_memory_adapter.py`](./iqra/core/smart_memory_adapter.py.md)
 - [`iqra/core/smart_report.py`](./iqra/core/smart_report.py.md)
 - [`iqra/core/storage.py`](./iqra/core/storage.py.md)
+- [`iqra/core/sub_agent.py`](./iqra/core/sub_agent.py.md)
 - [`iqra/core/supabase_client.py`](./iqra/core/supabase_client.py.md)
 - [`iqra/core/super_intelligence.py`](./iqra/core/super_intelligence.py.md)
 - [`iqra/core/sync_bridge.py`](./iqra/core/sync_bridge.py.md)
@@ -2351,10 +2363,12 @@
 - [`iqra/core/triple_sync.py`](./iqra/core/triple_sync.py.md)
 - [`iqra/core/ui_components.py`](./iqra/core/ui_components.py.md)
 - [`iqra/core/user_dao.py`](./iqra/core/user_dao.py.md)
+- [`iqra/core/verification_hook.py`](./iqra/core/verification_hook.py.md)
 - [`iqra/core/voice.py`](./iqra/core/voice.py.md)
 - [`iqra/core/web_search.py`](./iqra/core/web_search.py.md)
 - [`iqra/core/workflow_engine.py`](./iqra/core/workflow_engine.py.md)
 - [`iqra/core/workspace_indexer.py`](./iqra/core/workspace_indexer.py.md)
+- [`iqra/core/workspace_watcher.py`](./iqra/core/workspace_watcher.py.md)
 - [`iqra/hermes_constants.py`](./iqra/hermes_constants.py.md)
 - [`iqra/iqra_chat.py`](./iqra/iqra_chat.py.md)
 - [`iqra/iqra_setup.py`](./iqra/iqra_setup.py.md)
@@ -2446,6 +2460,7 @@
 - [`iqra/solar_explorer/star_catalog_window.py`](./iqra/solar_explorer/star_catalog_window.py.md)
 - [`iqra/solar_explorer/voice_reader.py`](./iqra/solar_explorer/voice_reader.py.md)
 - [`iqra/tools/__init__.py`](./iqra/tools/__init__.py.md)
+- [`iqra/tools/a2a_tool.py`](./iqra/tools/a2a_tool.py.md)
 - [`iqra/tools/check_imports.py`](./iqra/tools/check_imports.py.md)
 - [`iqra/tools/environments/__init__.py`](./iqra/tools/environments/__init__.py.md)
 - [`iqra/tools/environments/file_sync.py`](./iqra/tools/environments/file_sync.py.md)
@@ -2487,15 +2502,6 @@
 - [`management-system/core/modules/__init__.py`](./management-system/core/modules/__init__.py.md)
 - [`management-system/core/modules/intelligence/__init__.py`](./management-system/core/modules/intelligence/__init__.py.md)
 - [`management-system/core/modules/supabase/__init__.py`](./management-system/core/modules/supabase/__init__.py.md)
-- [`management-system/core/modules/supabase/_core.py`](./management-system/core/modules/supabase/_core.py.md)
-- [`management-system/core/modules/supabase/activation.py`](./management-system/core/modules/supabase/activation.py.md)
-- [`management-system/core/modules/supabase/admin_log.py`](./management-system/core/modules/supabase/admin_log.py.md)
-- [`management-system/core/modules/supabase/auth.py`](./management-system/core/modules/supabase/auth.py.md)
-- [`management-system/core/modules/supabase/business.py`](./management-system/core/modules/supabase/business.py.md)
-- [`management-system/core/modules/supabase/distribution.py`](./management-system/core/modules/supabase/distribution.py.md)
-- [`management-system/core/modules/supabase/member.py`](./management-system/core/modules/supabase/member.py.md)
-- [`management-system/core/modules/supabase/updater.py`](./management-system/core/modules/supabase/updater.py.md)
-- [`management-system/core/modules/supabase/wallet.py`](./management-system/core/modules/supabase/wallet.py.md)
 - [`management-system/core/notification_cron.py`](./management-system/core/notification_cron.py.md)
 - [`management-system/core/notification_service.py`](./management-system/core/notification_service.py.md)
 - [`management-system/core/notification_toast.py`](./management-system/core/notification_toast.py.md)
@@ -2729,14 +2735,10 @@
 - [`planetarium/core/module_manager.py`](./planetarium/core/module_manager.py.md)
 - [`planetarium/core/modules/__init__.py`](./planetarium/core/modules/__init__.py.md)
 - [`planetarium/core/modules/intelligence/__init__.py`](./planetarium/core/modules/intelligence/__init__.py.md)
-- [`planetarium/core/modules/intelligence/_ai_shared.py`](./planetarium/core/modules/intelligence/_ai_shared.py.md)
 - [`planetarium/core/modules/intelligence/_chat_dialog/__init__.py`](./planetarium/core/modules/intelligence/_chat_dialog/__init__.py.md)
 - [`planetarium/core/modules/intelligence/_chat_dialog/_dialog.py`](./planetarium/core/modules/intelligence/_chat_dialog/_dialog.py.md)
 - [`planetarium/core/modules/intelligence/_chat_dialog.py`](./planetarium/core/modules/intelligence/_chat_dialog.py.md)
 - [`planetarium/core/modules/intelligence/_compat.py`](./planetarium/core/modules/intelligence/_compat.py.md)
-- [`planetarium/core/modules/intelligence/_model_manager_download.py`](./planetarium/core/modules/intelligence/_model_manager_download.py.md)
-- [`planetarium/core/modules/intelligence/_model_manager_ollama.py`](./planetarium/core/modules/intelligence/_model_manager_ollama.py.md)
-- [`planetarium/core/modules/intelligence/_stubs.py`](./planetarium/core/modules/intelligence/_stubs.py.md)
 - [`planetarium/core/modules/intelligence/agent_bridge/__init__.py`](./planetarium/core/modules/intelligence/agent_bridge/__init__.py.md)
 - [`planetarium/core/modules/intelligence/agent_bridge/_core.py`](./planetarium/core/modules/intelligence/agent_bridge/_core.py.md)
 - [`planetarium/core/modules/intelligence/agent_bridge/_engine_mixin.py`](./planetarium/core/modules/intelligence/agent_bridge/_engine_mixin.py.md)
@@ -2760,38 +2762,23 @@
 - [`planetarium/core/modules/intelligence/marketing_tools/__init__.py`](./planetarium/core/modules/intelligence/marketing_tools/__init__.py.md)
 - [`planetarium/core/modules/intelligence/marketing_tools/_core.py`](./planetarium/core/modules/intelligence/marketing_tools/_core.py.md)
 - [`planetarium/core/modules/intelligence/marketing_tools/_registration.py`](./planetarium/core/modules/intelligence/marketing_tools/_registration.py.md)
-- [`planetarium/core/modules/intelligence/marketing_tools.py`](./planetarium/core/modules/intelligence/marketing_tools.py.md)
 - [`planetarium/core/modules/intelligence/quick_tools_panel/__init__.py`](./planetarium/core/modules/intelligence/quick_tools_panel/__init__.py.md)
 - [`planetarium/core/modules/intelligence/quick_tools_panel/_api_config.py`](./planetarium/core/modules/intelligence/quick_tools_panel/_api_config.py.md)
 - [`planetarium/core/modules/intelligence/quick_tools_panel/_quick_tools.py`](./planetarium/core/modules/intelligence/quick_tools_panel/_quick_tools.py.md)
-- [`planetarium/core/modules/intelligence/quick_tools_panel.py`](./planetarium/core/modules/intelligence/quick_tools_panel.py.md)
-- [`planetarium/core/modules/intelligence/session_context.py`](./planetarium/core/modules/intelligence/session_context.py.md)
 - [`planetarium/core/modules/intelligence/solar_system_data/__init__.py`](./planetarium/core/modules/intelligence/solar_system_data/__init__.py.md)
 - [`planetarium/core/modules/intelligence/solar_system_data/_catalog.py`](./planetarium/core/modules/intelligence/solar_system_data/_catalog.py.md)
 - [`planetarium/core/modules/intelligence/solar_system_data/_core.py`](./planetarium/core/modules/intelligence/solar_system_data/_core.py.md)
 - [`planetarium/core/modules/intelligence/solar_system_data/_data.py`](./planetarium/core/modules/intelligence/solar_system_data/_data.py.md)
-- [`planetarium/core/modules/intelligence/solar_system_data.py`](./planetarium/core/modules/intelligence/solar_system_data.py.md)
 - [`planetarium/core/modules/intelligence/super_intelligence.py`](./planetarium/core/modules/intelligence/super_intelligence.py.md)
 - [`planetarium/core/modules/intelligence/text_editor/__init__.py`](./planetarium/core/modules/intelligence/text_editor/__init__.py.md)
 - [`planetarium/core/modules/intelligence/text_editor/_core.py`](./planetarium/core/modules/intelligence/text_editor/_core.py.md)
 - [`planetarium/core/modules/intelligence/text_editor/_crypto.py`](./planetarium/core/modules/intelligence/text_editor/_crypto.py.md)
 - [`planetarium/core/modules/intelligence/text_editor/_note_tab.py`](./planetarium/core/modules/intelligence/text_editor/_note_tab.py.md)
-- [`planetarium/core/modules/intelligence/text_editor.py`](./planetarium/core/modules/intelligence/text_editor.py.md)
 - [`planetarium/core/modules/intelligence/tool_registry.py`](./planetarium/core/modules/intelligence/tool_registry.py.md)
 - [`planetarium/core/modules/intelligence/workflow_engine/__init__.py`](./planetarium/core/modules/intelligence/workflow_engine/__init__.py.md)
 - [`planetarium/core/modules/intelligence/workflow_engine/_engine.py`](./planetarium/core/modules/intelligence/workflow_engine/_engine.py.md)
 - [`planetarium/core/modules/intelligence/workflow_engine/_models.py`](./planetarium/core/modules/intelligence/workflow_engine/_models.py.md)
-- [`planetarium/core/modules/intelligence/workflow_engine.py`](./planetarium/core/modules/intelligence/workflow_engine.py.md)
 - [`planetarium/core/modules/supabase/__init__.py`](./planetarium/core/modules/supabase/__init__.py.md)
-- [`planetarium/core/modules/supabase/_core.py`](./planetarium/core/modules/supabase/_core.py.md)
-- [`planetarium/core/modules/supabase/activation.py`](./planetarium/core/modules/supabase/activation.py.md)
-- [`planetarium/core/modules/supabase/admin_log.py`](./planetarium/core/modules/supabase/admin_log.py.md)
-- [`planetarium/core/modules/supabase/auth.py`](./planetarium/core/modules/supabase/auth.py.md)
-- [`planetarium/core/modules/supabase/business.py`](./planetarium/core/modules/supabase/business.py.md)
-- [`planetarium/core/modules/supabase/distribution.py`](./planetarium/core/modules/supabase/distribution.py.md)
-- [`planetarium/core/modules/supabase/member.py`](./planetarium/core/modules/supabase/member.py.md)
-- [`planetarium/core/modules/supabase/updater.py`](./planetarium/core/modules/supabase/updater.py.md)
-- [`planetarium/core/modules/supabase/wallet.py`](./planetarium/core/modules/supabase/wallet.py.md)
 - [`planetarium/core/notification_cron.py`](./planetarium/core/notification_cron.py.md)
 - [`planetarium/core/notification_service.py`](./planetarium/core/notification_service.py.md)
 - [`planetarium/core/notification_toast.py`](./planetarium/core/notification_toast.py.md)

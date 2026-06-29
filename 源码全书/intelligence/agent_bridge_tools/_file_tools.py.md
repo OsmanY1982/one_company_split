@@ -1,6 +1,6 @@
 # `intelligence/agent_bridge_tools/_file_tools.py`
 
-> 路径：`intelligence/agent_bridge_tools/_file_tools.py` | 行数：285
+> 路径：`intelligence/agent_bridge_tools/_file_tools.py` | 行数：347
 
 
 ---
@@ -289,6 +289,68 @@ class _FileToolsMixin:
                     "recursive": {"type": "boolean", "description": "是否递归子目录", "default": True},
                 },
                 "required": ["directory", "pattern"],
+            },
+            category="file",
+        )(handler)
+
+    # ── 6. search_file_content（全文语义搜索）──
+    def _reg_search_file_content(self):
+        def handler(
+            query: str,
+            top_k: int = 10,
+            directory: str = "",
+            semantic: bool = True,
+        ) -> dict:
+            """全文语义搜索文件内容（BM25 + Embedding 混合检索）"""
+            try:
+                indexer = getattr(self, "_workspace_indexer", None)
+                if indexer is None:
+                    return {"error": "工作区索引器未初始化，请先构建索引"}
+
+                if not indexer._chunks:
+                    indexer._load_to_bm25()
+
+                if semantic:
+                    results = indexer.search_semantic(query, top_k=top_k)
+                else:
+                    results = indexer.search(query, top_k=top_k)
+
+                if directory:
+                    results = [r for r in results if r.file_path.startswith(directory)]
+
+                return {
+                    "query": query,
+                    "count": len(results),
+                    "mode": "semantic_bm25" if semantic else "bm25",
+                    "results": [
+                        {
+                            "file": r.file_path,
+                            "score": r.score,
+                            "snippet": r.snippet,
+                            "file_type": r.file_type,
+                        }
+                        for r in results
+                    ],
+                }
+            except Exception as e:
+                return {"error": str(e)}
+
+        self.registry.register(
+            name="search_file_content",
+            description=(
+                "全文语义搜索文件内容（BM25 + Embedding 混合检索）。"
+                "能按内容语义找到相关文件，而非仅按文件名。"
+                "适用场景：找到包含某功能实现的文件、查找讨论某话题的文档等"
+            ),
+            parameters={
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "自然语言查询（如'支付接口实现'、'数据库连接配置'）"},
+                    "top_k": {"type": "integer", "description": "返回结果数", "default": 10},
+                    "directory": {"type": "string", "description": "限定搜索目录，默认空表示全部", "default": ""},
+                    "semantic": {"type": "boolean", "description": "是否启用语义精排", "default": True},
+                },
+                "required": ["query"],
             },
             category="file",
         )(handler)

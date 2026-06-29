@@ -29,8 +29,8 @@ if TYPE_CHECKING:
 # ── 可选依赖检测 ──
 
 try:
-    from .semantic_search import SemanticSearcher
-    from .semantic_search.hybrid_retriever import HybridRetriever
+    from .embedding_searcher import SemanticSearcher, HAVE_SEMANTIC as _HAVE_DEPS
+    from .hybrid_retriever import HybridRetriever
     _HAVE_SEMANTIC_SEARCH = True
 except ImportError:
     _HAVE_SEMANTIC_SEARCH = False

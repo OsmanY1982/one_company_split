@@ -1,6 +1,6 @@
 # `iqra/siri_command_handler.py`
 
-> 路径：`iqra/siri_command_handler.py` | 行数：126
+> 路径：`iqra/siri_command_handler.py` | 行数：124
 
 
 ---
@@ -19,6 +19,7 @@ import os
 import subprocess
 import logging
 from datetime import datetime
+from iqra.core.platform_commands import text_to_speech, screenshot as do_screenshot
 
 LOG_PATH = "/Volumes/D盘工作区/一人公司宇宙版/one_company_cosmic/siri_commands.log"
 
@@ -31,9 +32,9 @@ logging.basicConfig(
 )
 
 def log_and_say(msg):
-    """记录日志并语音播报"""
+    """记录日志并语音播报（跨平台）"""
     logging.info(msg)
-    subprocess.run(["say", msg], check=False)
+    text_to_speech(msg)
 
 def run_osascript(script):
     """执行 AppleScript"""
@@ -80,11 +81,8 @@ def execute_command(text):
         desktop = os.path.expanduser("~/Desktop")
         filename = f"星球截图_{timestamp}.png"
         filepath = os.path.join(desktop, filename)
-        result = subprocess.run(
-            ["screencapture", "-i", filepath],
-            capture_output=True, text=True, check=False
-        )
-        if os.path.exists(filepath):
+        result = do_screenshot(filepath)
+        if result.get("success"):
             log_and_say(f"截图已保存到桌面: {filename}")
         else:
             log_and_say("截图已取消或失败")

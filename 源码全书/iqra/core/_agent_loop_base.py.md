@@ -1,6 +1,6 @@
 # `iqra/core/_agent_loop_base.py`
 
-> 路径：`iqra/core/_agent_loop_base.py` | 行数：709
+> 路径：`iqra/core/_agent_loop_base.py` | 行数：853
 
 
 ---
@@ -18,6 +18,7 @@ v5.4: 增加 AgentDelegate 任务分解入口 — 多步骤复杂任务自动拆
 """
 
 import re
+import os
 import time
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -31,6 +32,8 @@ from .chat_engine import ChatEngine
 from .iqra_logging import logger
 from .rag_context import RAGContextInjector
 from .proactive_engine import SuggestionEngine
+from .project_memory import ProjectMemory
+from .permission_manager import PermissionManager, PermissionLevel
 
 # ── AgentDelegate 复杂度检测配置 ──
 
@@ -117,6 +120,13 @@ class AgentLoopBase(QObject):
         # RAG 上下文注入器（单例）
         self._rag_injector = RAGContextInjector()
 
+        # 项目记忆系统：自动检测项目根目录，加载 .iqra.md + .iqra/memory.json
+        self._project_memory = ProjectMemory()
+        self._project_memory_context: str = ""  # 缓存加载结果
+
+        # 权限管理器（默认 ask 模式）
+        self._permission_manager = PermissionManager("ask")
+
         # 智能建议生成器（任务完成后生成下一步建议）
         self._suggester: Optional[SuggestionEngine] = None
 
@@ -133,6 +143,18 @@ class AgentLoopBase(QObject):
     def disable_suggestions(self):
         """关闭智能建议"""
         self._suggester = None
+
+    def set_permission_level(self, level: str) -> None:
+        """设置权限级别：restricted / ask / auto"""
+        self._permission_manager.level = level
+
+    @property
+    def permission_level(self) -> str:
+        return self._permission_manager.level.value
+
+    def set_ask_handler(self, callback) -> None:
+        """设置 ask 模式的确认回调。callback(tool_name, args) -> bool"""
+        self._permission_manager.set_ask_callback(callback)
 
     @property
     def use_llm_decompose(self) -> bool:
@@ -228,22 +250,34 @@ class AgentLoopBase(QObject):
         self._total_steps = 0
 
     def _inject_agent_prompt(self) -> None:
-        """注入 Agent 系统提示词到 engine 的消息列表头部"""
+        """注入 Agent 系统提示词 + 项目记忆到 engine 的消息列表头部"""
         msgs = self._engine.messages
         self._original_system_prompt = ""
 
-        # 替换已有的 system 消息（如果存在）为 Agent 增强版
+        # 构建增强版 system prompt: 原始 + Agent 指令 + 项目记忆
+        extra_blocks = [AGENT_SYSTEM_PROMPT]
+
+        # 项目记忆（惰性检测 + 缓存）
+        if not self._project_memory_context and self._project_memory:
+            self._project_memory.scan_up(os.getcwd())
+            self._project_memory_context = self._project_memory.load_context()
+        if self._project_memory_context:
+            extra_blocks.append(self._project_memory_context)
+
+        memory_block = "\n\n".join(extra_blocks)
+
+        # 替换已有的 system 消息
         for i, msg in enumerate(msgs):
             if msg.get("role") == "system":
                 self._original_system_prompt = msg["content"]
                 msgs[i] = {
                     "role": "system",
-                    "content": self._original_system_prompt + "\n\n" + AGENT_SYSTEM_PROMPT,
+                    "content": self._original_system_prompt + "\n\n" + memory_block,
                 }
                 return
 
         # 没有 system 消息，插入到头部
-        msgs.insert(0, {"role": "system", "content": AGENT_SYSTEM_PROMPT})
+        msgs.insert(0, {"role": "system", "content": memory_block})
 
     def _restore_system_prompt(self) -> None:
         """恢复原始 system prompt"""
@@ -564,6 +598,65 @@ class AgentLoopBase(QObject):
             logger.warning("AgentDelegate 执行失败，回退到原有流程: %s", e)
             return None
 
+    # ── v7.0 Sub-Agent 编排 ──
+
+    def _try_dispatch_sub_agent(self, user_message: str) -> Optional[dict]:
+        """
+        尝试通过 Sub-Agent 架构执行任务
+
+        只在任务涉及多域操作时触发（如"搜索然后改代码"→ search + code）
+        简单单域任务交给原有流程更高效。
+
+        Returns:
+            成功时返回 {"success": bool, "summary": str, ...}
+            不适用或失败时返回 None
+        """
+        if not getattr(self, '_enable_sub_agent', False):
+            return None
+
+        # 简单短消息不使用 Sub-Agent（避免 LLM 路由开销）
+        if len(user_message.strip()) < 50:
+            return None
+
+        try:
+            from iqra.core.sub_agent import SubAgentOrchestrator
+
+            orchestrator = SubAgentOrchestrator(
+                main_engine=self._engine,
+                main_backend=self._engine.backend,
+                main_tool_registry=self._engine.registry,
+            )
+
+            result = orchestrator.execute(
+                user_message,
+                max_iterations=self._max_iterations,
+                use_routing=True,
+            )
+
+            agent_results = result.get("agent_results", [])
+            if len(agent_results) <= 1 and result.get("routing_reason", "").startswith("关键词"):
+                # 关键词降级路由且只有 1 个 Agent → 不值得走 Sub-Agent 路径
+                return None
+
+            logger.info(
+                "SubAgentDispatch: %d Agent(s) → %s",
+                len(agent_results),
+                "全部成功" if result["success"] else "部分失败",
+            )
+
+            return {
+                "success": result["success"],
+                "summary": result["summary"],
+                "agents": [r["agent_name"] for r in agent_results],
+            }
+
+        except ImportError as e:
+            logger.debug("SubAgentOrchestrator 不可用: %s", e)
+            return None
+        except Exception as e:
+            logger.warning("SubAgentDispatch 失败，回退原有流程: %s", e)
+            return None
+
     def _execute_loop(self, user_message: str) -> dict:
         """核心执行循环（同步版）"""
 
@@ -598,6 +691,29 @@ class AgentLoopBase(QObject):
                 self._emit(AgentEventType.COMPLETE, summary)
             else:
                 self._emit(AgentEventType.REFLECT, f"部分子任务未完成，汇总如下: {summary[:200]}")
+
+            self._emit_suggestions(user_message, summary)
+            self.on_progress.emit(100)
+            return {"success": success, "summary": summary}
+
+        # ── v7.0: 尝试 Sub-Agent 编排（跨域多 Agent 协作）──
+        sub_result = self._try_dispatch_sub_agent(user_message)
+        if sub_result is not None:
+            agent_names = sub_result.get("agents", [])
+            agent_count = len(agent_names)
+            self._emit(
+                AgentEventType.THINK,
+                f"Sub-Agent 编排: {' → '.join(agent_names)} ({agent_count} Agent)",
+            )
+            self._current_step = agent_count
+            self._total_steps = agent_count
+
+            summary = sub_result["summary"]
+            success = sub_result["success"]
+            if success:
+                self._emit(AgentEventType.COMPLETE, summary)
+            else:
+                self._emit(AgentEventType.REFLECT, f"部分 Agent 未完成: {summary[:200]}")
 
             self._emit_suggestions(user_message, summary)
             self.on_progress.emit(100)
@@ -683,6 +799,34 @@ class AgentLoopBase(QObject):
             else:
                 event = AgentEvent(AgentEventType.REFLECT, task_count, task_count,
                                    f"部分子任务未完成，汇总如下: {summary[:200]}")
+            self._events.append(event)
+            yield event
+            self._emit_suggestions(user_message, summary)
+            return
+
+        # ── v7.0: Sub-Agent 编排 ──
+        sub_result = self._try_dispatch_sub_agent(user_message)
+        if sub_result is not None:
+            agent_names = sub_result.get("agents", [])
+            agent_count = len(agent_names)
+            think_event = AgentEvent(
+                AgentEventType.THINK, 0, agent_count,
+                f"Sub-Agent 编排: {' → '.join(agent_names)} ({agent_count} Agent)",
+            )
+            self._events.append(think_event)
+            yield think_event
+
+            self._current_step = agent_count
+            self._total_steps = agent_count
+
+            summary = sub_result["summary"]
+            success = sub_result["success"]
+
+            if success:
+                event = AgentEvent(AgentEventType.COMPLETE, agent_count, agent_count, summary)
+            else:
+                event = AgentEvent(AgentEventType.REFLECT, agent_count, agent_count,
+                                   f"部分 Agent 未完成: {summary[:200]}")
             self._events.append(event)
             yield event
             self._emit_suggestions(user_message, summary)

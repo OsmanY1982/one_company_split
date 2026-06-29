@@ -1,6 +1,6 @@
 # `iqra/core/_agent_loop_exec_mixin.py`
 
-> 路径：`iqra/core/_agent_loop_exec_mixin.py` | 行数：399
+> 路径：`iqra/core/_agent_loop_exec_mixin.py` | 行数：572
 
 
 ---
@@ -22,7 +22,7 @@ import time
 import signal
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FutureTimeoutError
-from typing import Iterator
+from typing import Iterator, Tuple
 
 from ._agent_events import AgentEventType, AgentEvent
 from ._agent_fallbacks import TOOL_FALLBACK_MAP
@@ -187,15 +187,92 @@ class AgentLoopExecMixin:
         if killed > 0:
             logger.info("已终止 %d 个工具子进程", killed)
 
+    # ── 卡死检测配置 ──
+    STUCK_CONSECUTIVE_THRESHOLD = 3  # 连续 N 轮无进展视为卡死
+
+    def _detect_stuck_progress(self, current_tool_calls: list) -> bool:
+        """
+        检测 Agent 是否陷入死循环 / 卡死。
+
+        判定条件（任一命中即为卡死）：
+          1. 连续 STUCK_CONSECUTIVE_THRESHOLD 轮工具全部返回失败（error）
+          2. 连续 STUCK_CONSECUTIVE_THRESHOLD 轮重复调用同一工具
+             （相同工具名 + 相同参数 JSON 摘要）
+
+        调用方在检测到卡死后应停止循环并请求用户介入。
+        """
+        if not hasattr(self, '_stuck_rounds_err'):
+            self._stuck_rounds_err = 0
+        if not hasattr(self, '_stuck_last_call_signatures'):
+            self._stuck_last_call_signatures = []
+
+        tool_names = [tc.name for tc in current_tool_calls]
+        if not tool_names:
+            # 无工具调用 → 不视为卡死（交给 LLM 自然结束判断）
+            self._stuck_rounds_err = 0
+            self._stuck_last_call_signatures = []
+            return False
+
+        # 条件1：全部工具失败
+        all_failed = self._all_last_round_failed if hasattr(self, '_all_last_round_failed') else False
+
+        # 条件2：重复调用检测
+        current_sigs = []
+        for tc in current_tool_calls:
+            try:
+                args_str = json.dumps(tc.arguments, ensure_ascii=False, sort_keys=True)
+            except Exception:
+                args_str = str(tc.arguments)
+            current_sigs.append(f"{tc.name}:{args_str}")
+
+        is_duplicate = (
+            len(self._stuck_last_call_signatures) > 0
+            and sorted(current_sigs) == sorted(self._stuck_last_call_signatures)
+        )
+
+        if all_failed:
+            self._stuck_rounds_err += 1
+            if self._stuck_rounds_err >= self.STUCK_CONSECUTIVE_THRESHOLD:
+                self._stuck_rounds_err = 0
+                return True
+        else:
+            self._stuck_rounds_err = 1 if all_failed else 0
+
+        if is_duplicate:
+            # 与上一轮完全相同 → 肯定卡死
+            self._stuck_rounds_err = 0
+            return True
+
+        self._stuck_last_call_signatures = current_sigs
+        return False
+
+    def _check_tool_permission(self, tc) -> Tuple[bool, str]:
+        """
+        权限检查包装：调用 PermissionManager.check()。
+        返回 (allowed, reason)。若被拒绝，自动发出 ERROR 事件。
+        """
+        pm = getattr(self, '_permission_manager', None)
+        if pm is None:
+            return (True, "")
+
+        allowed, reason = pm.check(tc.name, getattr(tc, 'arguments', {}))
+        if not allowed:
+            self._emit(AgentEventType.ERROR, f"权限拒绝: {tc.name} — {reason}")
+            self._errors.append(f"权限拒绝 [{tc.name}]: {reason}")
+        return (allowed, reason)
+
     def _tool_loop(self, user_message: str) -> dict:
-        """工具调用循环（同步版）"""
-        # 使用 engine 的 chat 方法（它会自动处理多轮工具调用）
-        # 但我们需要在每一轮之间插入观察和反思
+        """工具调用循环（同步版）— 含卡死检测"""
         augmented_message = self._inject_rag_context(user_message)
         self._engine.messages.append({"role": "user", "content": augmented_message})
         self._engine._trim_context()
 
         tools = self._engine.registry.to_openai_tools() if self._engine.registry.count() > 0 else None
+
+        # 卡死检测状态
+        self._stuck_rounds_err = 0
+        self._stuck_last_call_signatures = []
+        self._all_last_round_failed = False
 
         for iteration in range(self._max_iterations):
             if self._cancelled:
@@ -214,7 +291,6 @@ class AgentLoopExecMixin:
                 error_msg = f"LLM 调用失败: {e}"
                 self._errors.append(error_msg)
                 self._emit(AgentEventType.ERROR, error_msg)
-                # 尝试重试
                 if iteration < self._max_retries:
                     time.sleep(1)
                     continue
@@ -230,18 +306,40 @@ class AgentLoopExecMixin:
                 self.on_progress.emit(100)
                 return {"success": True, "summary": content}
 
+            # 卡死检测（执行前检查上一轮结果）
+            if self._detect_stuck_progress(response.tool_calls):
+                stuck_msg = (
+                    f"检测到 Agent 死循环：连续 {self.STUCK_CONSECUTIVE_THRESHOLD} 轮无有效进展。"
+                    f"当前重复调用: {', '.join(tc.name for tc in response.tool_calls)}"
+                )
+                self._emit(AgentEventType.ERROR, stuck_msg)
+                self._errors.append(stuck_msg)
+                return {"success": False, "summary": stuck_msg}
+
             # 处理工具调用 — 并行执行独立调用
             assistant_msg = {"role": "assistant", "content": None, "tool_calls": []}
             tool_count = len(response.tool_calls)
+            round_success_count = 0
 
             if tool_count == 1:
-                # 单工具调用：走原有串行逻辑（含重试）
+                # 单工具调用：权限检查 + 串行执行（含重试）
                 tc = response.tool_calls[0]
+                allowed, reason = self._check_tool_permission(tc)
+                if not allowed:
+                    self._engine.messages.append({
+                        "role": "tool", "tool_call_id": tc.id,
+                        "content": json.dumps({"success": False, "error": reason}, ensure_ascii=False),
+                    })
+                    self._all_last_round_failed = True
+                    continue
+
                 self._tools_called.append(tc.name)
                 self._emit(AgentEventType.ACT, f"调用工具: {tc.name}",
                           {"tool": tc.name, "args": tc.arguments})
                 result = self._execute_one_tool(tc)
                 success = result.get("success", False)
+                if success:
+                    round_success_count += 1
                 output = str(result.get("result", result.get("error", "")))[:500]
                 self._emit(AgentEventType.OBSERVE,
                           f"{'✅' if success else '❌'} {tc.name}: {output[:200]}",
@@ -257,15 +355,36 @@ class AgentLoopExecMixin:
                     "content": json.dumps(result, ensure_ascii=False),
                 })
             else:
-                # 多工具调用：并行执行
-                self._emit(AgentEventType.ACT,
-                          f"并行调用 {tool_count} 个工具: "
-                          f"{', '.join(tc.name for tc in response.tool_calls)}",
-                          {"parallel": True, "count": tool_count})
+                # 多工具调用：权限检查 + 并行执行
+                # 先做权限预检，拒绝的工具标记为 blocked
+                blocked_tools = {}
+                allowed_calls = []
+                for tc in response.tool_calls:
+                    allowed, reason = self._check_tool_permission(tc)
+                    if allowed:
+                        allowed_calls.append(tc)
+                    else:
+                        blocked_tools[tc.id] = (tc, reason)
 
-                # 并行提交所有工具调用
+                # 全部被拒 → 继续下一轮
+                if not allowed_calls:
+                    self._all_last_round_failed = True
+                    for tid, (tc, reason) in blocked_tools.items():
+                        self._engine.messages.append({
+                            "role": "tool", "tool_call_id": tid,
+                            "content": json.dumps({"success": False, "error": reason}, ensure_ascii=False),
+                        })
+                    continue
+
+                self._emit(AgentEventType.ACT,
+                          f"并行调用 {len(allowed_calls)} 个工具: "
+                          f"{', '.join(tc.name for tc in allowed_calls)}"
+                          + (f"（{len(blocked_tools)} 个被权限拒绝）" if blocked_tools else ""),
+                          {"parallel": True, "count": len(allowed_calls),
+                           "blocked": len(blocked_tools)})
+
                 futures = {}
-                future_to_idx = {}  # future → (tc, index) 保持顺序
+                future_to_idx = {}
                 with ThreadPoolExecutor(max_workers=min(tool_count, 8)) as pool:
                     for idx, tc in enumerate(response.tool_calls):
                         self._tools_called.append(tc.name)
@@ -273,8 +392,7 @@ class AgentLoopExecMixin:
                         futures[f] = tc
                         future_to_idx[f] = idx
 
-                    # 收集结果（按完成顺序处理事件，但按原始顺序构建消息）
-                    idx_results = {}  # index → result
+                    idx_results = {}
                     for future in as_completed(futures):
                         tc = futures[future]
                         idx = future_to_idx[future]
@@ -284,6 +402,8 @@ class AgentLoopExecMixin:
                             result = {"success": False, "error": str(e)}
                             self._errors.append(f"{tc.name}: {e}")
                             self._emit(AgentEventType.ERROR, f"{tc.name} 并行执行异常: {e}")
+                        if result.get("success", False):
+                            round_success_count += 1
                         idx_results[idx] = (tc, result)
                         success = result.get("success", False)
                         output = str(result.get("result", result.get("error", "")))[:500]
@@ -293,12 +413,27 @@ class AgentLoopExecMixin:
 
                 # 按原始顺序构建消息（确保 LLM 能正确匹配 tool_call_id）
                 for idx, tc in enumerate(response.tool_calls):
+                    # 被权限拒绝的工具
+                    if tc.id in blocked_tools:
+                        _, reason = blocked_tools[tc.id]
+                        assistant_msg["tool_calls"].append({
+                            "id": tc.id, "type": "function",
+                            "function": {"name": tc.name,
+                                        "arguments": json.dumps(tc.arguments, ensure_ascii=False)},
+                        })
+                        self._engine.messages.append({
+                            "role": "tool",
+                            "tool_call_id": tc.id,
+                            "content": json.dumps({"success": False, "error": reason}, ensure_ascii=False),
+                        })
+                        continue
+
+                    # 正常执行的工具
                     assistant_msg["tool_calls"].append({
                         "id": tc.id, "type": "function",
                         "function": {"name": tc.name,
                                     "arguments": json.dumps(tc.arguments, ensure_ascii=False)},
                     })
-                    # 追加对应的 tool 结果消息
                     tc_and_result = idx_results.get(idx, (tc, {"success": False, "error": "执行结果缺失"}))
                     _, result = tc_and_result
                     self._engine.messages.append({
@@ -307,6 +442,8 @@ class AgentLoopExecMixin:
                         "content": json.dumps(result, ensure_ascii=False),
                     })
 
+            # 记录本轮是否有工具成功（供下一轮卡死检测用）
+            self._all_last_round_failed = (round_success_count == 0)
             self._engine.messages.append(assistant_msg)
 
         # 达到最大迭代
@@ -317,12 +454,17 @@ class AgentLoopExecMixin:
                           f"已调用工具: {', '.join(self._tools_called)}"}
 
     def _tool_loop_stream(self, user_message: str) -> Iterator[AgentEvent]:
-        """工具调用循环（流式版）"""
+        """工具调用循环（流式版）— 含卡死检测"""
         augmented_message = self._inject_rag_context(user_message)
         self._engine.messages.append({"role": "user", "content": augmented_message})
         self._engine._trim_context()
 
         tools = self._engine.registry.to_openai_tools() if self._engine.registry.count() > 0 else None
+
+        # 卡死检测状态
+        self._stuck_rounds_err = 0
+        self._stuck_last_call_signatures = []
+        self._all_last_round_failed = False
 
         for iteration in range(self._max_iterations):
             if self._cancelled:
@@ -365,8 +507,36 @@ class AgentLoopExecMixin:
                 self._emit_suggestions(user_message, content)
                 return
 
+            # 卡死检测
+            if self._detect_stuck_progress(response.tool_calls):
+                stuck_msg = (
+                    f"检测到 Agent 死循环：连续 {self.STUCK_CONSECUTIVE_THRESHOLD} 轮无有效进展。"
+                    f"当前重复调用: {', '.join(tc.name for tc in response.tool_calls)}"
+                )
+                event = AgentEvent(AgentEventType.ERROR, self._current_step, self._total_steps, stuck_msg)
+                self._events.append(event)
+                self._errors.append(stuck_msg)
+                yield event
+                return
+
+            round_success_count = 0
             assistant_msg = {"role": "assistant", "content": None, "tool_calls": []}
             for tc in response.tool_calls:
+                # 权限检查
+                allowed, reason = self._check_tool_permission(tc)
+                if not allowed:
+                    self._engine.messages.append({
+                        "role": "tool", "tool_call_id": tc.id,
+                        "content": json.dumps({"success": False, "error": reason}, ensure_ascii=False),
+                    })
+                    assistant_msg["tool_calls"].append({
+                        "id": tc.id, "type": "function",
+                        "function": {"name": tc.name,
+                                    "arguments": json.dumps(tc.arguments, ensure_ascii=False)},
+                    })
+                    self._all_last_round_failed = True
+                    continue
+
                 self._tools_called.append(tc.name)
                 tool_data = {"tool": tc.name, "args": tc.arguments}
                 event = AgentEvent(AgentEventType.ACT, self._current_step, self._total_steps,
@@ -377,6 +547,8 @@ class AgentLoopExecMixin:
                 result = self._execute_one_tool(tc)
 
                 success = result.get("success", False)
+                if success:
+                    round_success_count += 1
                 output = str(result.get("result", result.get("error", "")))[:500]
                 event = AgentEvent(AgentEventType.OBSERVE, self._current_step, self._total_steps,
                                   f"{'✅' if success else '❌'} {tc.name}: {output[:200]}",
@@ -394,6 +566,7 @@ class AgentLoopExecMixin:
                     "content": json.dumps(result, ensure_ascii=False),
                 })
 
+            self._all_last_round_failed = (round_success_count == 0)
             self._engine.messages.append(assistant_msg)
 
         event = AgentEvent(AgentEventType.ERROR, self._current_step, self._total_steps,

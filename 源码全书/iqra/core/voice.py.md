@@ -1,6 +1,6 @@
 # `iqra/core/voice.py`
 
-> 路径：`iqra/core/voice.py` | 行数：355
+> 路径：`iqra/core/voice.py` | 行数：353
 
 
 ---
@@ -353,13 +353,11 @@ class TextFallbackDialog(QDialog):
 
 # ─── TTS 语音播报 ───
 def speak(text: str, voice: str = "Tingting", rate: int = 200):
-    """使用 macOS say 命令进行中文语音播报"""
+    """跨平台语音播报（macOS/Linux/Windows）"""
     try:
-        subprocess.run(
-            ["say", "-v", voice, "-r", str(rate), text],
-            capture_output=True,
-            timeout=15,
-        )
+        from iqra.core.platform_commands import text_to_speech
+        # rate 参数在 platform_commands 层面暂不传，后续扩展
+        text_to_speech(text, voice=voice)
     except Exception:
         pass
 

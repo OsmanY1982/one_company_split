@@ -1,6 +1,6 @@
 # `intelligence/agent_bridge_tools/_system_tools.py`
 
-> 路径：`intelligence/agent_bridge_tools/_system_tools.py` | 行数：125
+> 路径：`intelligence/agent_bridge_tools/_system_tools.py` | 行数：133
 
 
 ---
@@ -36,7 +36,7 @@ class _SystemToolsMixin:
 
         self.registry.register(
             name="execute_shell",
-            description="在 macOS 终端执行 shell 命令。适用：安装依赖、运行脚本、系统查询",
+            description="执行 shell 命令。适用：安装依赖、运行脚本、系统查询",
             parameters={
                 "type": "object",
                 "properties": {
@@ -48,41 +48,49 @@ class _SystemToolsMixin:
             category="system",
         )(handler)
 
-    # ── 9. desktop_control（AppleScript 桌面操控）──
+    # ── 9. desktop_control（跨平台桌面操控，由 platform_commands 抽象）──
     def _reg_desktop_control(self):
+        from iqra.core.platform_commands import (
+            app_open, app_close, app_switch, get_frontmost_app,
+            type_text, press_keys, volume_up, volume_down, volume_mute,
+            system_sleep, screenshot, open_url,
+        )
+
+        ACTIONS = {
+            "open_app":       (lambda t: app_open(t),              "target", "打开应用"),
+            "close_app":      (lambda t: app_close(t),             "target", "关闭应用"),
+            "switch_app":     (lambda t: app_switch(t),            "target", "切换到应用"),
+            "get_frontmost":  (lambda t: get_frontmost_app(),       None,     "获取前台应用"),
+            "type_text":      (lambda t: type_text(t),             "target", "输入文本"),
+            "press_keys":     (lambda t: press_keys(t),            "target", "按键组合"),
+            "volume_up":      (lambda t: volume_up(),              None,     "音量+10%"),
+            "volume_down":    (lambda t: volume_down(),            None,     "音量-10%"),
+            "mute":           (lambda t: volume_mute(),            None,     "静音切换"),
+            "sleep":          (lambda t: system_sleep(),           None,     "系统休眠"),
+            "screenshot":     (lambda t: screenshot(""),           None,     "截图存桌面"),
+            "open_url":       (lambda t: open_url(t),              "target", "打开URL"),
+        }
+
         def handler(action: str, target: str = "", text: str = "") -> dict:
             try:
-                scripts = {
-                    "open_app": f'tell application "{target}" to activate',
-                    "close_app": f'tell application "{target}" to quit',
-                    "type_text": f'tell application "System Events" to keystroke "{text}"',
-                    "press_keys": f'tell application "System Events" to keystroke "{text}"',
-                    "get_frontmost": 'tell application "System Events" to get name of first application process whose frontmost is true',
-                    "switch_app": f'tell application "{target}" to activate',
-                    "open_url": f'open location "{target}"',
-                    "volume_up": "set volume output volume (output volume of (get volume settings) + 10)",
-                    "volume_down": "set volume output volume (output volume of (get volume settings) - 10)",
-                    "mute": "set volume with output muted",
-                    "sleep": 'tell application "System Events" to sleep',
-                    "screenshot": 'do shell script "screencapture -i ~/Desktop/screenshot.png"',
-                }
-                if action not in scripts:
-                    return {"error": f"不支持的操作: {action}。可用: {list(scripts.keys())}"}
-                script = scripts[action]
-                result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=15)
-                if result.returncode != 0:
-                    return {"error": result.stderr.strip()}
-                return {"success": True, "action": action, "output": result.stdout.strip()}
+                if action not in ACTIONS:
+                    return {"error": f"不支持的操作: {action}。可用: {list(ACTIONS.keys())}"}
+                fn, param_key, _desc = ACTIONS[action]
+                param = target if param_key else ""
+                result = fn(param)
+                if result.get("error"):
+                    return result
+                return {"success": True, "action": action, **result}
             except Exception as e:
                 return {"error": str(e)}
 
         self.registry.register(
             name="desktop_control",
-            description="macOS 桌面操控：打开/关闭应用、模拟输入、系统控制",
+            description="跨平台桌面操控：打开/关闭应用、模拟输入、系统控制（macOS/Windows/Linux）",
             parameters={
                 "type": "object",
                 "properties": {
-                    "action": {"type": "string", "description": "操作: open_app/close_app/type_text/press_keys/switch_app/volume_up/volume_down/mute/sleep/screenshot"},
+                    "action": {"type": "string", "description": "操作: open_app/close_app/type_text/press_keys/switch_app/volume_up/volume_down/mute/sleep/screenshot/open_url/get_frontmost"},
                     "target": {"type": "string", "description": "目标应用名/按键/URL", "default": ""},
                     "text": {"type": "string", "description": "要输入的文本（type_text/press_keys 时使用）", "default": ""},
                 },

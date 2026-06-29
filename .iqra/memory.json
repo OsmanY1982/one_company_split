@@ -1,0 +1,7 @@
+{
+  "naming_style": "snake_case",
+  "preferred_model": "qwen3.6:35b",
+  "permissions": "ask",
+  "custom_entries": {},
+  "last_updated": "2026-06-29T20:42:36.480345"
+}

@@ -1,6 +1,6 @@
 # `iqra/core/chat_engine.py`
 
-> 路径：`iqra/core/chat_engine.py` | 行数：706
+> 路径：`iqra/core/chat_engine.py` | 行数：718
 
 
 ---
@@ -403,7 +403,13 @@ class ChatEngine(QObject):
                 return assistant_msg
             assistant_msg = {'role': 'assistant', 'content': None, 'tool_calls': []}
             for tc in response.tool_calls:
-                self.on_tool_start.emit(tc.name, tc.arguments)
+                args = tc.arguments
+                if isinstance(args, str):
+                    try:
+                        args = json.loads(args)
+                    except json.JSONDecodeError:
+                        args = {}
+                self.on_tool_start.emit(tc.name, args)
                 try:
                     result = self.registry.execute(tc)
                 except Exception as e:
@@ -508,8 +514,14 @@ class ChatEngine(QObject):
         同时发射 on_tool_start / on_tool_result 信号。"""
         results = []
         for ptc in parsed_tool_calls:
-            self.on_tool_start.emit(ptc['name'], ptc['arguments'])
-            tc = ToolCall(id=ptc['id'], name=ptc['name'], arguments=ptc['arguments'])
+            args = ptc['arguments']
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except json.JSONDecodeError:
+                    args = {}
+            self.on_tool_start.emit(ptc['name'], args)
+            tc = ToolCall(id=ptc['id'], name=ptc['name'], arguments=args)
             try:
                 result = self.registry.execute(tc)
             except Exception as e:

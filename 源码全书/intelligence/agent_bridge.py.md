@@ -1,6 +1,6 @@
 # `intelligence/agent_bridge.py`
 
-> 路径：`intelligence/agent_bridge.py` | 行数：1008
+> 路径：`intelligence/agent_bridge.py` | 行数：1044
 
 
 ---
@@ -14,12 +14,15 @@ AgentBridge v2 — iqra 自主 Agent 引擎（对标 Codex / Claude Code）
   chat(message)       → 对话模式（单轮工具调用，ChatEngine）
   run_task(message)   → 自主执行模式（多步 Think-Plan-Act-Observe-Reflect，AgentLoop）
 
-工具套件（12 个专业工具）：
-  文件:   read_file / write_file / edit_file / list_directory / search_files
-  代码:   search_code / run_tests
-  系统:   execute_shell / desktop_control
-  Git:    git_operation
-  网络:   web_search / web_fetch_page
+工具套件（v5.1）：
+  文件:     read_file / write_file / edit_file / list_directory / search_files / search_file_content
+  图片:     search_image / analyze_image
+  转换:     pdf_to_docx / docx_to_pdf / convert_image / images_to_pdf
+  代码:     search_code / run_tests / execute_python / analyze_code / search_codebase / search_project_book / generate_diff / apply_patch
+  系统:     execute_shell / desktop_control / git_operation
+  网络:     web_search / web_fetch_page / web_scrape / batch_scrape
+  任务:     todo / task_scheduler / search_sessions
+  旧引擎:   query_database / execute_code / add_schedule / add_customer / project_map
 """
 
 import os
@@ -229,11 +232,13 @@ class AgentBridge(AgentBridgeModelMixin, AgentBridgeToolsMixin):
         "你是 iqra，一人公司的全能 AI 助理。\n"
         "\n"
         "核心能力：\n"
-        "1. 文件系统：read_file/write_file/edit_file/list_directory/search_files\n"
-        "2. 代码：search_code/run_tests\n"
-        "3. 系统：execute_shell/execute_python/desktop_control\n"
-        "4. Git：git_operation\n"
-        "5. 网络：web_search/web_fetch_page\n"
+        "1. 文件系统：read_file/write_file/edit_file/list_directory/search_files/search_file_content\n"
+        "2. 图片：search_image/analyze_image（视觉理解，支持提取图中文字、描述场景等）\n"
+        "3. 格式转换：pdf_to_docx/docx_to_pdf/convert_image/images_to_pdf\n"
+        "4. 代码：search_code/run_tests\n"
+        "5. 系统：execute_shell/execute_python/desktop_control\n"
+        "6. Git：git_operation\n"
+        "7. 网络：web_search/web_fetch_page\n"
         "\n"
         "=== 工具选择铁律（违反将导致低效/错误） ===\n"
         "1. 读取文件 → 只用 read_file，严禁用 execute_shell 执行 cat/more/osascript\n"
@@ -286,6 +291,10 @@ class AgentBridge(AgentBridgeModelMixin, AgentBridgeToolsMixin):
         # ── 项目上下文感知 ──
         self._project_context: Dict[str, Any] = {}
         self._detect_project_context()
+
+        # ── 技能加载器（先占位，后续 init 模块会覆写）──
+        self._skill_loader = None
+        self._skill_system = None
 
         # ── 增强版 System Prompt（含项目上下文）──
         full_prompt = self._build_system_prompt(system_prompt)
@@ -353,6 +362,19 @@ class AgentBridge(AgentBridgeModelMixin, AgentBridgeToolsMixin):
                 self._rag = None
         else:
             self._rag = None
+
+        # ── 工作区索引（BM25 + Embedding 混合检索）──
+        self._workspace_indexer = None
+        if _HAVE_INDEXER:
+            try:
+                self._workspace_indexer = WorkspaceIndexer()
+                index_path = os.path.join(_project_root, "iqra", "data", "workspace_index.db")
+                os.makedirs(os.path.dirname(index_path), exist_ok=True)
+                self._workspace_indexer.open(index_path)
+                workspace_dir = os.path.join(os.path.expanduser("~"), "Desktop")
+                self._workspace_indexer.build(workspace_dir, max_file_size_mb=5)
+            except Exception:
+                self._workspace_indexer = None
 
         # ── Token 优化 ──
         if _HAVE_TOKEN_OPT:
@@ -628,7 +650,7 @@ class AgentBridge(AgentBridgeModelMixin, AgentBridgeToolsMixin):
                 with urllib.request.urlopen(req, timeout=5) as resp:
                     data = json.loads(resp.read().decode("utf-8"))
                     raw_models = data.get("data", [])
-                    models = [{"name": m.get("id", ""), "size": 0} for m in raw_models]
+                    models = [{"name": m.get("name", ""), "size": m.get("size", 0)} for m in raw_models]
             except Exception:
                 pass
 
@@ -929,6 +951,20 @@ class AgentBridge(AgentBridgeModelMixin, AgentBridgeToolsMixin):
                     lines.append("\n## 持久化记忆（跨会话 AI 自律）")
                     for i, entry in enumerate(entries, 1):
                         lines.append(f"\n### 记忆 {i}\n{entry}")
+            except Exception:
+                pass
+
+        # ── 技能注入 ──
+        if _HAVE_SKILL_LOADER and self._skill_loader:
+            try:
+                skills = self._skill_loader.list_skills()
+                if skills:
+                    lines.append("\n## 可用技能（Skills）")
+                    for s in skills:
+                        triggers = s.get("triggers", [])
+                        trigger_hint = f" [触发词: {', '.join(triggers[:5])}]" if triggers else ""
+                        lines.append(f"- **{s['name']}**: {s.get('description', '')}{trigger_hint}")
+                    lines.append("\n当用户请求匹配某个技能的触发词时，请主动加载对应技能的 SKILL.md 获取详细指导。")
             except Exception:
                 pass
 
