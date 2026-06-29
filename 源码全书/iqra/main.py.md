@@ -1,6 +1,6 @@
 # `iqra/main.py`
 
-> 路径：`iqra/main.py` | 行数：231
+> 路径：`iqra/main.py` | 行数：232
 
 
 ---
@@ -153,6 +153,7 @@ def _run_floating_only(app: QApplication):
         role="admin",
         membership_info={},
         config=config,
+        project_context="iqra",
     )
     planet.show()
 

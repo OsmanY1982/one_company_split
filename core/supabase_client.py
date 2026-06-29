@@ -1317,3 +1317,15 @@ class CloudAdminLog:
         if not ok or not result:
             return False, []
         return True, result if isinstance(result, list) else []
+
+
+# agent_bridge 兼容类
+class SupabaseClient:
+    """Supabase 云端客户端兼容包装"""
+    def __init__(self):
+        self.activation = CloudActivation()
+        self.user = CloudUser()
+        self.session = CloudSession()
+        self.membership = CloudMembership()
+        self.order = CloudOrder()
+        self.finance = CloudFinance()

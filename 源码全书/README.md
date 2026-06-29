@@ -1,6 +1,6 @@
 # 一人公司 · 宇宙版 — 源码全书
-> 自动生成于 2026-06-29 08:34
-> 共 1406 个模块，每个 `.py` 文件独立为一个文档
+> 自动生成于 2026-06-29 17:25
+> 共 1304 个模块，每个 `.py` 文件独立为一个文档
 
 ---
 
@@ -261,168 +261,7 @@
 │   │   │   ├── industry_report.py
 │   │   │   └── industry_window.py
 │   │   ├── intelligence/
-│   │   │   ├── _chat_dialog/
-│   │   │   │   ├── __init__.py
-│   │   │   │   └── _dialog.py
-│   │   │   ├── agent_bridge_tools/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _code_tools.py
-│   │   │   │   ├── _file_tools.py
-│   │   │   │   ├── _legacy_tools.py
-│   │   │   │   ├── _system_tools.py
-│   │   │   │   ├── _task_tools.py
-│   │   │   │   └── _web_tools.py
-│   │   │   ├── ai_chat_window/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _chat_stream.py
-│   │   │   │   ├── _file_upload.py
-│   │   │   │   ├── _misc.py
-│   │   │   │   ├── _model_selector.py
-│   │   │   │   ├── _session.py
-│   │   │   │   ├── _ui.py
-│   │   │   │   └── _voice.py
-│   │   │   ├── core/
-│   │   │   │   ├── __init__.py
-│   │   │   │   └── llm_backend.py
-│   │   │   ├── data/
-│   │   │   │   ├── learning/
-│   │   │   │   └── reflections/
-│   │   │   ├── enhanced/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _enhanced_base.py
-│   │   │   │   ├── _enhanced_files_mixin.py
-│   │   │   │   ├── _enhanced_storage_mixin.py
-│   │   │   │   ├── _enhanced_system_mixin.py
-│   │   │   │   ├── _enhanced_web_mixin.py
-│   │   │   │   └── enhanced_tools.py
-│   │   │   ├── iqra_floating_planet/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _chat_mixin.py
-│   │   │   │   ├── _core.py
-│   │   │   │   ├── _exit_mixin.py
-│   │   │   │   ├── _modules_mixin.py
-│   │   │   │   ├── floating_planet_anim_mixin.py
-│   │   │   │   ├── floating_planet_draw_mixin.py
-│   │   │   │   └── floating_planet_menu_mixin.py
-│   │   │   ├── marketing_tools/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _core.py
-│   │   │   │   └── _registration.py
-│   │   │   ├── quick_tools_panel/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _api_config.py
-│   │   │   │   └── _quick_tools.py
-│   │   │   ├── solar_system_data/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _catalog.py
-│   │   │   │   ├── _core.py
-│   │   │   │   └── _data.py
-│   │   │   ├── text_editor/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _core.py
-│   │   │   │   ├── _crypto.py
-│   │   │   │   └── _note_tab.py
-│   │   │   ├── workflow_engine/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _engine.py
-│   │   │   │   └── _models.py
-│   │   │   ├── __init__.py
-│   │   │   ├── _ai_shared.py
-│   │   │   ├── _ai_widgets.py
-│   │   │   ├── _ai_widgets_anomaly.py
-│   │   │   ├── _ai_widgets_business.py
-│   │   │   ├── _ai_widgets_core.py
-│   │   │   ├── _ai_widgets_recommendation.py
-│   │   │   ├── _ai_widgets_visualization.py
-│   │   │   ├── _ai_widgets_workflow.py
-│   │   │   ├── _compat.py
-│   │   │   ├── _model_manager.py
-│   │   │   ├── _model_manager_download.py
-│   │   │   ├── _model_manager_ollama.py
-│   │   │   ├── _navigation_hud.py
-│   │   │   ├── _shell_dialogs.py
-│   │   │   ├── _stubs.py
-│   │   │   ├── account_window.py
-│   │   │   ├── agent_bridge.py
-│   │   │   ├── agent_bridge_models.py
-│   │   │   ├── agent_bridge_workers.py
-│   │   │   ├── ai_assistant_window.py
-│   │   │   ├── ai_center_window.py
-│   │   │   ├── ai_chat_styles.py
-│   │   │   ├── ai_chat_window.py
-│   │   │   ├── ai_dashboard_window.py
-│   │   │   ├── ai_features_ai_dashboard.py
-│   │   │   ├── ai_features_customer_ai.py
-│   │   │   ├── ai_features_inventory_ai.py
-│   │   │   ├── ai_features_pricing_ai.py
-│   │   │   ├── ai_features_sales_ai.py
-│   │   │   ├── analysis_tools.py
-│   │   │   ├── anomaly_detector.py
-│   │   │   ├── auto_task_executor.py
-│   │   │   ├── backup_window.py
-│   │   │   ├── batch_text.py
-│   │   │   ├── business_ai_assistant.py
-│   │   │   ├── business_tools.py
-│   │   │   ├── chat_session_manager.py
-│   │   │   ├── compress_tool.py
-│   │   │   ├── crm_tools.py
-│   │   │   ├── data_import_tools.py
-│   │   │   ├── data_visualization.py
-│   │   │   ├── db_helper.py
-│   │   │   ├── download_dialog.py
-│   │   │   ├── editor_window.py
-│   │   │   ├── enhanced_chat.py
-│   │   │   ├── event_trigger.py
-│   │   │   ├── file_rename_tools.py
-│   │   │   ├── finance_analysis_tools.py
-│   │   │   ├── floating_planet.py
-│   │   │   ├── floating_planet_anim_mixin.py
-│   │   │   ├── floating_planet_draw_mixin.py
-│   │   │   ├── floating_planet_menu_mixin.py
-│   │   │   ├── hr_tools.py
-│   │   │   ├── img_converter.py
-│   │   │   ├── intelligence_integration.py
-│   │   │   ├── intelligence_window.py
-│   │   │   ├── inventory_tools.py
-│   │   │   ├── iqra_floating_planet.py
-│   │   │   ├── json_tools.py
-│   │   │   ├── key_manager.py
-│   │   │   ├── knowledge_base.py
-│   │   │   ├── marketing_tools.py
-│   │   │   ├── model_config.py
-│   │   │   ├── monitor_dashboard.py
-│   │   │   ├── offline_analyzer.py
-│   │   │   ├── password_tools.py
-│   │   │   ├── performance_monitor.py
-│   │   │   ├── predictor_window.py
-│   │   │   ├── quick_actions.py
-│   │   │   ├── quick_tools_panel.py
-│   │   │   ├── rag_injector.py
-│   │   │   ├── recommendation_engine.py
-│   │   │   ├── report_generator.py
-│   │   │   ├── sales_predictor.py
-│   │   │   ├── scan_window.py
-│   │   │   ├── screen_recorder.py
-│   │   │   ├── self_monitor.py
-│   │   │   ├── session_context.py
-│   │   │   ├── smart_assistant.py
-│   │   │   ├── smart_report_tools.py
-│   │   │   ├── smart_workflow.py
-│   │   │   ├── solar_system_data.py
-│   │   │   ├── solar_system_window.py
-│   │   │   ├── super_intelligence.py
-│   │   │   ├── system_hub_window.py
-│   │   │   ├── system_monitor.py
-│   │   │   ├── text_editor.py
-│   │   │   ├── timestamp_tools.py
-│   │   │   ├── tool_registry.py
-│   │   │   ├── tools_window.py
-│   │   │   ├── usb_scanner.py
-│   │   │   ├── vault_window.py
-│   │   │   ├── voice_interface.py
-│   │   │   ├── whisper_recognizer.py
-│   │   │   ├── window_top_tools.py
-│   │   │   └── workflow_engine.py
+│   │   │   └── __init__.py
 │   │   ├── notification/
 │   │   │   └── notification_window.py
 │   │   ├── permission/
@@ -596,6 +435,7 @@
 │   ├── _debug_run.py
 │   ├── ad_launcher.py
 │   ├── agent.py
+│   ├── agent_delegate.py
 │   ├── agent_loop.py
 │   ├── app_state.py
 │   ├── auth_service.py
@@ -603,11 +443,14 @@
 │   ├── business_service.py
 │   ├── ceo_agent.py
 │   ├── chat_engine.py
+│   ├── clarify_system.py
 │   ├── cloud_pull.py
 │   ├── cloud_sync.py
 │   ├── cloud_sync_v2.py
 │   ├── code_executor.py
 │   ├── code_intel.py
+│   ├── collaboration_client.py
+│   ├── config_validator.py
 │   ├── conflict_resolver.py
 │   ├── cosmic.py
 │   ├── custom_fields.py
@@ -618,33 +461,48 @@
 │   ├── database.py
 │   ├── event_bus.py
 │   ├── excel_export.py
+│   ├── iqra_logging.py
 │   ├── light_tool_theme.py
 │   ├── llm_backend.py
 │   ├── llm_client.py
 │   ├── machine_code.py
 │   ├── main.py
 │   ├── mobile_api.py
+│   ├── model_status.py
+│   ├── model_status_manager.py
 │   ├── module_manager.py
+│   ├── multi_model.py
 │   ├── notification_cron.py
 │   ├── notification_service.py
 │   ├── notification_toast.py
 │   ├── obscura_provider.py
+│   ├── observability.py
 │   ├── operation_log.py
 │   ├── oplog.py
 │   ├── patch_engine.py
 │   ├── paths.py
+│   ├── performance_monitor.py
 │   ├── planet_daemon.py
 │   ├── planet_painter.py
 │   ├── procedural_texture.py
+│   ├── process_manager.py
+│   ├── provider_registry.py
+│   ├── rag_context.py
 │   ├── reconciliation.py
 │   ├── rollback_control.py
 │   ├── scheduled_tasks.py
+│   ├── secure_storage.py
+│   ├── semantic_search.py
+│   ├── session_search.py
 │   ├── simple_sync.py
 │   ├── siri_command_handler.py
+│   ├── skill_loader.py
+│   ├── skill_system.py
 │   ├── smart_memory_adapter.py
 │   ├── smart_report.py
 │   ├── storage.py
 │   ├── supabase_client.py
+│   ├── super_intelligence.py
 │   ├── sync_bridge.py
 │   ├── sync_decorator.py
 │   ├── sync_integration.py
@@ -652,6 +510,9 @@
 │   ├── task_scheduler.py
 │   ├── texture_mapper.py
 │   ├── theme.py
+│   ├── todo_system.py
+│   ├── token_optimizer.py
+│   ├── token_saver.py
 │   ├── tool_registry.py
 │   ├── ui_components.py
 │   ├── user_dao.py
@@ -660,6 +521,169 @@
 │   └── workspace_indexer.py
 ├── data/
 │   ├── sync/
+├── intelligence/
+│   ├── _chat_dialog/
+│   │   ├── __init__.py
+│   │   └── _dialog.py
+│   ├── agent_bridge_tools/
+│   │   ├── __init__.py
+│   │   ├── _code_tools.py
+│   │   ├── _file_tools.py
+│   │   ├── _legacy_tools.py
+│   │   ├── _system_tools.py
+│   │   ├── _task_tools.py
+│   │   └── _web_tools.py
+│   ├── ai_chat_window/
+│   │   ├── __init__.py
+│   │   ├── _chat_stream.py
+│   │   ├── _file_upload.py
+│   │   ├── _misc.py
+│   │   ├── _model_selector.py
+│   │   ├── _session.py
+│   │   ├── _ui.py
+│   │   └── _voice.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   └── llm_backend.py
+│   ├── data/
+│   │   ├── learning/
+│   │   └── reflections/
+│   ├── enhanced/
+│   │   ├── __init__.py
+│   │   ├── _enhanced_base.py
+│   │   ├── _enhanced_files_mixin.py
+│   │   ├── _enhanced_storage_mixin.py
+│   │   ├── _enhanced_system_mixin.py
+│   │   ├── _enhanced_web_mixin.py
+│   │   └── enhanced_tools.py
+│   ├── iqra_floating_planet/
+│   │   ├── __init__.py
+│   │   ├── _chat_mixin.py
+│   │   ├── _core.py
+│   │   ├── _exit_mixin.py
+│   │   ├── _modules_mixin.py
+│   │   ├── floating_planet_anim_mixin.py
+│   │   ├── floating_planet_draw_mixin.py
+│   │   └── floating_planet_menu_mixin.py
+│   ├── marketing_tools/
+│   │   ├── __init__.py
+│   │   ├── _core.py
+│   │   └── _registration.py
+│   ├── quick_tools_panel/
+│   │   ├── __init__.py
+│   │   ├── _api_config.py
+│   │   └── _quick_tools.py
+│   ├── solar_system_data/
+│   │   ├── __init__.py
+│   │   ├── _catalog.py
+│   │   ├── _core.py
+│   │   └── _data.py
+│   ├── text_editor/
+│   │   ├── __init__.py
+│   │   ├── _core.py
+│   │   ├── _crypto.py
+│   │   └── _note_tab.py
+│   ├── workflow_engine/
+│   │   ├── __init__.py
+│   │   ├── _engine.py
+│   │   └── _models.py
+│   ├── __init__.py
+│   ├── _ai_shared.py
+│   ├── _ai_widgets.py
+│   ├── _ai_widgets_anomaly.py
+│   ├── _ai_widgets_business.py
+│   ├── _ai_widgets_core.py
+│   ├── _ai_widgets_recommendation.py
+│   ├── _ai_widgets_visualization.py
+│   ├── _ai_widgets_workflow.py
+│   ├── _compat.py
+│   ├── _model_manager.py
+│   ├── _model_manager_download.py
+│   ├── _model_manager_ollama.py
+│   ├── _navigation_hud.py
+│   ├── _shell_dialogs.py
+│   ├── _stubs.py
+│   ├── account_window.py
+│   ├── agent_bridge.py
+│   ├── agent_bridge_models.py
+│   ├── agent_bridge_workers.py
+│   ├── ai_assistant_window.py
+│   ├── ai_center_window.py
+│   ├── ai_chat_styles.py
+│   ├── ai_chat_window.py
+│   ├── ai_dashboard_window.py
+│   ├── ai_features_ai_dashboard.py
+│   ├── ai_features_customer_ai.py
+│   ├── ai_features_inventory_ai.py
+│   ├── ai_features_pricing_ai.py
+│   ├── ai_features_sales_ai.py
+│   ├── analysis_tools.py
+│   ├── anomaly_detector.py
+│   ├── auto_task_executor.py
+│   ├── backup_window.py
+│   ├── batch_text.py
+│   ├── business_ai_assistant.py
+│   ├── business_tools.py
+│   ├── chat_session_manager.py
+│   ├── compress_tool.py
+│   ├── crm_tools.py
+│   ├── data_import_tools.py
+│   ├── data_visualization.py
+│   ├── db_helper.py
+│   ├── download_dialog.py
+│   ├── editor_window.py
+│   ├── enhanced_chat.py
+│   ├── event_trigger.py
+│   ├── file_rename_tools.py
+│   ├── finance_analysis_tools.py
+│   ├── floating_planet.py
+│   ├── floating_planet_anim_mixin.py
+│   ├── floating_planet_draw_mixin.py
+│   ├── floating_planet_menu_mixin.py
+│   ├── hr_tools.py
+│   ├── img_converter.py
+│   ├── intelligence_integration.py
+│   ├── intelligence_window.py
+│   ├── inventory_tools.py
+│   ├── iqra_floating_planet.py
+│   ├── json_tools.py
+│   ├── key_manager.py
+│   ├── knowledge_base.py
+│   ├── marketing_tools.py
+│   ├── model_config.py
+│   ├── monitor_dashboard.py
+│   ├── offline_analyzer.py
+│   ├── password_tools.py
+│   ├── performance_monitor.py
+│   ├── predictor_window.py
+│   ├── quick_actions.py
+│   ├── quick_tools_panel.py
+│   ├── rag_injector.py
+│   ├── recommendation_engine.py
+│   ├── report_generator.py
+│   ├── sales_predictor.py
+│   ├── scan_window.py
+│   ├── screen_recorder.py
+│   ├── self_monitor.py
+│   ├── session_context.py
+│   ├── smart_assistant.py
+│   ├── smart_report_tools.py
+│   ├── smart_workflow.py
+│   ├── solar_system_data.py
+│   ├── solar_system_window.py
+│   ├── super_intelligence.py
+│   ├── system_hub_window.py
+│   ├── system_monitor.py
+│   ├── text_editor.py
+│   ├── timestamp_tools.py
+│   ├── tool_registry.py
+│   ├── tools_window.py
+│   ├── usb_scanner.py
+│   ├── vault_window.py
+│   ├── voice_interface.py
+│   ├── whisper_recognizer.py
+│   ├── window_top_tools.py
+│   └── workflow_engine.py
 ├── iqra/
 │   ├── _archived/
 │   │   ├── data_20260619_122853/
@@ -680,6 +704,8 @@
 │   │   │   ├── __init__.py
 │   │   │   └── config_schema.py
 │   │   ├── modules/
+│   │   │   ├── intelligence/
+│   │   │   │   └── __init__.py
 │   │   │   ├── supabase/
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── _core.py
@@ -911,141 +937,7 @@
 │   │   │   │   └── _ui.py
 │   │   │   └── dashboard_window.py
 │   │   ├── intelligence/
-│   │   │   ├── agent_bridge_tools/
-│   │   │   │   ├── __test_temp/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _code_tools.py
-│   │   │   │   ├── _file_tools.py
-│   │   │   │   ├── _legacy_tools.py
-│   │   │   │   ├── _system_tools.py
-│   │   │   │   ├── _task_tools.py
-│   │   │   │   └── _web_tools.py
-│   │   │   ├── ai_chat_window/
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── _chat_stream.py
-│   │   │   │   ├── _file_upload.py
-│   │   │   │   ├── _misc.py
-│   │   │   │   ├── _model_selector.py
-│   │   │   │   ├── _session.py
-│   │   │   │   ├── _ui.py
-│   │   │   │   └── _voice.py
-│   │   │   ├── core/
-│   │   │   │   ├── __init__.py
-│   │   │   │   └── llm_backend.py
-│   │   │   ├── data/
-│   │   │   │   ├── learning/
-│   │   │   │   └── reflections/
-│   │   │   ├── enhanced/
-│   │   │   │   ├── __init__.py
-│   │   │   │   └── enhanced_tools.py
-│   │   │   ├── __init__.py
-│   │   │   ├── _ai_shared.py
-│   │   │   ├── _ai_widgets.py
-│   │   │   ├── _ai_widgets_anomaly.py
-│   │   │   ├── _ai_widgets_business.py
-│   │   │   ├── _ai_widgets_core.py
-│   │   │   ├── _ai_widgets_recommendation.py
-│   │   │   ├── _ai_widgets_visualization.py
-│   │   │   ├── _ai_widgets_workflow.py
-│   │   │   ├── _api_key_dialog.py
-│   │   │   ├── _chat_dialog.py
-│   │   │   ├── _compat.py
-│   │   │   ├── _floating_planet_chat_mixin.py
-│   │   │   ├── _floating_planet_input_mixin.py
-│   │   │   ├── _floating_planet_modules_mixin.py
-│   │   │   ├── _model_manager.py
-│   │   │   ├── _model_manager_download.py
-│   │   │   ├── _model_manager_ollama.py
-│   │   │   ├── _navigation_hud.py
-│   │   │   ├── _quick_tools_widget.py
-│   │   │   ├── _shell_dialogs.py
-│   │   │   ├── _stubs.py
-│   │   │   ├── _text_crypto.py
-│   │   │   ├── _text_editor_files_mixin.py
-│   │   │   ├── _text_editor_format_mixin.py
-│   │   │   ├── _text_editor_tree_mixin.py
-│   │   │   ├── _text_editor_ui_mixin.py
-│   │   │   ├── account_window.py
-│   │   │   ├── agent_bridge.py
-│   │   │   ├── agent_bridge_models.py
-│   │   │   ├── agent_bridge_tools.py
-│   │   │   ├── agent_bridge_workers.py
-│   │   │   ├── ai_assistant_window.py
-│   │   │   ├── ai_center_window.py
-│   │   │   ├── ai_chat_styles.py
-│   │   │   ├── ai_chat_window.py
-│   │   │   ├── ai_dashboard_window.py
-│   │   │   ├── ai_features_ai_dashboard.py
-│   │   │   ├── ai_features_customer_ai.py
-│   │   │   ├── ai_features_inventory_ai.py
-│   │   │   ├── ai_features_pricing_ai.py
-│   │   │   ├── ai_features_sales_ai.py
-│   │   │   ├── analysis_tools.py
-│   │   │   ├── anomaly_detector.py
-│   │   │   ├── auto_task_executor.py
-│   │   │   ├── batch_text.py
-│   │   │   ├── business_ai_assistant.py
-│   │   │   ├── business_tools.py
-│   │   │   ├── chat_session_manager.py
-│   │   │   ├── compress_tool.py
-│   │   │   ├── crm_tools.py
-│   │   │   ├── data_import_tools.py
-│   │   │   ├── data_visualization.py
-│   │   │   ├── db_helper.py
-│   │   │   ├── download_dialog.py
-│   │   │   ├── editor_window.py
-│   │   │   ├── enhanced_chat.py
-│   │   │   ├── event_trigger.py
-│   │   │   ├── file_rename_tools.py
-│   │   │   ├── finance_analysis_tools.py
-│   │   │   ├── floating_planet.py
-│   │   │   ├── floating_planet_anim_mixin.py
-│   │   │   ├── floating_planet_draw_mixin.py
-│   │   │   ├── floating_planet_menu_mixin.py
-│   │   │   ├── hr_tools.py
-│   │   │   ├── img_converter.py
-│   │   │   ├── intelligence_integration.py
-│   │   │   ├── intelligence_window.py
-│   │   │   ├── inventory_tools.py
-│   │   │   ├── iqra_floating_planet.py
-│   │   │   ├── json_tools.py
-│   │   │   ├── key_manager.py
-│   │   │   ├── knowledge_base.py
-│   │   │   ├── marketing_tools.py
-│   │   │   ├── model_config.py
-│   │   │   ├── monitor_dashboard.py
-│   │   │   ├── offline_analyzer.py
-│   │   │   ├── password_tools.py
-│   │   │   ├── performance_monitor.py
-│   │   │   ├── predictor_window.py
-│   │   │   ├── quick_actions.py
-│   │   │   ├── quick_tools_panel.py
-│   │   │   ├── rag_injector.py
-│   │   │   ├── recommendation_engine.py
-│   │   │   ├── report_generator.py
-│   │   │   ├── sales_predictor.py
-│   │   │   ├── scan_window.py
-│   │   │   ├── screen_recorder.py
-│   │   │   ├── self_monitor.py
-│   │   │   ├── session_context.py
-│   │   │   ├── smart_assistant.py
-│   │   │   ├── smart_report_tools.py
-│   │   │   ├── smart_workflow.py
-│   │   │   ├── solar_system_data.py
-│   │   │   ├── solar_system_window.py
-│   │   │   ├── super_intelligence.py
-│   │   │   ├── system_hub_window.py
-│   │   │   ├── system_monitor.py
-│   │   │   ├── text_editor.py
-│   │   │   ├── timestamp_tools.py
-│   │   │   ├── tool_registry.py
-│   │   │   ├── tools_window.py
-│   │   │   ├── usb_scanner.py
-│   │   │   ├── vault_window.py
-│   │   │   ├── voice_interface.py
-│   │   │   ├── whisper_recognizer.py
-│   │   │   ├── window_top_tools.py
-│   │   │   └── workflow_engine.py
+│   │   │   └── __init__.py
 │   │   ├── iqra/
 │   │   │   └── data/
 │   │   └── __init__.py
@@ -1117,7 +1009,6 @@
 │   ├── rollback_control.py
 │   ├── siri_command_handler.py
 │   ├── utils.py
-├── knowledge_base/
 ├── log/
 ├── management-system/
 │   ├── _archived/
@@ -1139,6 +1030,7 @@
 │   │   │   └── triple_sync.py
 │   │   ├── modules/
 │   │   │   ├── intelligence/
+│   │   │   │   └── __init__.py
 │   │   │   ├── supabase/
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── _core.py
@@ -1719,7 +1611,6 @@
 │   ├── clean_package.py
 │   └── pack_build.py
 ├── gen_book.py
-├── test_sync_30_tables.py
 └── verify_both.py
 ```
 
@@ -1762,6 +1653,7 @@
 - [`core/_deprecated/triple_sync.py`](./core/_deprecated/triple_sync.py.md)
 - [`core/ad_launcher.py`](./core/ad_launcher.py.md)
 - [`core/agent.py`](./core/agent.py.md)
+- [`core/agent_delegate.py`](./core/agent_delegate.py.md)
 - [`core/agent_loop.py`](./core/agent_loop.py.md)
 - [`core/app_state.py`](./core/app_state.py.md)
 - [`core/auth_service.py`](./core/auth_service.py.md)
@@ -1769,12 +1661,15 @@
 - [`core/business_service.py`](./core/business_service.py.md)
 - [`core/ceo_agent.py`](./core/ceo_agent.py.md)
 - [`core/chat_engine.py`](./core/chat_engine.py.md)
+- [`core/clarify_system.py`](./core/clarify_system.py.md)
 - [`core/cloud_pull.py`](./core/cloud_pull.py.md)
 - [`core/cloud_sync.py`](./core/cloud_sync.py.md)
 - [`core/cloud_sync_v2.py`](./core/cloud_sync_v2.py.md)
 - [`core/code_executor.py`](./core/code_executor.py.md)
 - [`core/code_intel.py`](./core/code_intel.py.md)
+- [`core/collaboration_client.py`](./core/collaboration_client.py.md)
 - [`core/config/supabase_config.py`](./core/config/supabase_config.py.md)
+- [`core/config_validator.py`](./core/config_validator.py.md)
 - [`core/conflict_resolver.py`](./core/conflict_resolver.py.md)
 - [`core/cosmic.py`](./core/cosmic.py.md)
 - [`core/custom_fields.py`](./core/custom_fields.py.md)
@@ -1785,12 +1680,15 @@
 - [`core/database.py`](./core/database.py.md)
 - [`core/event_bus.py`](./core/event_bus.py.md)
 - [`core/excel_export.py`](./core/excel_export.py.md)
+- [`core/iqra_logging.py`](./core/iqra_logging.py.md)
 - [`core/light_tool_theme.py`](./core/light_tool_theme.py.md)
 - [`core/llm_backend.py`](./core/llm_backend.py.md)
 - [`core/llm_client.py`](./core/llm_client.py.md)
 - [`core/machine_code.py`](./core/machine_code.py.md)
 - [`core/main.py`](./core/main.py.md)
 - [`core/mobile_api.py`](./core/mobile_api.py.md)
+- [`core/model_status.py`](./core/model_status.py.md)
+- [`core/model_status_manager.py`](./core/model_status_manager.py.md)
 - [`core/module_manager.py`](./core/module_manager.py.md)
 - [`core/modules/__init__.py`](./core/modules/__init__.py.md)
 - [`core/modules/account/__init__.py`](./core/modules/account/__init__.py.md)
@@ -1930,153 +1828,6 @@
 - [`core/modules/industry/industry_report.py`](./core/modules/industry/industry_report.py.md)
 - [`core/modules/industry/industry_window.py`](./core/modules/industry/industry_window.py.md)
 - [`core/modules/intelligence/__init__.py`](./core/modules/intelligence/__init__.py.md)
-- [`core/modules/intelligence/_ai_shared.py`](./core/modules/intelligence/_ai_shared.py.md)
-- [`core/modules/intelligence/_ai_widgets.py`](./core/modules/intelligence/_ai_widgets.py.md)
-- [`core/modules/intelligence/_ai_widgets_anomaly.py`](./core/modules/intelligence/_ai_widgets_anomaly.py.md)
-- [`core/modules/intelligence/_ai_widgets_business.py`](./core/modules/intelligence/_ai_widgets_business.py.md)
-- [`core/modules/intelligence/_ai_widgets_core.py`](./core/modules/intelligence/_ai_widgets_core.py.md)
-- [`core/modules/intelligence/_ai_widgets_recommendation.py`](./core/modules/intelligence/_ai_widgets_recommendation.py.md)
-- [`core/modules/intelligence/_ai_widgets_visualization.py`](./core/modules/intelligence/_ai_widgets_visualization.py.md)
-- [`core/modules/intelligence/_ai_widgets_workflow.py`](./core/modules/intelligence/_ai_widgets_workflow.py.md)
-- [`core/modules/intelligence/_chat_dialog/__init__.py`](./core/modules/intelligence/_chat_dialog/__init__.py.md)
-- [`core/modules/intelligence/_chat_dialog/_dialog.py`](./core/modules/intelligence/_chat_dialog/_dialog.py.md)
-- [`core/modules/intelligence/_compat.py`](./core/modules/intelligence/_compat.py.md)
-- [`core/modules/intelligence/_model_manager.py`](./core/modules/intelligence/_model_manager.py.md)
-- [`core/modules/intelligence/_model_manager_download.py`](./core/modules/intelligence/_model_manager_download.py.md)
-- [`core/modules/intelligence/_model_manager_ollama.py`](./core/modules/intelligence/_model_manager_ollama.py.md)
-- [`core/modules/intelligence/_navigation_hud.py`](./core/modules/intelligence/_navigation_hud.py.md)
-- [`core/modules/intelligence/_shell_dialogs.py`](./core/modules/intelligence/_shell_dialogs.py.md)
-- [`core/modules/intelligence/_stubs.py`](./core/modules/intelligence/_stubs.py.md)
-- [`core/modules/intelligence/account_window.py`](./core/modules/intelligence/account_window.py.md)
-- [`core/modules/intelligence/agent_bridge.py`](./core/modules/intelligence/agent_bridge.py.md)
-- [`core/modules/intelligence/agent_bridge_models.py`](./core/modules/intelligence/agent_bridge_models.py.md)
-- [`core/modules/intelligence/agent_bridge_tools/__init__.py`](./core/modules/intelligence/agent_bridge_tools/__init__.py.md)
-- [`core/modules/intelligence/agent_bridge_tools/_code_tools.py`](./core/modules/intelligence/agent_bridge_tools/_code_tools.py.md)
-- [`core/modules/intelligence/agent_bridge_tools/_file_tools.py`](./core/modules/intelligence/agent_bridge_tools/_file_tools.py.md)
-- [`core/modules/intelligence/agent_bridge_tools/_legacy_tools.py`](./core/modules/intelligence/agent_bridge_tools/_legacy_tools.py.md)
-- [`core/modules/intelligence/agent_bridge_tools/_system_tools.py`](./core/modules/intelligence/agent_bridge_tools/_system_tools.py.md)
-- [`core/modules/intelligence/agent_bridge_tools/_task_tools.py`](./core/modules/intelligence/agent_bridge_tools/_task_tools.py.md)
-- [`core/modules/intelligence/agent_bridge_tools/_web_tools.py`](./core/modules/intelligence/agent_bridge_tools/_web_tools.py.md)
-- [`core/modules/intelligence/agent_bridge_workers.py`](./core/modules/intelligence/agent_bridge_workers.py.md)
-- [`core/modules/intelligence/ai_assistant_window.py`](./core/modules/intelligence/ai_assistant_window.py.md)
-- [`core/modules/intelligence/ai_center_window.py`](./core/modules/intelligence/ai_center_window.py.md)
-- [`core/modules/intelligence/ai_chat_styles.py`](./core/modules/intelligence/ai_chat_styles.py.md)
-- [`core/modules/intelligence/ai_chat_window/__init__.py`](./core/modules/intelligence/ai_chat_window/__init__.py.md)
-- [`core/modules/intelligence/ai_chat_window/_chat_stream.py`](./core/modules/intelligence/ai_chat_window/_chat_stream.py.md)
-- [`core/modules/intelligence/ai_chat_window/_file_upload.py`](./core/modules/intelligence/ai_chat_window/_file_upload.py.md)
-- [`core/modules/intelligence/ai_chat_window/_misc.py`](./core/modules/intelligence/ai_chat_window/_misc.py.md)
-- [`core/modules/intelligence/ai_chat_window/_model_selector.py`](./core/modules/intelligence/ai_chat_window/_model_selector.py.md)
-- [`core/modules/intelligence/ai_chat_window/_session.py`](./core/modules/intelligence/ai_chat_window/_session.py.md)
-- [`core/modules/intelligence/ai_chat_window/_ui.py`](./core/modules/intelligence/ai_chat_window/_ui.py.md)
-- [`core/modules/intelligence/ai_chat_window/_voice.py`](./core/modules/intelligence/ai_chat_window/_voice.py.md)
-- [`core/modules/intelligence/ai_chat_window.py`](./core/modules/intelligence/ai_chat_window.py.md)
-- [`core/modules/intelligence/ai_dashboard_window.py`](./core/modules/intelligence/ai_dashboard_window.py.md)
-- [`core/modules/intelligence/ai_features_ai_dashboard.py`](./core/modules/intelligence/ai_features_ai_dashboard.py.md)
-- [`core/modules/intelligence/ai_features_customer_ai.py`](./core/modules/intelligence/ai_features_customer_ai.py.md)
-- [`core/modules/intelligence/ai_features_inventory_ai.py`](./core/modules/intelligence/ai_features_inventory_ai.py.md)
-- [`core/modules/intelligence/ai_features_pricing_ai.py`](./core/modules/intelligence/ai_features_pricing_ai.py.md)
-- [`core/modules/intelligence/ai_features_sales_ai.py`](./core/modules/intelligence/ai_features_sales_ai.py.md)
-- [`core/modules/intelligence/analysis_tools.py`](./core/modules/intelligence/analysis_tools.py.md)
-- [`core/modules/intelligence/anomaly_detector.py`](./core/modules/intelligence/anomaly_detector.py.md)
-- [`core/modules/intelligence/auto_task_executor.py`](./core/modules/intelligence/auto_task_executor.py.md)
-- [`core/modules/intelligence/backup_window.py`](./core/modules/intelligence/backup_window.py.md)
-- [`core/modules/intelligence/batch_text.py`](./core/modules/intelligence/batch_text.py.md)
-- [`core/modules/intelligence/business_ai_assistant.py`](./core/modules/intelligence/business_ai_assistant.py.md)
-- [`core/modules/intelligence/business_tools.py`](./core/modules/intelligence/business_tools.py.md)
-- [`core/modules/intelligence/chat_session_manager.py`](./core/modules/intelligence/chat_session_manager.py.md)
-- [`core/modules/intelligence/compress_tool.py`](./core/modules/intelligence/compress_tool.py.md)
-- [`core/modules/intelligence/core/__init__.py`](./core/modules/intelligence/core/__init__.py.md)
-- [`core/modules/intelligence/core/llm_backend.py`](./core/modules/intelligence/core/llm_backend.py.md)
-- [`core/modules/intelligence/crm_tools.py`](./core/modules/intelligence/crm_tools.py.md)
-- [`core/modules/intelligence/data_import_tools.py`](./core/modules/intelligence/data_import_tools.py.md)
-- [`core/modules/intelligence/data_visualization.py`](./core/modules/intelligence/data_visualization.py.md)
-- [`core/modules/intelligence/db_helper.py`](./core/modules/intelligence/db_helper.py.md)
-- [`core/modules/intelligence/download_dialog.py`](./core/modules/intelligence/download_dialog.py.md)
-- [`core/modules/intelligence/editor_window.py`](./core/modules/intelligence/editor_window.py.md)
-- [`core/modules/intelligence/enhanced/__init__.py`](./core/modules/intelligence/enhanced/__init__.py.md)
-- [`core/modules/intelligence/enhanced/_enhanced_base.py`](./core/modules/intelligence/enhanced/_enhanced_base.py.md)
-- [`core/modules/intelligence/enhanced/_enhanced_files_mixin.py`](./core/modules/intelligence/enhanced/_enhanced_files_mixin.py.md)
-- [`core/modules/intelligence/enhanced/_enhanced_storage_mixin.py`](./core/modules/intelligence/enhanced/_enhanced_storage_mixin.py.md)
-- [`core/modules/intelligence/enhanced/_enhanced_system_mixin.py`](./core/modules/intelligence/enhanced/_enhanced_system_mixin.py.md)
-- [`core/modules/intelligence/enhanced/_enhanced_web_mixin.py`](./core/modules/intelligence/enhanced/_enhanced_web_mixin.py.md)
-- [`core/modules/intelligence/enhanced/enhanced_tools.py`](./core/modules/intelligence/enhanced/enhanced_tools.py.md)
-- [`core/modules/intelligence/enhanced_chat.py`](./core/modules/intelligence/enhanced_chat.py.md)
-- [`core/modules/intelligence/event_trigger.py`](./core/modules/intelligence/event_trigger.py.md)
-- [`core/modules/intelligence/file_rename_tools.py`](./core/modules/intelligence/file_rename_tools.py.md)
-- [`core/modules/intelligence/finance_analysis_tools.py`](./core/modules/intelligence/finance_analysis_tools.py.md)
-- [`core/modules/intelligence/floating_planet.py`](./core/modules/intelligence/floating_planet.py.md)
-- [`core/modules/intelligence/floating_planet_anim_mixin.py`](./core/modules/intelligence/floating_planet_anim_mixin.py.md)
-- [`core/modules/intelligence/floating_planet_draw_mixin.py`](./core/modules/intelligence/floating_planet_draw_mixin.py.md)
-- [`core/modules/intelligence/floating_planet_menu_mixin.py`](./core/modules/intelligence/floating_planet_menu_mixin.py.md)
-- [`core/modules/intelligence/hr_tools.py`](./core/modules/intelligence/hr_tools.py.md)
-- [`core/modules/intelligence/img_converter.py`](./core/modules/intelligence/img_converter.py.md)
-- [`core/modules/intelligence/intelligence_integration.py`](./core/modules/intelligence/intelligence_integration.py.md)
-- [`core/modules/intelligence/intelligence_window.py`](./core/modules/intelligence/intelligence_window.py.md)
-- [`core/modules/intelligence/inventory_tools.py`](./core/modules/intelligence/inventory_tools.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/__init__.py`](./core/modules/intelligence/iqra_floating_planet/__init__.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/_chat_mixin.py`](./core/modules/intelligence/iqra_floating_planet/_chat_mixin.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/_core.py`](./core/modules/intelligence/iqra_floating_planet/_core.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/_exit_mixin.py`](./core/modules/intelligence/iqra_floating_planet/_exit_mixin.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/_modules_mixin.py`](./core/modules/intelligence/iqra_floating_planet/_modules_mixin.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/floating_planet_anim_mixin.py`](./core/modules/intelligence/iqra_floating_planet/floating_planet_anim_mixin.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/floating_planet_draw_mixin.py`](./core/modules/intelligence/iqra_floating_planet/floating_planet_draw_mixin.py.md)
-- [`core/modules/intelligence/iqra_floating_planet/floating_planet_menu_mixin.py`](./core/modules/intelligence/iqra_floating_planet/floating_planet_menu_mixin.py.md)
-- [`core/modules/intelligence/iqra_floating_planet.py`](./core/modules/intelligence/iqra_floating_planet.py.md)
-- [`core/modules/intelligence/json_tools.py`](./core/modules/intelligence/json_tools.py.md)
-- [`core/modules/intelligence/key_manager.py`](./core/modules/intelligence/key_manager.py.md)
-- [`core/modules/intelligence/knowledge_base.py`](./core/modules/intelligence/knowledge_base.py.md)
-- [`core/modules/intelligence/marketing_tools/__init__.py`](./core/modules/intelligence/marketing_tools/__init__.py.md)
-- [`core/modules/intelligence/marketing_tools/_core.py`](./core/modules/intelligence/marketing_tools/_core.py.md)
-- [`core/modules/intelligence/marketing_tools/_registration.py`](./core/modules/intelligence/marketing_tools/_registration.py.md)
-- [`core/modules/intelligence/marketing_tools.py`](./core/modules/intelligence/marketing_tools.py.md)
-- [`core/modules/intelligence/model_config.py`](./core/modules/intelligence/model_config.py.md)
-- [`core/modules/intelligence/monitor_dashboard.py`](./core/modules/intelligence/monitor_dashboard.py.md)
-- [`core/modules/intelligence/offline_analyzer.py`](./core/modules/intelligence/offline_analyzer.py.md)
-- [`core/modules/intelligence/password_tools.py`](./core/modules/intelligence/password_tools.py.md)
-- [`core/modules/intelligence/performance_monitor.py`](./core/modules/intelligence/performance_monitor.py.md)
-- [`core/modules/intelligence/predictor_window.py`](./core/modules/intelligence/predictor_window.py.md)
-- [`core/modules/intelligence/quick_actions.py`](./core/modules/intelligence/quick_actions.py.md)
-- [`core/modules/intelligence/quick_tools_panel/__init__.py`](./core/modules/intelligence/quick_tools_panel/__init__.py.md)
-- [`core/modules/intelligence/quick_tools_panel/_api_config.py`](./core/modules/intelligence/quick_tools_panel/_api_config.py.md)
-- [`core/modules/intelligence/quick_tools_panel/_quick_tools.py`](./core/modules/intelligence/quick_tools_panel/_quick_tools.py.md)
-- [`core/modules/intelligence/quick_tools_panel.py`](./core/modules/intelligence/quick_tools_panel.py.md)
-- [`core/modules/intelligence/rag_injector.py`](./core/modules/intelligence/rag_injector.py.md)
-- [`core/modules/intelligence/recommendation_engine.py`](./core/modules/intelligence/recommendation_engine.py.md)
-- [`core/modules/intelligence/report_generator.py`](./core/modules/intelligence/report_generator.py.md)
-- [`core/modules/intelligence/sales_predictor.py`](./core/modules/intelligence/sales_predictor.py.md)
-- [`core/modules/intelligence/scan_window.py`](./core/modules/intelligence/scan_window.py.md)
-- [`core/modules/intelligence/screen_recorder.py`](./core/modules/intelligence/screen_recorder.py.md)
-- [`core/modules/intelligence/self_monitor.py`](./core/modules/intelligence/self_monitor.py.md)
-- [`core/modules/intelligence/session_context.py`](./core/modules/intelligence/session_context.py.md)
-- [`core/modules/intelligence/smart_assistant.py`](./core/modules/intelligence/smart_assistant.py.md)
-- [`core/modules/intelligence/smart_report_tools.py`](./core/modules/intelligence/smart_report_tools.py.md)
-- [`core/modules/intelligence/smart_workflow.py`](./core/modules/intelligence/smart_workflow.py.md)
-- [`core/modules/intelligence/solar_system_data/__init__.py`](./core/modules/intelligence/solar_system_data/__init__.py.md)
-- [`core/modules/intelligence/solar_system_data/_catalog.py`](./core/modules/intelligence/solar_system_data/_catalog.py.md)
-- [`core/modules/intelligence/solar_system_data/_core.py`](./core/modules/intelligence/solar_system_data/_core.py.md)
-- [`core/modules/intelligence/solar_system_data/_data.py`](./core/modules/intelligence/solar_system_data/_data.py.md)
-- [`core/modules/intelligence/solar_system_data.py`](./core/modules/intelligence/solar_system_data.py.md)
-- [`core/modules/intelligence/solar_system_window.py`](./core/modules/intelligence/solar_system_window.py.md)
-- [`core/modules/intelligence/super_intelligence.py`](./core/modules/intelligence/super_intelligence.py.md)
-- [`core/modules/intelligence/system_hub_window.py`](./core/modules/intelligence/system_hub_window.py.md)
-- [`core/modules/intelligence/system_monitor.py`](./core/modules/intelligence/system_monitor.py.md)
-- [`core/modules/intelligence/text_editor/__init__.py`](./core/modules/intelligence/text_editor/__init__.py.md)
-- [`core/modules/intelligence/text_editor/_core.py`](./core/modules/intelligence/text_editor/_core.py.md)
-- [`core/modules/intelligence/text_editor/_crypto.py`](./core/modules/intelligence/text_editor/_crypto.py.md)
-- [`core/modules/intelligence/text_editor/_note_tab.py`](./core/modules/intelligence/text_editor/_note_tab.py.md)
-- [`core/modules/intelligence/text_editor.py`](./core/modules/intelligence/text_editor.py.md)
-- [`core/modules/intelligence/timestamp_tools.py`](./core/modules/intelligence/timestamp_tools.py.md)
-- [`core/modules/intelligence/tool_registry.py`](./core/modules/intelligence/tool_registry.py.md)
-- [`core/modules/intelligence/tools_window.py`](./core/modules/intelligence/tools_window.py.md)
-- [`core/modules/intelligence/usb_scanner.py`](./core/modules/intelligence/usb_scanner.py.md)
-- [`core/modules/intelligence/vault_window.py`](./core/modules/intelligence/vault_window.py.md)
-- [`core/modules/intelligence/voice_interface.py`](./core/modules/intelligence/voice_interface.py.md)
-- [`core/modules/intelligence/whisper_recognizer.py`](./core/modules/intelligence/whisper_recognizer.py.md)
-- [`core/modules/intelligence/window_top_tools.py`](./core/modules/intelligence/window_top_tools.py.md)
-- [`core/modules/intelligence/workflow_engine/__init__.py`](./core/modules/intelligence/workflow_engine/__init__.py.md)
-- [`core/modules/intelligence/workflow_engine/_engine.py`](./core/modules/intelligence/workflow_engine/_engine.py.md)
-- [`core/modules/intelligence/workflow_engine/_models.py`](./core/modules/intelligence/workflow_engine/_models.py.md)
-- [`core/modules/intelligence/workflow_engine.py`](./core/modules/intelligence/workflow_engine.py.md)
 - [`core/modules/notification/notification_window.py`](./core/modules/notification/notification_window.py.md)
 - [`core/modules/permission/permission_window.py`](./core/modules/permission/permission_window.py.md)
 - [`core/modules/personnel/__init__.py`](./core/modules/personnel/__init__.py.md)
@@ -2140,20 +1891,28 @@
 - [`core/modules/system_logs/system_logs_service.py`](./core/modules/system_logs/system_logs_service.py.md)
 - [`core/modules/system_logs/system_logs_window.py`](./core/modules/system_logs/system_logs_window.py.md)
 - [`core/modules/workflow/workflow_window.py`](./core/modules/workflow/workflow_window.py.md)
+- [`core/multi_model.py`](./core/multi_model.py.md)
 - [`core/notification_cron.py`](./core/notification_cron.py.md)
 - [`core/notification_service.py`](./core/notification_service.py.md)
 - [`core/notification_toast.py`](./core/notification_toast.py.md)
 - [`core/obscura_provider.py`](./core/obscura_provider.py.md)
+- [`core/observability.py`](./core/observability.py.md)
 - [`core/operation_log.py`](./core/operation_log.py.md)
 - [`core/oplog.py`](./core/oplog.py.md)
 - [`core/patch_engine.py`](./core/patch_engine.py.md)
 - [`core/paths.py`](./core/paths.py.md)
+- [`core/performance_monitor.py`](./core/performance_monitor.py.md)
 - [`core/planet_daemon.py`](./core/planet_daemon.py.md)
 - [`core/planet_painter.py`](./core/planet_painter.py.md)
 - [`core/procedural_texture.py`](./core/procedural_texture.py.md)
+- [`core/process_manager.py`](./core/process_manager.py.md)
+- [`core/provider_registry.py`](./core/provider_registry.py.md)
+- [`core/rag_context.py`](./core/rag_context.py.md)
 - [`core/reconciliation.py`](./core/reconciliation.py.md)
 - [`core/rollback_control.py`](./core/rollback_control.py.md)
 - [`core/scheduled_tasks.py`](./core/scheduled_tasks.py.md)
+- [`core/secure_storage.py`](./core/secure_storage.py.md)
+- [`core/semantic_search.py`](./core/semantic_search.py.md)
 - [`core/services/__init__.py`](./core/services/__init__.py.md)
 - [`core/services/ad_service.py`](./core/services/ad_service.py.md)
 - [`core/services/ai_chatbot_service.py`](./core/services/ai_chatbot_service.py.md)
@@ -2193,6 +1952,7 @@
 - [`core/services/theme_service.py`](./core/services/theme_service.py.md)
 - [`core/services/update_service.py`](./core/services/update_service.py.md)
 - [`core/services/workflow_service.py`](./core/services/workflow_service.py.md)
+- [`core/session_search.py`](./core/session_search.py.md)
 - [`core/shapes/__init__.py`](./core/shapes/__init__.py.md)
 - [`core/shapes/alien.py`](./core/shapes/alien.py.md)
 - [`core/shapes/black_hole.py`](./core/shapes/black_hole.py.md)
@@ -2236,10 +1996,13 @@
 - [`core/shapes/wormhole.py`](./core/shapes/wormhole.py.md)
 - [`core/simple_sync.py`](./core/simple_sync.py.md)
 - [`core/siri_command_handler.py`](./core/siri_command_handler.py.md)
+- [`core/skill_loader.py`](./core/skill_loader.py.md)
+- [`core/skill_system.py`](./core/skill_system.py.md)
 - [`core/smart_memory_adapter.py`](./core/smart_memory_adapter.py.md)
 - [`core/smart_report.py`](./core/smart_report.py.md)
 - [`core/storage.py`](./core/storage.py.md)
 - [`core/supabase_client.py`](./core/supabase_client.py.md)
+- [`core/super_intelligence.py`](./core/super_intelligence.py.md)
 - [`core/sync_bridge.py`](./core/sync_bridge.py.md)
 - [`core/sync_decorator.py`](./core/sync_decorator.py.md)
 - [`core/sync_integration.py`](./core/sync_integration.py.md)
@@ -2248,6 +2011,9 @@
 - [`core/tests/conftest.py`](./core/tests/conftest.py.md)
 - [`core/texture_mapper.py`](./core/texture_mapper.py.md)
 - [`core/theme.py`](./core/theme.py.md)
+- [`core/todo_system.py`](./core/todo_system.py.md)
+- [`core/token_optimizer.py`](./core/token_optimizer.py.md)
+- [`core/token_saver.py`](./core/token_saver.py.md)
 - [`core/tool_registry.py`](./core/tool_registry.py.md)
 - [`core/tools/__init__.py`](./core/tools/__init__.py.md)
 - [`core/tools/environments/__init__.py`](./core/tools/environments/__init__.py.md)
@@ -2259,6 +2025,154 @@
 - [`core/workflow_engine.py`](./core/workflow_engine.py.md)
 - [`core/workspace_indexer.py`](./core/workspace_indexer.py.md)
 - [`gen_book.py`](./gen_book.py.md)
+- [`intelligence/__init__.py`](./intelligence/__init__.py.md)
+- [`intelligence/_ai_shared.py`](./intelligence/_ai_shared.py.md)
+- [`intelligence/_ai_widgets.py`](./intelligence/_ai_widgets.py.md)
+- [`intelligence/_ai_widgets_anomaly.py`](./intelligence/_ai_widgets_anomaly.py.md)
+- [`intelligence/_ai_widgets_business.py`](./intelligence/_ai_widgets_business.py.md)
+- [`intelligence/_ai_widgets_core.py`](./intelligence/_ai_widgets_core.py.md)
+- [`intelligence/_ai_widgets_recommendation.py`](./intelligence/_ai_widgets_recommendation.py.md)
+- [`intelligence/_ai_widgets_visualization.py`](./intelligence/_ai_widgets_visualization.py.md)
+- [`intelligence/_ai_widgets_workflow.py`](./intelligence/_ai_widgets_workflow.py.md)
+- [`intelligence/_chat_dialog/__init__.py`](./intelligence/_chat_dialog/__init__.py.md)
+- [`intelligence/_chat_dialog/_dialog.py`](./intelligence/_chat_dialog/_dialog.py.md)
+- [`intelligence/_compat.py`](./intelligence/_compat.py.md)
+- [`intelligence/_model_manager.py`](./intelligence/_model_manager.py.md)
+- [`intelligence/_model_manager_download.py`](./intelligence/_model_manager_download.py.md)
+- [`intelligence/_model_manager_ollama.py`](./intelligence/_model_manager_ollama.py.md)
+- [`intelligence/_navigation_hud.py`](./intelligence/_navigation_hud.py.md)
+- [`intelligence/_shell_dialogs.py`](./intelligence/_shell_dialogs.py.md)
+- [`intelligence/_stubs.py`](./intelligence/_stubs.py.md)
+- [`intelligence/account_window.py`](./intelligence/account_window.py.md)
+- [`intelligence/agent_bridge.py`](./intelligence/agent_bridge.py.md)
+- [`intelligence/agent_bridge_models.py`](./intelligence/agent_bridge_models.py.md)
+- [`intelligence/agent_bridge_tools/__init__.py`](./intelligence/agent_bridge_tools/__init__.py.md)
+- [`intelligence/agent_bridge_tools/_code_tools.py`](./intelligence/agent_bridge_tools/_code_tools.py.md)
+- [`intelligence/agent_bridge_tools/_file_tools.py`](./intelligence/agent_bridge_tools/_file_tools.py.md)
+- [`intelligence/agent_bridge_tools/_legacy_tools.py`](./intelligence/agent_bridge_tools/_legacy_tools.py.md)
+- [`intelligence/agent_bridge_tools/_system_tools.py`](./intelligence/agent_bridge_tools/_system_tools.py.md)
+- [`intelligence/agent_bridge_tools/_task_tools.py`](./intelligence/agent_bridge_tools/_task_tools.py.md)
+- [`intelligence/agent_bridge_tools/_web_tools.py`](./intelligence/agent_bridge_tools/_web_tools.py.md)
+- [`intelligence/agent_bridge_workers.py`](./intelligence/agent_bridge_workers.py.md)
+- [`intelligence/ai_assistant_window.py`](./intelligence/ai_assistant_window.py.md)
+- [`intelligence/ai_center_window.py`](./intelligence/ai_center_window.py.md)
+- [`intelligence/ai_chat_styles.py`](./intelligence/ai_chat_styles.py.md)
+- [`intelligence/ai_chat_window/__init__.py`](./intelligence/ai_chat_window/__init__.py.md)
+- [`intelligence/ai_chat_window/_chat_stream.py`](./intelligence/ai_chat_window/_chat_stream.py.md)
+- [`intelligence/ai_chat_window/_file_upload.py`](./intelligence/ai_chat_window/_file_upload.py.md)
+- [`intelligence/ai_chat_window/_misc.py`](./intelligence/ai_chat_window/_misc.py.md)
+- [`intelligence/ai_chat_window/_model_selector.py`](./intelligence/ai_chat_window/_model_selector.py.md)
+- [`intelligence/ai_chat_window/_session.py`](./intelligence/ai_chat_window/_session.py.md)
+- [`intelligence/ai_chat_window/_ui.py`](./intelligence/ai_chat_window/_ui.py.md)
+- [`intelligence/ai_chat_window/_voice.py`](./intelligence/ai_chat_window/_voice.py.md)
+- [`intelligence/ai_chat_window.py`](./intelligence/ai_chat_window.py.md)
+- [`intelligence/ai_dashboard_window.py`](./intelligence/ai_dashboard_window.py.md)
+- [`intelligence/ai_features_ai_dashboard.py`](./intelligence/ai_features_ai_dashboard.py.md)
+- [`intelligence/ai_features_customer_ai.py`](./intelligence/ai_features_customer_ai.py.md)
+- [`intelligence/ai_features_inventory_ai.py`](./intelligence/ai_features_inventory_ai.py.md)
+- [`intelligence/ai_features_pricing_ai.py`](./intelligence/ai_features_pricing_ai.py.md)
+- [`intelligence/ai_features_sales_ai.py`](./intelligence/ai_features_sales_ai.py.md)
+- [`intelligence/analysis_tools.py`](./intelligence/analysis_tools.py.md)
+- [`intelligence/anomaly_detector.py`](./intelligence/anomaly_detector.py.md)
+- [`intelligence/auto_task_executor.py`](./intelligence/auto_task_executor.py.md)
+- [`intelligence/backup_window.py`](./intelligence/backup_window.py.md)
+- [`intelligence/batch_text.py`](./intelligence/batch_text.py.md)
+- [`intelligence/business_ai_assistant.py`](./intelligence/business_ai_assistant.py.md)
+- [`intelligence/business_tools.py`](./intelligence/business_tools.py.md)
+- [`intelligence/chat_session_manager.py`](./intelligence/chat_session_manager.py.md)
+- [`intelligence/compress_tool.py`](./intelligence/compress_tool.py.md)
+- [`intelligence/core/__init__.py`](./intelligence/core/__init__.py.md)
+- [`intelligence/core/llm_backend.py`](./intelligence/core/llm_backend.py.md)
+- [`intelligence/crm_tools.py`](./intelligence/crm_tools.py.md)
+- [`intelligence/data_import_tools.py`](./intelligence/data_import_tools.py.md)
+- [`intelligence/data_visualization.py`](./intelligence/data_visualization.py.md)
+- [`intelligence/db_helper.py`](./intelligence/db_helper.py.md)
+- [`intelligence/download_dialog.py`](./intelligence/download_dialog.py.md)
+- [`intelligence/editor_window.py`](./intelligence/editor_window.py.md)
+- [`intelligence/enhanced/__init__.py`](./intelligence/enhanced/__init__.py.md)
+- [`intelligence/enhanced/_enhanced_base.py`](./intelligence/enhanced/_enhanced_base.py.md)
+- [`intelligence/enhanced/_enhanced_files_mixin.py`](./intelligence/enhanced/_enhanced_files_mixin.py.md)
+- [`intelligence/enhanced/_enhanced_storage_mixin.py`](./intelligence/enhanced/_enhanced_storage_mixin.py.md)
+- [`intelligence/enhanced/_enhanced_system_mixin.py`](./intelligence/enhanced/_enhanced_system_mixin.py.md)
+- [`intelligence/enhanced/_enhanced_web_mixin.py`](./intelligence/enhanced/_enhanced_web_mixin.py.md)
+- [`intelligence/enhanced/enhanced_tools.py`](./intelligence/enhanced/enhanced_tools.py.md)
+- [`intelligence/enhanced_chat.py`](./intelligence/enhanced_chat.py.md)
+- [`intelligence/event_trigger.py`](./intelligence/event_trigger.py.md)
+- [`intelligence/file_rename_tools.py`](./intelligence/file_rename_tools.py.md)
+- [`intelligence/finance_analysis_tools.py`](./intelligence/finance_analysis_tools.py.md)
+- [`intelligence/floating_planet.py`](./intelligence/floating_planet.py.md)
+- [`intelligence/floating_planet_anim_mixin.py`](./intelligence/floating_planet_anim_mixin.py.md)
+- [`intelligence/floating_planet_draw_mixin.py`](./intelligence/floating_planet_draw_mixin.py.md)
+- [`intelligence/floating_planet_menu_mixin.py`](./intelligence/floating_planet_menu_mixin.py.md)
+- [`intelligence/hr_tools.py`](./intelligence/hr_tools.py.md)
+- [`intelligence/img_converter.py`](./intelligence/img_converter.py.md)
+- [`intelligence/intelligence_integration.py`](./intelligence/intelligence_integration.py.md)
+- [`intelligence/intelligence_window.py`](./intelligence/intelligence_window.py.md)
+- [`intelligence/inventory_tools.py`](./intelligence/inventory_tools.py.md)
+- [`intelligence/iqra_floating_planet/__init__.py`](./intelligence/iqra_floating_planet/__init__.py.md)
+- [`intelligence/iqra_floating_planet/_chat_mixin.py`](./intelligence/iqra_floating_planet/_chat_mixin.py.md)
+- [`intelligence/iqra_floating_planet/_core.py`](./intelligence/iqra_floating_planet/_core.py.md)
+- [`intelligence/iqra_floating_planet/_exit_mixin.py`](./intelligence/iqra_floating_planet/_exit_mixin.py.md)
+- [`intelligence/iqra_floating_planet/_modules_mixin.py`](./intelligence/iqra_floating_planet/_modules_mixin.py.md)
+- [`intelligence/iqra_floating_planet/floating_planet_anim_mixin.py`](./intelligence/iqra_floating_planet/floating_planet_anim_mixin.py.md)
+- [`intelligence/iqra_floating_planet/floating_planet_draw_mixin.py`](./intelligence/iqra_floating_planet/floating_planet_draw_mixin.py.md)
+- [`intelligence/iqra_floating_planet/floating_planet_menu_mixin.py`](./intelligence/iqra_floating_planet/floating_planet_menu_mixin.py.md)
+- [`intelligence/iqra_floating_planet.py`](./intelligence/iqra_floating_planet.py.md)
+- [`intelligence/json_tools.py`](./intelligence/json_tools.py.md)
+- [`intelligence/key_manager.py`](./intelligence/key_manager.py.md)
+- [`intelligence/knowledge_base.py`](./intelligence/knowledge_base.py.md)
+- [`intelligence/marketing_tools/__init__.py`](./intelligence/marketing_tools/__init__.py.md)
+- [`intelligence/marketing_tools/_core.py`](./intelligence/marketing_tools/_core.py.md)
+- [`intelligence/marketing_tools/_registration.py`](./intelligence/marketing_tools/_registration.py.md)
+- [`intelligence/marketing_tools.py`](./intelligence/marketing_tools.py.md)
+- [`intelligence/model_config.py`](./intelligence/model_config.py.md)
+- [`intelligence/monitor_dashboard.py`](./intelligence/monitor_dashboard.py.md)
+- [`intelligence/offline_analyzer.py`](./intelligence/offline_analyzer.py.md)
+- [`intelligence/password_tools.py`](./intelligence/password_tools.py.md)
+- [`intelligence/performance_monitor.py`](./intelligence/performance_monitor.py.md)
+- [`intelligence/predictor_window.py`](./intelligence/predictor_window.py.md)
+- [`intelligence/quick_actions.py`](./intelligence/quick_actions.py.md)
+- [`intelligence/quick_tools_panel/__init__.py`](./intelligence/quick_tools_panel/__init__.py.md)
+- [`intelligence/quick_tools_panel/_api_config.py`](./intelligence/quick_tools_panel/_api_config.py.md)
+- [`intelligence/quick_tools_panel/_quick_tools.py`](./intelligence/quick_tools_panel/_quick_tools.py.md)
+- [`intelligence/quick_tools_panel.py`](./intelligence/quick_tools_panel.py.md)
+- [`intelligence/rag_injector.py`](./intelligence/rag_injector.py.md)
+- [`intelligence/recommendation_engine.py`](./intelligence/recommendation_engine.py.md)
+- [`intelligence/report_generator.py`](./intelligence/report_generator.py.md)
+- [`intelligence/sales_predictor.py`](./intelligence/sales_predictor.py.md)
+- [`intelligence/scan_window.py`](./intelligence/scan_window.py.md)
+- [`intelligence/screen_recorder.py`](./intelligence/screen_recorder.py.md)
+- [`intelligence/self_monitor.py`](./intelligence/self_monitor.py.md)
+- [`intelligence/session_context.py`](./intelligence/session_context.py.md)
+- [`intelligence/smart_assistant.py`](./intelligence/smart_assistant.py.md)
+- [`intelligence/smart_report_tools.py`](./intelligence/smart_report_tools.py.md)
+- [`intelligence/smart_workflow.py`](./intelligence/smart_workflow.py.md)
+- [`intelligence/solar_system_data/__init__.py`](./intelligence/solar_system_data/__init__.py.md)
+- [`intelligence/solar_system_data/_catalog.py`](./intelligence/solar_system_data/_catalog.py.md)
+- [`intelligence/solar_system_data/_core.py`](./intelligence/solar_system_data/_core.py.md)
+- [`intelligence/solar_system_data/_data.py`](./intelligence/solar_system_data/_data.py.md)
+- [`intelligence/solar_system_data.py`](./intelligence/solar_system_data.py.md)
+- [`intelligence/solar_system_window.py`](./intelligence/solar_system_window.py.md)
+- [`intelligence/super_intelligence.py`](./intelligence/super_intelligence.py.md)
+- [`intelligence/system_hub_window.py`](./intelligence/system_hub_window.py.md)
+- [`intelligence/system_monitor.py`](./intelligence/system_monitor.py.md)
+- [`intelligence/text_editor/__init__.py`](./intelligence/text_editor/__init__.py.md)
+- [`intelligence/text_editor/_core.py`](./intelligence/text_editor/_core.py.md)
+- [`intelligence/text_editor/_crypto.py`](./intelligence/text_editor/_crypto.py.md)
+- [`intelligence/text_editor/_note_tab.py`](./intelligence/text_editor/_note_tab.py.md)
+- [`intelligence/text_editor.py`](./intelligence/text_editor.py.md)
+- [`intelligence/timestamp_tools.py`](./intelligence/timestamp_tools.py.md)
+- [`intelligence/tool_registry.py`](./intelligence/tool_registry.py.md)
+- [`intelligence/tools_window.py`](./intelligence/tools_window.py.md)
+- [`intelligence/usb_scanner.py`](./intelligence/usb_scanner.py.md)
+- [`intelligence/vault_window.py`](./intelligence/vault_window.py.md)
+- [`intelligence/voice_interface.py`](./intelligence/voice_interface.py.md)
+- [`intelligence/whisper_recognizer.py`](./intelligence/whisper_recognizer.py.md)
+- [`intelligence/window_top_tools.py`](./intelligence/window_top_tools.py.md)
+- [`intelligence/workflow_engine/__init__.py`](./intelligence/workflow_engine/__init__.py.md)
+- [`intelligence/workflow_engine/_engine.py`](./intelligence/workflow_engine/_engine.py.md)
+- [`intelligence/workflow_engine/_models.py`](./intelligence/workflow_engine/_models.py.md)
+- [`intelligence/workflow_engine.py`](./intelligence/workflow_engine.py.md)
 - [`iqra/_archived/dedup_20260619_170800/deps.py`](./iqra/_archived/dedup_20260619_170800/deps.py.md)
 - [`iqra/_archived/license_模块归档_20260619/license_crypto.py`](./iqra/_archived/license_模块归档_20260619/license_crypto.py.md)
 - [`iqra/_archived/license_模块归档_20260619/license_db.py`](./iqra/_archived/license_模块归档_20260619/license_db.py.md)
@@ -2336,6 +2250,7 @@
 - [`iqra/core/model_status_manager.py`](./iqra/core/model_status_manager.py.md)
 - [`iqra/core/module_manager.py`](./iqra/core/module_manager.py.md)
 - [`iqra/core/modules/__init__.py`](./iqra/core/modules/__init__.py.md)
+- [`iqra/core/modules/intelligence/__init__.py`](./iqra/core/modules/intelligence/__init__.py.md)
 - [`iqra/core/modules/supabase/__init__.py`](./iqra/core/modules/supabase/__init__.py.md)
 - [`iqra/core/modules/supabase/_core.py`](./iqra/core/modules/supabase/_core.py.md)
 - [`iqra/core/modules/supabase/activation.py`](./iqra/core/modules/supabase/activation.py.md)
@@ -2478,132 +2393,6 @@
 - [`iqra/modules/dashboard/dashboard_window/_ui.py`](./iqra/modules/dashboard/dashboard_window/_ui.py.md)
 - [`iqra/modules/dashboard/dashboard_window.py`](./iqra/modules/dashboard/dashboard_window.py.md)
 - [`iqra/modules/intelligence/__init__.py`](./iqra/modules/intelligence/__init__.py.md)
-- [`iqra/modules/intelligence/_ai_shared.py`](./iqra/modules/intelligence/_ai_shared.py.md)
-- [`iqra/modules/intelligence/_ai_widgets.py`](./iqra/modules/intelligence/_ai_widgets.py.md)
-- [`iqra/modules/intelligence/_ai_widgets_anomaly.py`](./iqra/modules/intelligence/_ai_widgets_anomaly.py.md)
-- [`iqra/modules/intelligence/_ai_widgets_business.py`](./iqra/modules/intelligence/_ai_widgets_business.py.md)
-- [`iqra/modules/intelligence/_ai_widgets_core.py`](./iqra/modules/intelligence/_ai_widgets_core.py.md)
-- [`iqra/modules/intelligence/_ai_widgets_recommendation.py`](./iqra/modules/intelligence/_ai_widgets_recommendation.py.md)
-- [`iqra/modules/intelligence/_ai_widgets_visualization.py`](./iqra/modules/intelligence/_ai_widgets_visualization.py.md)
-- [`iqra/modules/intelligence/_ai_widgets_workflow.py`](./iqra/modules/intelligence/_ai_widgets_workflow.py.md)
-- [`iqra/modules/intelligence/_api_key_dialog.py`](./iqra/modules/intelligence/_api_key_dialog.py.md)
-- [`iqra/modules/intelligence/_chat_dialog.py`](./iqra/modules/intelligence/_chat_dialog.py.md)
-- [`iqra/modules/intelligence/_compat.py`](./iqra/modules/intelligence/_compat.py.md)
-- [`iqra/modules/intelligence/_floating_planet_chat_mixin.py`](./iqra/modules/intelligence/_floating_planet_chat_mixin.py.md)
-- [`iqra/modules/intelligence/_floating_planet_input_mixin.py`](./iqra/modules/intelligence/_floating_planet_input_mixin.py.md)
-- [`iqra/modules/intelligence/_floating_planet_modules_mixin.py`](./iqra/modules/intelligence/_floating_planet_modules_mixin.py.md)
-- [`iqra/modules/intelligence/_model_manager.py`](./iqra/modules/intelligence/_model_manager.py.md)
-- [`iqra/modules/intelligence/_model_manager_download.py`](./iqra/modules/intelligence/_model_manager_download.py.md)
-- [`iqra/modules/intelligence/_model_manager_ollama.py`](./iqra/modules/intelligence/_model_manager_ollama.py.md)
-- [`iqra/modules/intelligence/_navigation_hud.py`](./iqra/modules/intelligence/_navigation_hud.py.md)
-- [`iqra/modules/intelligence/_quick_tools_widget.py`](./iqra/modules/intelligence/_quick_tools_widget.py.md)
-- [`iqra/modules/intelligence/_shell_dialogs.py`](./iqra/modules/intelligence/_shell_dialogs.py.md)
-- [`iqra/modules/intelligence/_stubs.py`](./iqra/modules/intelligence/_stubs.py.md)
-- [`iqra/modules/intelligence/_text_crypto.py`](./iqra/modules/intelligence/_text_crypto.py.md)
-- [`iqra/modules/intelligence/_text_editor_files_mixin.py`](./iqra/modules/intelligence/_text_editor_files_mixin.py.md)
-- [`iqra/modules/intelligence/_text_editor_format_mixin.py`](./iqra/modules/intelligence/_text_editor_format_mixin.py.md)
-- [`iqra/modules/intelligence/_text_editor_tree_mixin.py`](./iqra/modules/intelligence/_text_editor_tree_mixin.py.md)
-- [`iqra/modules/intelligence/_text_editor_ui_mixin.py`](./iqra/modules/intelligence/_text_editor_ui_mixin.py.md)
-- [`iqra/modules/intelligence/account_window.py`](./iqra/modules/intelligence/account_window.py.md)
-- [`iqra/modules/intelligence/agent_bridge.py`](./iqra/modules/intelligence/agent_bridge.py.md)
-- [`iqra/modules/intelligence/agent_bridge_models.py`](./iqra/modules/intelligence/agent_bridge_models.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools/__init__.py`](./iqra/modules/intelligence/agent_bridge_tools/__init__.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools/_code_tools.py`](./iqra/modules/intelligence/agent_bridge_tools/_code_tools.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools/_file_tools.py`](./iqra/modules/intelligence/agent_bridge_tools/_file_tools.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools/_legacy_tools.py`](./iqra/modules/intelligence/agent_bridge_tools/_legacy_tools.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools/_system_tools.py`](./iqra/modules/intelligence/agent_bridge_tools/_system_tools.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools/_task_tools.py`](./iqra/modules/intelligence/agent_bridge_tools/_task_tools.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools/_web_tools.py`](./iqra/modules/intelligence/agent_bridge_tools/_web_tools.py.md)
-- [`iqra/modules/intelligence/agent_bridge_tools.py`](./iqra/modules/intelligence/agent_bridge_tools.py.md)
-- [`iqra/modules/intelligence/agent_bridge_workers.py`](./iqra/modules/intelligence/agent_bridge_workers.py.md)
-- [`iqra/modules/intelligence/ai_assistant_window.py`](./iqra/modules/intelligence/ai_assistant_window.py.md)
-- [`iqra/modules/intelligence/ai_center_window.py`](./iqra/modules/intelligence/ai_center_window.py.md)
-- [`iqra/modules/intelligence/ai_chat_styles.py`](./iqra/modules/intelligence/ai_chat_styles.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/__init__.py`](./iqra/modules/intelligence/ai_chat_window/__init__.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/_chat_stream.py`](./iqra/modules/intelligence/ai_chat_window/_chat_stream.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/_file_upload.py`](./iqra/modules/intelligence/ai_chat_window/_file_upload.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/_misc.py`](./iqra/modules/intelligence/ai_chat_window/_misc.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/_model_selector.py`](./iqra/modules/intelligence/ai_chat_window/_model_selector.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/_session.py`](./iqra/modules/intelligence/ai_chat_window/_session.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/_ui.py`](./iqra/modules/intelligence/ai_chat_window/_ui.py.md)
-- [`iqra/modules/intelligence/ai_chat_window/_voice.py`](./iqra/modules/intelligence/ai_chat_window/_voice.py.md)
-- [`iqra/modules/intelligence/ai_chat_window.py`](./iqra/modules/intelligence/ai_chat_window.py.md)
-- [`iqra/modules/intelligence/ai_dashboard_window.py`](./iqra/modules/intelligence/ai_dashboard_window.py.md)
-- [`iqra/modules/intelligence/ai_features_ai_dashboard.py`](./iqra/modules/intelligence/ai_features_ai_dashboard.py.md)
-- [`iqra/modules/intelligence/ai_features_customer_ai.py`](./iqra/modules/intelligence/ai_features_customer_ai.py.md)
-- [`iqra/modules/intelligence/ai_features_inventory_ai.py`](./iqra/modules/intelligence/ai_features_inventory_ai.py.md)
-- [`iqra/modules/intelligence/ai_features_pricing_ai.py`](./iqra/modules/intelligence/ai_features_pricing_ai.py.md)
-- [`iqra/modules/intelligence/ai_features_sales_ai.py`](./iqra/modules/intelligence/ai_features_sales_ai.py.md)
-- [`iqra/modules/intelligence/analysis_tools.py`](./iqra/modules/intelligence/analysis_tools.py.md)
-- [`iqra/modules/intelligence/anomaly_detector.py`](./iqra/modules/intelligence/anomaly_detector.py.md)
-- [`iqra/modules/intelligence/auto_task_executor.py`](./iqra/modules/intelligence/auto_task_executor.py.md)
-- [`iqra/modules/intelligence/batch_text.py`](./iqra/modules/intelligence/batch_text.py.md)
-- [`iqra/modules/intelligence/business_ai_assistant.py`](./iqra/modules/intelligence/business_ai_assistant.py.md)
-- [`iqra/modules/intelligence/business_tools.py`](./iqra/modules/intelligence/business_tools.py.md)
-- [`iqra/modules/intelligence/chat_session_manager.py`](./iqra/modules/intelligence/chat_session_manager.py.md)
-- [`iqra/modules/intelligence/compress_tool.py`](./iqra/modules/intelligence/compress_tool.py.md)
-- [`iqra/modules/intelligence/core/__init__.py`](./iqra/modules/intelligence/core/__init__.py.md)
-- [`iqra/modules/intelligence/core/llm_backend.py`](./iqra/modules/intelligence/core/llm_backend.py.md)
-- [`iqra/modules/intelligence/crm_tools.py`](./iqra/modules/intelligence/crm_tools.py.md)
-- [`iqra/modules/intelligence/data_import_tools.py`](./iqra/modules/intelligence/data_import_tools.py.md)
-- [`iqra/modules/intelligence/data_visualization.py`](./iqra/modules/intelligence/data_visualization.py.md)
-- [`iqra/modules/intelligence/db_helper.py`](./iqra/modules/intelligence/db_helper.py.md)
-- [`iqra/modules/intelligence/download_dialog.py`](./iqra/modules/intelligence/download_dialog.py.md)
-- [`iqra/modules/intelligence/editor_window.py`](./iqra/modules/intelligence/editor_window.py.md)
-- [`iqra/modules/intelligence/enhanced/__init__.py`](./iqra/modules/intelligence/enhanced/__init__.py.md)
-- [`iqra/modules/intelligence/enhanced/enhanced_tools.py`](./iqra/modules/intelligence/enhanced/enhanced_tools.py.md)
-- [`iqra/modules/intelligence/enhanced_chat.py`](./iqra/modules/intelligence/enhanced_chat.py.md)
-- [`iqra/modules/intelligence/event_trigger.py`](./iqra/modules/intelligence/event_trigger.py.md)
-- [`iqra/modules/intelligence/file_rename_tools.py`](./iqra/modules/intelligence/file_rename_tools.py.md)
-- [`iqra/modules/intelligence/finance_analysis_tools.py`](./iqra/modules/intelligence/finance_analysis_tools.py.md)
-- [`iqra/modules/intelligence/floating_planet.py`](./iqra/modules/intelligence/floating_planet.py.md)
-- [`iqra/modules/intelligence/floating_planet_anim_mixin.py`](./iqra/modules/intelligence/floating_planet_anim_mixin.py.md)
-- [`iqra/modules/intelligence/floating_planet_draw_mixin.py`](./iqra/modules/intelligence/floating_planet_draw_mixin.py.md)
-- [`iqra/modules/intelligence/floating_planet_menu_mixin.py`](./iqra/modules/intelligence/floating_planet_menu_mixin.py.md)
-- [`iqra/modules/intelligence/hr_tools.py`](./iqra/modules/intelligence/hr_tools.py.md)
-- [`iqra/modules/intelligence/img_converter.py`](./iqra/modules/intelligence/img_converter.py.md)
-- [`iqra/modules/intelligence/intelligence_integration.py`](./iqra/modules/intelligence/intelligence_integration.py.md)
-- [`iqra/modules/intelligence/intelligence_window.py`](./iqra/modules/intelligence/intelligence_window.py.md)
-- [`iqra/modules/intelligence/inventory_tools.py`](./iqra/modules/intelligence/inventory_tools.py.md)
-- [`iqra/modules/intelligence/iqra_floating_planet.py`](./iqra/modules/intelligence/iqra_floating_planet.py.md)
-- [`iqra/modules/intelligence/json_tools.py`](./iqra/modules/intelligence/json_tools.py.md)
-- [`iqra/modules/intelligence/key_manager.py`](./iqra/modules/intelligence/key_manager.py.md)
-- [`iqra/modules/intelligence/knowledge_base.py`](./iqra/modules/intelligence/knowledge_base.py.md)
-- [`iqra/modules/intelligence/marketing_tools.py`](./iqra/modules/intelligence/marketing_tools.py.md)
-- [`iqra/modules/intelligence/model_config.py`](./iqra/modules/intelligence/model_config.py.md)
-- [`iqra/modules/intelligence/monitor_dashboard.py`](./iqra/modules/intelligence/monitor_dashboard.py.md)
-- [`iqra/modules/intelligence/offline_analyzer.py`](./iqra/modules/intelligence/offline_analyzer.py.md)
-- [`iqra/modules/intelligence/password_tools.py`](./iqra/modules/intelligence/password_tools.py.md)
-- [`iqra/modules/intelligence/performance_monitor.py`](./iqra/modules/intelligence/performance_monitor.py.md)
-- [`iqra/modules/intelligence/predictor_window.py`](./iqra/modules/intelligence/predictor_window.py.md)
-- [`iqra/modules/intelligence/quick_actions.py`](./iqra/modules/intelligence/quick_actions.py.md)
-- [`iqra/modules/intelligence/quick_tools_panel.py`](./iqra/modules/intelligence/quick_tools_panel.py.md)
-- [`iqra/modules/intelligence/rag_injector.py`](./iqra/modules/intelligence/rag_injector.py.md)
-- [`iqra/modules/intelligence/recommendation_engine.py`](./iqra/modules/intelligence/recommendation_engine.py.md)
-- [`iqra/modules/intelligence/report_generator.py`](./iqra/modules/intelligence/report_generator.py.md)
-- [`iqra/modules/intelligence/sales_predictor.py`](./iqra/modules/intelligence/sales_predictor.py.md)
-- [`iqra/modules/intelligence/scan_window.py`](./iqra/modules/intelligence/scan_window.py.md)
-- [`iqra/modules/intelligence/screen_recorder.py`](./iqra/modules/intelligence/screen_recorder.py.md)
-- [`iqra/modules/intelligence/self_monitor.py`](./iqra/modules/intelligence/self_monitor.py.md)
-- [`iqra/modules/intelligence/session_context.py`](./iqra/modules/intelligence/session_context.py.md)
-- [`iqra/modules/intelligence/smart_assistant.py`](./iqra/modules/intelligence/smart_assistant.py.md)
-- [`iqra/modules/intelligence/smart_report_tools.py`](./iqra/modules/intelligence/smart_report_tools.py.md)
-- [`iqra/modules/intelligence/smart_workflow.py`](./iqra/modules/intelligence/smart_workflow.py.md)
-- [`iqra/modules/intelligence/solar_system_data.py`](./iqra/modules/intelligence/solar_system_data.py.md)
-- [`iqra/modules/intelligence/solar_system_window.py`](./iqra/modules/intelligence/solar_system_window.py.md)
-- [`iqra/modules/intelligence/super_intelligence.py`](./iqra/modules/intelligence/super_intelligence.py.md)
-- [`iqra/modules/intelligence/system_hub_window.py`](./iqra/modules/intelligence/system_hub_window.py.md)
-- [`iqra/modules/intelligence/system_monitor.py`](./iqra/modules/intelligence/system_monitor.py.md)
-- [`iqra/modules/intelligence/text_editor.py`](./iqra/modules/intelligence/text_editor.py.md)
-- [`iqra/modules/intelligence/timestamp_tools.py`](./iqra/modules/intelligence/timestamp_tools.py.md)
-- [`iqra/modules/intelligence/tool_registry.py`](./iqra/modules/intelligence/tool_registry.py.md)
-- [`iqra/modules/intelligence/tools_window.py`](./iqra/modules/intelligence/tools_window.py.md)
-- [`iqra/modules/intelligence/usb_scanner.py`](./iqra/modules/intelligence/usb_scanner.py.md)
-- [`iqra/modules/intelligence/vault_window.py`](./iqra/modules/intelligence/vault_window.py.md)
-- [`iqra/modules/intelligence/voice_interface.py`](./iqra/modules/intelligence/voice_interface.py.md)
-- [`iqra/modules/intelligence/whisper_recognizer.py`](./iqra/modules/intelligence/whisper_recognizer.py.md)
-- [`iqra/modules/intelligence/window_top_tools.py`](./iqra/modules/intelligence/window_top_tools.py.md)
-- [`iqra/modules/intelligence/workflow_engine.py`](./iqra/modules/intelligence/workflow_engine.py.md)
 - [`iqra/planet_daemon.py`](./iqra/planet_daemon.py.md)
 - [`iqra/rollback_control.py`](./iqra/rollback_control.py.md)
 - [`iqra/services/__init__.py`](./iqra/services/__init__.py.md)
@@ -2696,6 +2485,7 @@
 - [`management-system/core/mobile_api.py`](./management-system/core/mobile_api.py.md)
 - [`management-system/core/module_manager.py`](./management-system/core/module_manager.py.md)
 - [`management-system/core/modules/__init__.py`](./management-system/core/modules/__init__.py.md)
+- [`management-system/core/modules/intelligence/__init__.py`](./management-system/core/modules/intelligence/__init__.py.md)
 - [`management-system/core/modules/supabase/__init__.py`](./management-system/core/modules/supabase/__init__.py.md)
 - [`management-system/core/modules/supabase/_core.py`](./management-system/core/modules/supabase/_core.py.md)
 - [`management-system/core/modules/supabase/activation.py`](./management-system/core/modules/supabase/activation.py.md)
@@ -3129,7 +2919,6 @@
 - [`solar_explorer/body_encyclopedia.py`](./solar_explorer/body_encyclopedia.py.md)
 - [`solar_explorer/star_catalog_window.py`](./solar_explorer/star_catalog_window.py.md)
 - [`solar_explorer/voice_reader.py`](./solar_explorer/voice_reader.py.md)
-- [`test_sync_30_tables.py`](./test_sync_30_tables.py.md)
 - [`tools/clean_package.py`](./tools/clean_package.py.md)
 - [`tools/pack_build.py`](./tools/pack_build.py.md)
 - [`verify_both.py`](./verify_both.py.md)

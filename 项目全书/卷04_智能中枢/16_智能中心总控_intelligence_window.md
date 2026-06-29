@@ -100,8 +100,8 @@
 | 子项目 | 菜单文件 |
 |--------|---------|
 | management-system | `modules/floating_planet_menu_mixin.py` |
-| iqra | `modules/intelligence/floating_planet_menu_mixin.py` |
-| planetarium | `modules/intelligence/floating_planet_menu_mixin.py` |
+| iqra | `intelligence/floating_planet_menu_mixin.py` |
+| planetarium | `intelligence/floating_planet_menu_mixin.py` |
 
 ---
 

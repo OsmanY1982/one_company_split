@@ -705,3 +705,6 @@ def sync_all():
 
 if __name__ == "__main__":
     sync_all()
+
+# agent_bridge forwarding
+from iqra.core.cloud_sync import CloudSyncService

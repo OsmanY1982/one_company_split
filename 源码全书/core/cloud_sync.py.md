@@ -1,6 +1,6 @@
 # `core/cloud_sync.py`
 
-> 路径：`core/cloud_sync.py` | 行数：707
+> 路径：`core/cloud_sync.py` | 行数：710
 
 
 ---
@@ -714,5 +714,8 @@ def sync_all():
 
 if __name__ == "__main__":
     sync_all()
+
+# agent_bridge forwarding
+from iqra.core.cloud_sync import CloudSyncService
 
 ```

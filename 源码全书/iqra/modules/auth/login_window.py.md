@@ -1,6 +1,6 @@
 # `iqra/modules/auth/login_window.py`
 
-> 路径：`iqra/modules/auth/login_window.py` | 行数：698
+> 路径：`iqra/modules/auth/login_window.py` | 行数：699
 
 
 ---
@@ -661,6 +661,7 @@ class LoginWindow(QMainWindow):
                 role=role,
                 membership_info=membership_info,
                 config=config,
+                project_context="iqra",
             )
             self._floating.show()
             self._floating.raise_()

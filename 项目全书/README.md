@@ -12,7 +12,7 @@
 |------|------|
 | Python 模块文件 | 429 个 |
 | 总代码行数 | 123,359 行 |
-| 最大单文件 | `core/modules/intelligence/starship_painter.py` (2,031行) |
+| 最大单文件 | `intelligence/agent_bridge.py` (1,008行) |
 | 一级目录数 | 2 个 |
 
 ## 目录结构

@@ -20,6 +20,9 @@ from core.cosmic import CosmicBackground, ACCENT_CYAN, ACCENT_GOLD, ACCENT_PURPL
 from core.planet_painter import PLANET_STYLES, paint_planet
 from deps.install_deps import ensure
 
+# 后台线程：避免主线程阻塞
+from iqra.modules.auth.model_config_panel._workers import _OllamaModelFetcher
+
 # 模型列表统一走 AgentBridge.list_all_models() 静态方法（数据源：iqra_config.json + Ollama 动态发现）
 
 
@@ -95,7 +98,18 @@ class SetupCosmicBackground(QWidget):
             })
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._tick)
-        self._timer.start(16)  # ~60fps (原 40ms)
+        self._timer.start(33)  # ~30fps（降低渲染开销）
+
+    def showEvent(self, event):
+        """窗口显示时恢复动画"""
+        super().showEvent(event)
+        if not self._timer.isActive():
+            self._timer.start(33)
+
+    def hideEvent(self, event):
+        """窗口隐藏时暂停动画，释放渲染资源"""
+        super().hideEvent(event)
+        self._timer.stop()
 
     def _tick(self):
         self._t += 0.02
@@ -537,7 +551,8 @@ class ModelSetupWindow(QMainWindow):
 
         v.addStretch()
 
-        self._on_local_service_changed()
+        # 初始化时不阻塞：推迟到事件循环再刷新（避免 Ollama HTTP 请求卡死 UI）
+        QTimer.singleShot(0, self._on_local_service_changed)
 
         # 预填已有本地配置
         local = self._existing.get("local_providers", {})
@@ -575,46 +590,32 @@ class ModelSetupWindow(QMainWindow):
                 self._local_model.addItem(m, m)
 
     def _refresh_local_models(self):
-        """通过 AgentBridge.list_all_models() + 直接扫描当前服务获取模型列表"""
-        from modules.intelligence.agent_bridge import AgentBridge
-
+        """异步获取本地模型列表（Ollama /api/tags），不阻塞 UI"""
         self._local_model.clear()
         self._refresh_btn.setEnabled(False)
         self._refresh_btn.setText("扫描中...")
 
-        local_models = []
-
-        # 优先直连当前选中的本地服务扫描（不依赖已保存的配置）
-        sid = self._local_service.currentData()
         url = self._local_url.text().strip()
-        if url and "localhost" in url:
-            try:
-                import urllib.request
-                import urllib.parse
 
-                if "11434" in url or sid == "ollama":
-                    # Ollama 的 /api/tags 在根路径，不在 base_url 的 /v1 下
-                    parsed = urllib.parse.urlparse(url)
-                    origin = f"{parsed.scheme}://{parsed.hostname}:{parsed.port or 11434}"
-                    endpoint = urllib.parse.urljoin(origin + "/", "api/tags")
-                    resp = urllib.request.urlopen(endpoint, timeout=5)
-                    data = json.loads(resp.read())
-                    for m in data.get("models", []):
-                        if "name" in m:
-                            size = m.get("size", 0)
-                            size_str = f" ({size / 1024 / 1024 / 1024:.1f}GB)" if size else ""
-                            local_models.append({"model": m["name"], "size": size, "display": f"{m['name']}{size_str}"})
-                else:
-                    endpoint = urllib.parse.urljoin(url.rstrip("/") + "/", "models")
-                    resp = urllib.request.urlopen(endpoint, timeout=5)
-                    data = json.loads(resp.read())
-                    for m in data.get("data", []):
-                        local_models.append({"model": m["id"], "size": 0, "display": m["id"]})
-            except Exception as e:
-                print(f"[ModelSetup] 直接扫描 {url} 失败: {e}")
+        if not url:
+            self._local_model.addItem("（未配置本地服务地址）", "")
+            self._refresh_btn.setEnabled(True)
+            self._refresh_btn.setText("刷新模型")
+            return
 
-        # 补充从已保存配置中读取的模型
-        if not local_models:
+        self._local_model.addItem("（扫描中...）", "")
+        self._ollama_fetcher = _OllamaModelFetcher(base_url=url, timeout=15)
+        self._ollama_fetcher.finished.connect(self._on_ollama_fetch_done)
+        self._ollama_fetcher.start()
+
+    def _on_ollama_fetch_done(self, models: list, error: str):
+        """Ollama 模型列表获取完成回调（主线程安全）"""
+        self._local_model.clear()
+
+        if error:
+            print(f"[ModelSetup] Ollama 扫描失败: {error}")
+            # 回退到已保存配置
+            from modules.intelligence.agent_bridge import AgentBridge
             try:
                 all_models = AgentBridge.list_all_models()
                 for m in all_models:
@@ -622,19 +623,17 @@ class ModelSetupWindow(QMainWindow):
                         name = m.get("model", "")
                         size = m.get("size", 0)
                         size_str = f" ({size / 1024 / 1024 / 1024:.1f}GB)" if size else ""
-                        local_models.append({"model": name, "size": size, "display": f"{name}{size_str}"})
+                        models.append(f"{name}{size_str}")
             except Exception as e:
-                print(f"[ModelSetup] agent_bridge 获取模型列表失败: {e}")
-                traceback.print_exc()
+                print(f"[ModelSetup] agent_bridge 回退失败: {e}")
 
-        if not local_models:
+        if not models:
             self._local_model.addItem("（暂无本地模型，请先配置或启动 Ollama）", "")
         else:
-            for m in local_models:
-                name = m.get("model", "")
-                size = m.get("size", 0)
-                size_str = f" ({size / 1024 / 1024 / 1024:.1f}GB)" if size else ""
-                self._local_model.addItem(f"{name}{size_str}", name)
+            for display_name in models:
+                # _OllamaModelFetcher 返回的列表项格式为 "model_name (size)"，提取纯名称
+                name = display_name.split(" (")[0] if " (" in display_name else display_name
+                self._local_model.addItem(display_name, name)
 
         self._refresh_btn.setEnabled(True)
         self._refresh_btn.setText("刷新模型")

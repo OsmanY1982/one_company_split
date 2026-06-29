@@ -1,6 +1,6 @@
 # `iqra/modules/auth/model_setup_window.py`
 
-> 路径：`iqra/modules/auth/model_setup_window.py` | 行数：935
+> 路径：`iqra/modules/auth/model_setup_window.py` | 行数：913
 
 
 ---
@@ -112,55 +112,34 @@ def _import_iqra_llm_backend():
 
 
 def _import_iqra_agent_bridge():
-    """从 iqra 子项目直接加载 agent_bridge 模块。
+    """从项目根目录 intelligence/ 直接加载 agent_bridge 模块。
+    intelligence 已迁移至项目根目录 intelligence/ 独立子项目，
+    iqra/modules/intelligence/ 副本已删除，此处直接加载根目录版本。
     agent_bridge.py 模块级有 from core.llm_backend import BaseLLMBackend，
     必须先解除主应用 core 的 sys.modules 遮蔽再导入。
-    同时注入 iqra/modules/ 到 modules.__path__，避免主应用
-    modules/intelligence/__init__.py 的 from core.xxx 绝对导入
-    在 core 被重定向到 iqra/core/ 后解析失败。
     """
     import importlib.machinery
     _iqra_root = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))), "iqra")
+    _project_root = os.path.dirname(_iqra_root)
     # 保存主应用 core 及 core.modules（bridge 加载会污染 core.modules）
     _saved_core = sys.modules.pop("core", None)
     _saved_core_modules = sys.modules.pop("core.modules", None)
-    # 注入 iqra/modules/ 到 modules 包搜索路径最前面
-    _modules_iqra = os.path.join(_iqra_root, "modules")
-    _saved_mi_path = None
-    _modules_was_loaded = "modules" in sys.modules
-    if _modules_was_loaded:
-        _saved_mi_path = list(sys.modules["modules"].__path__)
-        if _modules_iqra not in sys.modules["modules"].__path__:
-            sys.modules["modules"].__path__.insert(0, _modules_iqra)
-    # 临时解除 modules.intelligence 及所有子模块缓存（_build_ui 阶段的失败导入可能已缓存 core 版本）
-    # 否则 from modules.intelligence.agent_bridge_models 等导入会命中缓存而找不到文件
+    # 临时解除 modules.intelligence 及所有子模块缓存
     _saved_mi = sys.modules.pop("modules.intelligence", None)
-    # 记录 bridge 加载前已存在的 modules.intelligence.* 子模块（用于加载后清理）
     _pre_bridge_mi_keys = {k for k in sys.modules if k.startswith("modules.intelligence.")}
-    # 确保 parent 在 sys.path[0]，这样存根中的
-    # from core.modules.intelligence.agent_bridge import * 解析到父项目 core/
-    # 而非 iqra/core/（后者 modules/ 下只有 supabase/，没有 intelligence/）
+    # 确保 project_root 在 sys.path[0]，让 intelligence/ 包可被找到
     _saved_syspath = list(sys.path)
-    _parent = os.path.dirname(_iqra_root)
-    sys.path.insert(0, _parent)
-    sys.path.insert(1, _iqra_root)
+    sys.path.insert(0, _project_root)
     try:
         _mod = importlib.machinery.SourceFileLoader(
             "iqra_agent_bridge",
-            os.path.join(_iqra_root, "modules", "intelligence", "agent_bridge.py")
+            os.path.join(_project_root, "intelligence", "agent_bridge.py")
         ).load_module()
     finally:
         sys.path[:] = _saved_syspath
-        if _saved_mi_path is not None:
-            sys.modules["modules"].__path__[:] = _saved_mi_path
-        elif not _modules_was_loaded and "modules" in sys.modules:
-            # modules 是 bridge 加载期间新创建的（__path__ 指向 iqra），
-            # 删除它，让后续 import 从 sys.path 重新解析到 core
-            del sys.modules["modules"]
-        # 先清除 bridge 加载期间写入的 modules.intelligence 及所有子模块（iqra 版本），
-        # 再恢复主应用缓存的版本（若存在）。避免 login_window 后续 import
-        # 拿到 iqra 的 AI助手 界面而非 core 的智能中心。
+        # 清除 bridge 加载期间写入的 modules.intelligence 及所有子模块（可能指向 iqra 版本），
+        # 再恢复主应用缓存的版本（若存在）。
         sys.modules.pop("modules.intelligence", None)
         for _k in list(sys.modules):
             if _k.startswith("modules.intelligence.") and _k not in _pre_bridge_mi_keys:
@@ -172,7 +151,6 @@ def _import_iqra_agent_bridge():
         if _saved_core_modules is not None:
             sys.modules["core.modules"] = _saved_core_modules
         elif "core.modules" in sys.modules:
-            # core.modules 是 bridge 加载期间新创建的（指向 iqra），清除它
             del sys.modules["core.modules"]
     return _mod
 
